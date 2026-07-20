@@ -13,7 +13,7 @@
 
 
 import ApiClient from "../ApiClient";
-import AuthResponse from '../model/AuthResponse';
+import AuthResult from '../model/AuthResult';
 import CreateUserRequest from '../model/CreateUserRequest';
 import Error from '../model/Error';
 import LoginRequest from '../model/LoginRequest';
@@ -285,7 +285,7 @@ export default class DefaultApi {
      * Callback function to receive the result of the login operation.
      * @callback module:api/DefaultApi~loginCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/AuthResponse} data The data returned by the service call.
+     * @param {module:model/AuthResult} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -293,7 +293,7 @@ export default class DefaultApi {
      * Authenticate and receive access tokens
      * @param {module:model/LoginRequest} loginRequest 
      * @param {module:api/DefaultApi~loginCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/AuthResponse}
+     * data is of type: {@link module:model/AuthResult}
      */
     login(loginRequest, callback) {
       let postBody = loginRequest;
@@ -314,7 +314,7 @@ export default class DefaultApi {
       let authNames = [];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = AuthResponse;
+      let returnType = AuthResult;
       return this.apiClient.callApi(
         '/auth/login', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -326,7 +326,7 @@ export default class DefaultApi {
      * Callback function to receive the result of the refreshToken operation.
      * @callback module:api/DefaultApi~refreshTokenCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/AuthResponse} data The data returned by the service call.
+     * @param {module:model/AuthResult} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -334,7 +334,7 @@ export default class DefaultApi {
      * Exchange a refresh token for a new access token
      * @param {module:model/RefreshRequest} refreshRequest 
      * @param {module:api/DefaultApi~refreshTokenCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/AuthResponse}
+     * data is of type: {@link module:model/AuthResult}
      */
     refreshToken(refreshRequest, callback) {
       let postBody = refreshRequest;
@@ -355,7 +355,7 @@ export default class DefaultApi {
       let authNames = [];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = AuthResponse;
+      let returnType = AuthResult;
       return this.apiClient.callApi(
         '/auth/refresh', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -367,7 +367,7 @@ export default class DefaultApi {
      * Callback function to receive the result of the register operation.
      * @callback module:api/DefaultApi~registerCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/AuthResponse} data The data returned by the service call.
+     * @param {module:model/AuthResult} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -375,7 +375,7 @@ export default class DefaultApi {
      * Register a new user account
      * @param {module:model/RegisterRequest} registerRequest 
      * @param {module:api/DefaultApi~registerCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/AuthResponse}
+     * data is of type: {@link module:model/AuthResult}
      */
     register(registerRequest, callback) {
       let postBody = registerRequest;
@@ -396,7 +396,7 @@ export default class DefaultApi {
       let authNames = [];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = AuthResponse;
+      let returnType = AuthResult;
       return this.apiClient.callApi(
         '/auth/register', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,

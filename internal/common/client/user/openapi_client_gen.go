@@ -981,13 +981,13 @@ type LoginResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AuthResponse
+	JSON200 *AuthResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r LoginResponse) GetJSON200() *AuthResponse {
+func (r LoginResponse) GetJSON200() *AuthResult {
 	return r.JSON200
 }
 
@@ -1029,13 +1029,13 @@ type RefreshTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AuthResponse
+	JSON200 *AuthResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r RefreshTokenResponse) GetJSON200() *AuthResponse {
+func (r RefreshTokenResponse) GetJSON200() *AuthResult {
 	return r.JSON200
 }
 
@@ -1077,13 +1077,13 @@ type RegisterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *AuthResponse
+	JSON201 *AuthResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
 // GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r RegisterResponse) GetJSON201() *AuthResponse {
+func (r RegisterResponse) GetJSON201() *AuthResult {
 	return r.JSON201
 }
 
@@ -1660,7 +1660,7 @@ func ParseLoginResponse(rsp *http.Response) (*LoginResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AuthResponse
+		var dest AuthResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1693,7 +1693,7 @@ func ParseRefreshTokenResponse(rsp *http.Response) (*RefreshTokenResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AuthResponse
+		var dest AuthResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1726,7 +1726,7 @@ func ParseRegisterResponse(rsp *http.Response) (*RegisterResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest AuthResponse
+		var dest AuthResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

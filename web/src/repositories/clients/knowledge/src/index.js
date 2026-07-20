@@ -21,7 +21,7 @@ import Error from './model/Error';
 import IndexJob from './model/IndexJob';
 import IndexStatus from './model/IndexStatus';
 import RetrieveRequest from './model/RetrieveRequest';
-import RetrieveResponse from './model/RetrieveResponse';
+import RetrieveResult from './model/RetrieveResult';
 import RetrievedChunk from './model/RetrievedChunk';
 import UpdateDocumentRequest from './model/UpdateDocumentRequest';
 import DefaultApi from './api/DefaultApi';
@@ -114,10 +114,10 @@ export {
     RetrieveRequest,
 
     /**
-     * The RetrieveResponse model constructor.
-     * @property {module:model/RetrieveResponse}
+     * The RetrieveResult model constructor.
+     * @property {module:model/RetrieveResult}
      */
-    RetrieveResponse,
+    RetrieveResult,
 
     /**
      * The RetrievedChunk model constructor.

@@ -21,7 +21,7 @@ import Error from '../model/Error';
 import Message from '../model/Message';
 import MessageList from '../model/MessageList';
 import SendMessageRequest from '../model/SendMessageRequest';
-import SendMessageResponse from '../model/SendMessageResponse';
+import SendMessageResult from '../model/SendMessageResult';
 
 /**
 * Default service.
@@ -306,7 +306,7 @@ export default class DefaultApi {
      * Callback function to receive the result of the sendMessage operation.
      * @callback module:api/DefaultApi~sendMessageCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/SendMessageResponse} data The data returned by the service call.
+     * @param {module:model/SendMessageResult} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -316,7 +316,7 @@ export default class DefaultApi {
      * @param {String} conversationId 
      * @param {module:model/SendMessageRequest} sendMessageRequest 
      * @param {module:api/DefaultApi~sendMessageCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/SendMessageResponse}
+     * data is of type: {@link module:model/SendMessageResult}
      */
     sendMessage(conversationId, sendMessageRequest, callback) {
       let postBody = sendMessageRequest;
@@ -342,7 +342,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = SendMessageResponse;
+      let returnType = SendMessageResult;
       return this.apiClient.callApi(
         '/conversations/{conversationId}/messages', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,

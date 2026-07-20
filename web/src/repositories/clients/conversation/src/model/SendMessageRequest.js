@@ -89,9 +89,9 @@ SendMessageRequest.prototype['tags'] = undefined;
 /**
  * Number of most recent messages in the conversation to include as LLM context
  * @member {Number} historyCapacity
- * @default 10
+ * @default 3
  */
-SendMessageRequest.prototype['historyCapacity'] = 10;
+SendMessageRequest.prototype['historyCapacity'] = 3;
 
 
 

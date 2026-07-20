@@ -297,7 +297,7 @@ Name | Type | Description  | Notes
 
 ## login
 
-> AuthResponse login(loginRequest)
+> AuthResult login(loginRequest)
 
 Authenticate and receive access tokens
 
@@ -326,7 +326,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AuthResponse**](AuthResponse.md)
+[**AuthResult**](AuthResult.md)
 
 ### Authorization
 
@@ -340,7 +340,7 @@ No authorization required
 
 ## refreshToken
 
-> AuthResponse refreshToken(refreshRequest)
+> AuthResult refreshToken(refreshRequest)
 
 Exchange a refresh token for a new access token
 
@@ -369,7 +369,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AuthResponse**](AuthResponse.md)
+[**AuthResult**](AuthResult.md)
 
 ### Authorization
 
@@ -383,7 +383,7 @@ No authorization required
 
 ## register
 
-> AuthResponse register(registerRequest)
+> AuthResult register(registerRequest)
 
 Register a new user account
 
@@ -412,7 +412,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AuthResponse**](AuthResponse.md)
+[**AuthResult**](AuthResult.md)
 
 ### Authorization
 

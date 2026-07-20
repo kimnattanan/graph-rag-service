@@ -980,13 +980,13 @@ type SendMessageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *SendMessageResponse
+	JSON201 *SendMessageResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
 // GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r SendMessageResponse) GetJSON201() *SendMessageResponse {
+func (r SendMessageResponse) GetJSON201() *SendMessageResult {
 	return r.JSON201
 }
 
@@ -1369,7 +1369,7 @@ func ParseSendMessageResponse(rsp *http.Response) (*SendMessageResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest SendMessageResponse
+		var dest SendMessageResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

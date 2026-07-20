@@ -28,7 +28,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/AuthResult'
         default:
           description: unexpected error
           content:
@@ -53,7 +53,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/AuthResult'
         default:
           description: unexpected error
           content:
@@ -78,7 +78,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/AuthResult'
         default:
           description: unexpected error
           content:
@@ -292,7 +292,7 @@ components:
         refreshToken:
           type: string
 
-    AuthResponse:
+    AuthResult:
       type: object
       required: [accessToken, refreshToken, expiresIn, tokenType, user]
       properties:

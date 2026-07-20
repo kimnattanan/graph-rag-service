@@ -13,7 +13,7 @@
 
 
 import ApiClient from './ApiClient';
-import AuthResponse from './model/AuthResponse';
+import AuthResult from './model/AuthResult';
 import CreateUserRequest from './model/CreateUserRequest';
 import Error from './model/Error';
 import LoginRequest from './model/LoginRequest';
@@ -65,10 +65,10 @@ export {
     ApiClient,
 
     /**
-     * The AuthResponse model constructor.
-     * @property {module:model/AuthResponse}
+     * The AuthResult model constructor.
+     * @property {module:model/AuthResult}
      */
-    AuthResponse,
+    AuthResult,
 
     /**
      * The CreateUserRequest model constructor.

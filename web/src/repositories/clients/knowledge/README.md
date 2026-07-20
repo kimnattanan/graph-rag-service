@@ -144,7 +144,7 @@ Class | Method | HTTP request | Description
  - [GraphRagServiceKnowledge.IndexJob](docs/IndexJob.md)
  - [GraphRagServiceKnowledge.IndexStatus](docs/IndexStatus.md)
  - [GraphRagServiceKnowledge.RetrieveRequest](docs/RetrieveRequest.md)
- - [GraphRagServiceKnowledge.RetrieveResponse](docs/RetrieveResponse.md)
+ - [GraphRagServiceKnowledge.RetrieveResult](docs/RetrieveResult.md)
  - [GraphRagServiceKnowledge.RetrievedChunk](docs/RetrievedChunk.md)
  - [GraphRagServiceKnowledge.UpdateDocumentRequest](docs/UpdateDocumentRequest.md)
 

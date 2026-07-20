@@ -307,7 +307,7 @@ Name | Type | Description  | Notes
 
 ## retrieve
 
-> RetrieveResponse retrieve(retrieveRequest)
+> RetrieveResult retrieve(retrieveRequest)
 
 Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 
@@ -342,7 +342,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**RetrieveResponse**](RetrieveResponse.md)
+[**RetrieveResult**](RetrieveResult.md)
 
 ### Authorization
 

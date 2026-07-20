@@ -312,7 +312,7 @@ Name | Type | Description  | Notes
 
 ## sendMessage
 
-> SendMessageResponse sendMessage(conversationId, sendMessageRequest)
+> SendMessageResult sendMessage(conversationId, sendMessageRequest)
 
 Send a user message and receive an assistant reply (requires conversation:ask)
 
@@ -349,7 +349,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SendMessageResponse**](SendMessageResponse.md)
+[**SendMessageResult**](SendMessageResult.md)
 
 ### Authorization
 

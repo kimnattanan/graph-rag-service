@@ -172,7 +172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SendMessageResponse'
+                $ref: '#/components/schemas/SendMessageResult'
         default:
           description: unexpected error
           content:
@@ -248,7 +248,7 @@ components:
           type: integer
           minimum: 0
           maximum: 100
-          default: 10
+          default: 3
           description: Number of most recent messages in the conversation to include as LLM context
 
     Conversation:
@@ -331,7 +331,7 @@ components:
           type: string
           format: date-time
 
-    SendMessageResponse:
+    SendMessageResult:
       type: object
       required: [userMessage, assistantMessage]
       properties:

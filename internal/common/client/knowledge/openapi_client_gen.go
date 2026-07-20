@@ -1156,13 +1156,13 @@ type RetrieveResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *RetrieveResponse
+	JSON200 *RetrieveResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r RetrieveResponse) GetJSON200() *RetrieveResponse {
+func (r RetrieveResponse) GetJSON200() *RetrieveResult {
 	return r.JSON200
 }
 
@@ -1589,7 +1589,7 @@ func ParseRetrieveResponse(rsp *http.Response) (*RetrieveResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RetrieveResponse
+		var dest RetrieveResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

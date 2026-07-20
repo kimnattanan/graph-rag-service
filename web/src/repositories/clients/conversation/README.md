@@ -147,7 +147,7 @@ Class | Method | HTTP request | Description
  - [GraphRagServiceConversation.Message](docs/Message.md)
  - [GraphRagServiceConversation.MessageList](docs/MessageList.md)
  - [GraphRagServiceConversation.SendMessageRequest](docs/SendMessageRequest.md)
- - [GraphRagServiceConversation.SendMessageResponse](docs/SendMessageResponse.md)
+ - [GraphRagServiceConversation.SendMessageResult](docs/SendMessageResult.md)
  - [GraphRagServiceConversation.Source](docs/Source.md)
 
 

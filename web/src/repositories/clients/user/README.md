@@ -138,7 +138,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation for Models
 
- - [GraphRagServiceUser.AuthResponse](docs/AuthResponse.md)
+ - [GraphRagServiceUser.AuthResult](docs/AuthResult.md)
  - [GraphRagServiceUser.CreateUserRequest](docs/CreateUserRequest.md)
  - [GraphRagServiceUser.Error](docs/Error.md)
  - [GraphRagServiceUser.LoginRequest](docs/LoginRequest.md)

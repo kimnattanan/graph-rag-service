@@ -20,7 +20,7 @@ import Error from '../model/Error';
 import IndexJob from '../model/IndexJob';
 import IndexStatus from '../model/IndexStatus';
 import RetrieveRequest from '../model/RetrieveRequest';
-import RetrieveResponse from '../model/RetrieveResponse';
+import RetrieveResult from '../model/RetrieveResult';
 import UpdateDocumentRequest from '../model/UpdateDocumentRequest';
 
 /**
@@ -300,7 +300,7 @@ export default class DefaultApi {
      * Callback function to receive the result of the retrieve operation.
      * @callback module:api/DefaultApi~retrieveCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/RetrieveResponse} data The data returned by the service call.
+     * @param {module:model/RetrieveResult} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
      */
 
@@ -309,7 +309,7 @@ export default class DefaultApi {
      * Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
      * @param {module:model/RetrieveRequest} retrieveRequest 
      * @param {module:api/DefaultApi~retrieveCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/RetrieveResponse}
+     * data is of type: {@link module:model/RetrieveResult}
      */
     retrieve(retrieveRequest, callback) {
       let postBody = retrieveRequest;
@@ -330,7 +330,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = RetrieveResponse;
+      let returnType = RetrieveResult;
       return this.apiClient.callApi(
         '/retrieve', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
