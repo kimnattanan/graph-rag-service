@@ -7,6 +7,7 @@ import (
 )
 
 type CommonConfig struct {
+	IsLocalEnv     bool   `env:"LOCAL_ENV" envDefault:"false"`
 	Port           string `env:"HTTP_PORT,required"`
 	AllowedOrigins string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"http://localhost:3000"`
 }
