@@ -1,0 +1,401 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Graph RAG Service - Knowledge
+  description: Document CRUD, indexing, and retrieval over the knowledge graph.
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: []
+paths:
+  /documents:
+    get:
+      operationId: listDocuments
+      summary: List knowledge documents (requires knowledge:write)
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: tag
+          schema:
+            type: string
+          description: Filter by tag
+        - in: query
+          name: indexStatus
+          schema:
+            $ref: '#/components/schemas/IndexStatus'
+      responses:
+        '200':
+          description: Document list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createDocument
+      summary: Create a markdown document and start indexing (requires knowledge:write)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDocumentRequest'
+      responses:
+        '201':
+          description: Document created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{documentId}:
+    get:
+      operationId: getDocument
+      summary: Get a document by ID (requires knowledge:write)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Document details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      operationId: updateDocument
+      summary: Update a document and reindex (requires knowledge:write)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDocumentRequest'
+      responses:
+        '200':
+          description: Document updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteDocument
+      summary: Delete a document and its graph data (requires knowledge:write)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Document deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{documentId}/reindex:
+    post:
+      operationId: reindexDocument
+      summary: Trigger reindexing for a document (requires knowledge:write)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '202':
+          description: Reindex accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexJob'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{documentId}/index-status:
+    get:
+      operationId: getDocumentIndexStatus
+      summary: Get indexing status for a document (requires knowledge:write)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Index status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexJob'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /retrieve:
+    post:
+      operationId: retrieve
+      summary: Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
+      description: Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveRequest'
+      responses:
+        '200':
+          description: Retrieval results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IndexStatus:
+      type: string
+      enum: [pending, processing, ready, failed]
+
+    CreateDocumentRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+          description: Markdown content
+        tags:
+          type: array
+          items:
+            type: string
+
+    UpdateDocumentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+          description: Markdown content
+        tags:
+          type: array
+          items:
+            type: string
+
+    Document:
+      type: object
+      required: [id, title, content, tags, indexStatus, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        indexStatus:
+          $ref: '#/components/schemas/IndexStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DocumentList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentSummary'
+        total:
+          type: integer
+
+    DocumentSummary:
+      type: object
+      required: [id, title, tags, indexStatus, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        indexStatus:
+          $ref: '#/components/schemas/IndexStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    IndexJob:
+      type: object
+      required: [documentId, status]
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/IndexStatus'
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        errorMessage:
+          type: string
+
+    RetrieveRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+        topK:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 5
+        tags:
+          type: array
+          items:
+            type: string
+          description: Optional tag filter
+
+    RetrieveResponse:
+      type: object
+      required: [query, chunks]
+      properties:
+        query:
+          type: string
+        chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetrievedChunk'
+
+    RetrievedChunk:
+      type: object
+      required: [documentId, documentTitle, text, score]
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        documentTitle:
+          type: string
+        chunkId:
+          type: string
+        text:
+          type: string
+        score:
+          type: number
+          format: float
+        graphPath:
+          type: array
+          items:
+            type: string
+          description: Optional graph traversal path for explainability
+
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string
