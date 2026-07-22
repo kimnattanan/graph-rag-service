@@ -15,3 +15,9 @@ openapi_js:
 	@./scripts/openapi-js.sh user
 	@./scripts/openapi-js.sh knowledge
 	@./scripts/openapi-js.sh conversation
+
+.PHONY: proto
+proto:
+	@./scripts/proto.sh user
+	@./scripts/proto.sh knowledge
+	@./scripts/proto.sh conversation

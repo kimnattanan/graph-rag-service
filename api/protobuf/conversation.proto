@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package conversation;
+
+option go_package = "github.com/kimnattanan/graph-rag-service/internal/conversation";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service ConversationService {
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {}
+  rpc CreateConversation(CreateConversationRequest) returns (Conversation) {}
+  rpc GetConversation(GetConversationRequest) returns (Conversation) {}
+  rpc DeleteConversation(DeleteConversationRequest) returns (google.protobuf.Empty) {}
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {}
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+  rpc GetMessage(GetMessageRequest) returns (Message) {}
+}
+
+enum MessageRole {
+  MESSAGE_ROLE_UNSPECIFIED = 0;
+  MESSAGE_ROLE_USER = 1;
+  MESSAGE_ROLE_ASSISTANT = 2;
+}
+
+message ListConversationsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message ListConversationsResponse {
+  repeated ConversationSummary conversations = 1;
+  int32 total = 2;
+}
+
+message CreateConversationRequest {
+  string title = 1;
+}
+
+message GetConversationRequest {
+  string conversation_id = 1;
+}
+
+message DeleteConversationRequest {
+  string conversation_id = 1;
+}
+
+message ListMessagesRequest {
+  string conversation_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListMessagesResponse {
+  repeated Message messages = 1;
+  int32 total = 2;
+}
+
+message SendMessageRequest {
+  string conversation_id = 1;
+  string content = 2;
+  int32 top_k = 3;
+  repeated string tags = 4;
+  int32 history_capacity = 5;
+}
+
+message SendMessageResponse {
+  Message user_message = 1;
+  Message assistant_message = 2;
+}
+
+message GetMessageRequest {
+  string conversation_id = 1;
+  string message_id = 2;
+}
+
+message Conversation {
+  string id = 1;
+  string title = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  repeated Message messages = 5;
+}
+
+message ConversationSummary {
+  string id = 1;
+  string title = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  int32 message_count = 5;
+}
+
+message Message {
+  string id = 1;
+  string conversation_id = 2;
+  MessageRole role = 3;
+  string content = 4;
+  repeated Source sources = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message Source {
+  string document_id = 1;
+  string document_title = 2;
+  string chunk_id = 3;
+  string text = 4;
+  float score = 5;
+}

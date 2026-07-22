@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package knowledge;
+
+option go_package = "github.com/kimnattanan/graph-rag-service/internal/knowledge";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service KnowledgeService {
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse) {}
+  rpc CreateDocument(CreateDocumentRequest) returns (Document) {}
+  rpc GetDocument(GetDocumentRequest) returns (Document) {}
+  rpc UpdateDocument(UpdateDocumentRequest) returns (Document) {}
+  rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty) {}
+  rpc ReindexDocument(ReindexDocumentRequest) returns (ReindexDocumentResponse) {}
+  rpc GetDocumentIndexStatus(GetDocumentIndexStatusRequest) returns (GetDocumentIndexStatusResponse) {}
+  rpc Retrieve(RetrieveRequest) returns (RetrieveResponse) {}
+}
+
+enum IndexStatus {
+  INDEX_STATUS_UNSPECIFIED = 0;
+  INDEX_STATUS_PENDING = 1;
+  INDEX_STATUS_PROCESSING = 2;
+  INDEX_STATUS_READY = 3;
+  INDEX_STATUS_FAILED = 4;
+}
+
+message ListDocumentsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  string tag = 3;
+  IndexStatus index_status = 4;
+}
+
+message ListDocumentsResponse {
+  repeated DocumentSummary documents = 1;
+  int32 total = 2;
+}
+
+message CreateDocumentRequest {
+  string title = 1;
+  string content = 2;
+  repeated string tags = 3;
+}
+
+message GetDocumentRequest {
+  string document_id = 1;
+}
+
+message UpdateDocumentRequest {
+  string document_id = 1;
+  string title = 2;
+  string content = 3;
+  repeated string tags = 4;
+}
+
+message DeleteDocumentRequest {
+  string document_id = 1;
+}
+
+message ReindexDocumentRequest {
+  string document_id = 1;
+}
+
+message ReindexDocumentResponse {
+  IndexJob job = 1;
+}
+
+message GetDocumentIndexStatusRequest {
+  string document_id = 1;
+}
+
+message GetDocumentIndexStatusResponse {
+  IndexJob job = 1;
+}
+
+message RetrieveRequest {
+  string query = 1;
+  int32 top_k = 2;
+  repeated string tags = 3;
+}
+
+message RetrieveResponse {
+  string query = 1;
+  repeated RetrievedChunk chunks = 2;
+}
+
+message Document {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  repeated string tags = 4;
+  IndexStatus index_status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message DocumentSummary {
+  string id = 1;
+  string title = 2;
+  repeated string tags = 3;
+  IndexStatus index_status = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message IndexJob {
+  string document_id = 1;
+  IndexStatus status = 2;
+  google.protobuf.Timestamp started_at = 3;
+  google.protobuf.Timestamp finished_at = 4;
+  string error_message = 5;
+}
+
+message RetrievedChunk {
+  string document_id = 1;
+  string document_title = 2;
+  string chunk_id = 3;
+  string text = 4;
+  float score = 5;
+  repeated string graph_path = 6;
+}
