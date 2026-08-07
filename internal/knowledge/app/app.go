@@ -2,7 +2,7 @@ package app
 
 import (
 	// "github.com/kimnattanan/graph-rag-service/internal/knowledge/app/command"
-	// "github.com/kimnattanan/graph-rag-service/internal/knowledge/app/query"
+	"github.com/kimnattanan/graph-rag-service/internal/knowledge/app/query"
 )
 
 type Application struct {
@@ -15,5 +15,5 @@ type Commands struct {
 }
 
 type Queries struct {
-	
+	ListDocuments query.ListDocumentsHandler
 }

@@ -26,7 +26,7 @@ func main() {
 
 	ctx := context.Background()
 
-	application := service.NewApplication(ctx)
+	application := service.NewApplication(ctx, &cfg)
 
 	serverType := strings.ToLower(cfg.App.ServerToRun)
 	switch serverType {
