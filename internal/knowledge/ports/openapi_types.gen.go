@@ -11,22 +11,19 @@ import (
 
 // Defines values for IndexStatus.
 const (
-	Failed     IndexStatus = "failed"
-	Pending    IndexStatus = "pending"
-	Processing IndexStatus = "processing"
-	Ready      IndexStatus = "ready"
+	Completed IndexStatus = "completed"
+	Failed    IndexStatus = "failed"
+	Pending   IndexStatus = "pending"
 )
 
 // Valid indicates whether the value is a known member of the IndexStatus enum.
 func (e IndexStatus) Valid() bool {
 	switch e {
+	case Completed:
+		return true
 	case Failed:
 		return true
 	case Pending:
-		return true
-	case Processing:
-		return true
-	case Ready:
 		return true
 	default:
 		return false

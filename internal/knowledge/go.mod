@@ -10,9 +10,11 @@ require (
 )
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/caarlos0/env/v11 v11.4.1 // indirect
 	github.com/go-chi/cors v1.2.2 // indirect
+	github.com/go-chi/render v1.0.3 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect

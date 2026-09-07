@@ -14,9 +14,9 @@ type (
 	}
 
 	Memgraph struct {
-		Host     string `env:"MEMGRAPH_HOST,default=localhost"`
-		Port     string `env:"MEMGRAPH_PORT,default=7687"`
-		User     string `env:"MEMGRAPH_USER,default=memgraph"`
-		Password string `env:"MEMGRAPH_PASSWORD,default=memgraph"`
+		Host     string `env:"MEMGRAPH_HOST" envDefault:"localhost"`
+		Port     string `env:"MEMGRAPH_PORT" envDefault:"7687"`
+		User     string `env:"MEMGRAPH_USER" envDefault:"memgraph"`
+		Password string `env:"MEMGRAPH_PASSWORD" envDefault:"memgraph"`
 	}
 )

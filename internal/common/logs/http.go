@@ -56,3 +56,8 @@ func (l *StructuredLoggerEntry) Panic(v interface{}, stack []byte) {
 		"panic": fmt.Sprintf("%+v", v),
 	})
 }
+
+func GetLogEntry(r *http.Request) logrus.FieldLogger {
+	entry := middleware.GetLogEntry(r).(*StructuredLoggerEntry)
+	return entry.Logger
+}

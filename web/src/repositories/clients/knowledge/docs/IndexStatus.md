@@ -5,9 +5,7 @@
 
 * `pending` (value: `"pending"`)
 
-* `processing` (value: `"processing"`)
-
-* `ready` (value: `"ready"`)
+* `completed` (value: `"completed"`)
 
 * `failed` (value: `"failed"`)
 

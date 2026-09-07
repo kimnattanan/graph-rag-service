@@ -26,7 +26,8 @@ func main() {
 
 	ctx := context.Background()
 
-	application := service.NewApplication(ctx, &cfg)
+	application, cleanup := service.NewApplication(ctx, &cfg)
+	defer cleanup()
 
 	serverType := strings.ToLower(cfg.App.ServerToRun)
 	switch serverType {

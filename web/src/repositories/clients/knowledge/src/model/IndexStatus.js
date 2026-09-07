@@ -27,17 +27,10 @@ export default class IndexStatus {
 
     
         /**
-         * value: "processing"
+         * value: "completed"
          * @const
          */
-        "processing" = "processing";
-
-    
-        /**
-         * value: "ready"
-         * @const
-         */
-        "ready" = "ready";
+        "completed" = "completed";
 
     
         /**

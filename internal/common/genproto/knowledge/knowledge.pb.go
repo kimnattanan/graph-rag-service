@@ -26,28 +26,22 @@ const (
 type IndexStatus int32
 
 const (
-	IndexStatus_INDEX_STATUS_UNSPECIFIED IndexStatus = 0
-	IndexStatus_INDEX_STATUS_PENDING     IndexStatus = 1
-	IndexStatus_INDEX_STATUS_PROCESSING  IndexStatus = 2
-	IndexStatus_INDEX_STATUS_READY       IndexStatus = 3
-	IndexStatus_INDEX_STATUS_FAILED      IndexStatus = 4
+	IndexStatus_INDEX_STATUS_PENDING   IndexStatus = 0
+	IndexStatus_INDEX_STATUS_COMPLETED IndexStatus = 1
+	IndexStatus_INDEX_STATUS_FAILED    IndexStatus = 2
 )
 
 // Enum value maps for IndexStatus.
 var (
 	IndexStatus_name = map[int32]string{
-		0: "INDEX_STATUS_UNSPECIFIED",
-		1: "INDEX_STATUS_PENDING",
-		2: "INDEX_STATUS_PROCESSING",
-		3: "INDEX_STATUS_READY",
-		4: "INDEX_STATUS_FAILED",
+		0: "INDEX_STATUS_PENDING",
+		1: "INDEX_STATUS_COMPLETED",
+		2: "INDEX_STATUS_FAILED",
 	}
 	IndexStatus_value = map[string]int32{
-		"INDEX_STATUS_UNSPECIFIED": 0,
-		"INDEX_STATUS_PENDING":     1,
-		"INDEX_STATUS_PROCESSING":  2,
-		"INDEX_STATUS_READY":       3,
-		"INDEX_STATUS_FAILED":      4,
+		"INDEX_STATUS_PENDING":   0,
+		"INDEX_STATUS_COMPLETED": 1,
+		"INDEX_STATUS_FAILED":    2,
 	}
 )
 
@@ -143,7 +137,7 @@ func (x *ListDocumentsRequest) GetIndexStatus() IndexStatus {
 	if x != nil {
 		return x.IndexStatus
 	}
-	return IndexStatus_INDEX_STATUS_UNSPECIFIED
+	return IndexStatus_INDEX_STATUS_PENDING
 }
 
 type ListDocumentsResponse struct {
@@ -777,7 +771,7 @@ func (x *Document) GetIndexStatus() IndexStatus {
 	if x != nil {
 		return x.IndexStatus
 	}
-	return IndexStatus_INDEX_STATUS_UNSPECIFIED
+	return IndexStatus_INDEX_STATUS_PENDING
 }
 
 func (x *Document) GetCreatedAt() *timestamppb.Timestamp {
@@ -861,7 +855,7 @@ func (x *DocumentSummary) GetIndexStatus() IndexStatus {
 	if x != nil {
 		return x.IndexStatus
 	}
-	return IndexStatus_INDEX_STATUS_UNSPECIFIED
+	return IndexStatus_INDEX_STATUS_PENDING
 }
 
 func (x *DocumentSummary) GetCreatedAt() *timestamppb.Timestamp {
@@ -930,7 +924,7 @@ func (x *IndexJob) GetStatus() IndexStatus {
 	if x != nil {
 		return x.Status
 	}
-	return IndexStatus_INDEX_STATUS_UNSPECIFIED
+	return IndexStatus_INDEX_STATUS_PENDING
 }
 
 func (x *IndexJob) GetStartedAt() *timestamppb.Timestamp {
@@ -1120,13 +1114,11 @@ const file_knowledge_proto_rawDesc = "" +
 	"\x04text\x18\x04 \x01(\tR\x04text\x12\x14\n" +
 	"\x05score\x18\x05 \x01(\x02R\x05score\x12\x1d\n" +
 	"\n" +
-	"graph_path\x18\x06 \x03(\tR\tgraphPath*\x93\x01\n" +
-	"\vIndexStatus\x12\x1c\n" +
-	"\x18INDEX_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
-	"\x14INDEX_STATUS_PENDING\x10\x01\x12\x1b\n" +
-	"\x17INDEX_STATUS_PROCESSING\x10\x02\x12\x16\n" +
-	"\x12INDEX_STATUS_READY\x10\x03\x12\x17\n" +
-	"\x13INDEX_STATUS_FAILED\x10\x042\xa5\x05\n" +
+	"graph_path\x18\x06 \x03(\tR\tgraphPath*\\\n" +
+	"\vIndexStatus\x12\x18\n" +
+	"\x14INDEX_STATUS_PENDING\x10\x00\x12\x1a\n" +
+	"\x16INDEX_STATUS_COMPLETED\x10\x01\x12\x17\n" +
+	"\x13INDEX_STATUS_FAILED\x10\x022\xa5\x05\n" +
 	"\x10KnowledgeService\x12T\n" +
 	"\rListDocuments\x12\x1f.knowledge.ListDocumentsRequest\x1a .knowledge.ListDocumentsResponse\"\x00\x12I\n" +
 	"\x0eCreateDocument\x12 .knowledge.CreateDocumentRequest\x1a\x13.knowledge.Document\"\x00\x12C\n" +

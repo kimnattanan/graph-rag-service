@@ -1,4 +1,24 @@
 services:
+  knowledge-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /internal
+    ports:
+      - "127.0.0.1:3000:$PORT"
+    env_file:
+      - .env
+      - .env.knowledge
+    environment:
+      SERVICE: knowledge
+      SERVER_TO_RUN: http
+      GOCACHE: /go-cachee
+    depends_on:
+      - memgraph
+
   memgraph:
     image: "memgraph/memgraph-mage"
     volumes:
@@ -7,21 +27,23 @@ services:
       - mg_etc:/etc/memgraph
     ports:
       - "${MEMGRAPH_PORT}:7687"
-      - "7444:7444"
+      - "127.0.0.1:7444:7444"
     command: ["--log-level=TRACE"]
     environment:
       - MEMGRAPH_USER=${MEMGRAPH_USER}
       - MEMGRAPH_PASSWORD=${MEMGRAPH_PASSWORD}
+  
   memgraph-lab:
     image: memgraph/lab:latest
     container_name: memgraph-lab
     ports:
-      - "3000:3000"
+      - "127.0.0.1:8000:3000"
     depends_on:
       - memgraph
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
       - QUICK_CONNECT_MG_PORT=7687
+
 volumes:
   mg_lib:
   mg_log:
