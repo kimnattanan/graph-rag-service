@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
+	"github.com/kimnattanan/graph-rag-service/internal/common/auth"
 	commonerrors "github.com/kimnattanan/graph-rag-service/internal/common/errors"
 	"github.com/kimnattanan/graph-rag-service/internal/common/server/httperr"
 	"github.com/kimnattanan/graph-rag-service/internal/knowledge/app"
@@ -23,6 +24,11 @@ func NewHttpServer(app app.Application) HttpServer {
 }
 
 func (h HttpServer) GetDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	appDoc, err := h.app.Queries.GetDocument.Handle(r.Context(), query.GetDocument{
 		DocumentID: documentId.String(),
 	})
@@ -40,8 +46,12 @@ func (h HttpServer) GetDocument(w http.ResponseWriter, r *http.Request, document
 	render.Respond(w, r, doc)
 }
 
-
 func (h HttpServer) GetDocumentIndexStatus(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	status, err := h.app.Queries.GetDocumentIndexStatus.Handle(r.Context(), query.GetDocumentIndexStatus{
 		DocumentID: documentId.String(),
 	})
@@ -60,6 +70,11 @@ func (h HttpServer) GetDocumentIndexStatus(w http.ResponseWriter, r *http.Reques
 }
 
 func (h HttpServer) ListDocuments(w http.ResponseWriter, r *http.Request, params ListDocumentsParams) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	var indexStatus *document.IndexStatus
 	if params.IndexStatus != nil {
 		parsedIndexStatus, err := parseIndexStatus(*params.IndexStatus)
@@ -95,6 +110,11 @@ func (h HttpServer) ListDocuments(w http.ResponseWriter, r *http.Request, params
 }
 
 func (h HttpServer) CreateDocument(w http.ResponseWriter, r *http.Request) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	var body CreateDocumentRequest
 	if err := render.Decode(r, &body); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
@@ -120,8 +140,12 @@ func (h HttpServer) CreateDocument(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-
 func (h HttpServer) UpdateDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	var body UpdateDocumentRequest
 	if err := render.Decode(r, &body); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
@@ -143,6 +167,11 @@ func (h HttpServer) UpdateDocument(w http.ResponseWriter, r *http.Request, docum
 }
 
 func (h HttpServer) DeleteDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	err := h.app.Commands.DeleteDocument.Handle(r.Context(), command.DeleteDocument{
 		DocumentID: documentId.String(),
 	})
@@ -155,6 +184,11 @@ func (h HttpServer) DeleteDocument(w http.ResponseWriter, r *http.Request, docum
 }
 
 func (h HttpServer) ReindexDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	if _, err := h.authorize(r, auth.PermissionKnowledgeWrite); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	err := h.app.Commands.ReindexDocument.Handle(r.Context(), command.ReindexDocument{
 		DocumentID: documentId.String(),
 	})
@@ -167,6 +201,11 @@ func (h HttpServer) ReindexDocument(w http.ResponseWriter, r *http.Request, docu
 }
 
 func (h HttpServer) Retrieve(w http.ResponseWriter, r *http.Request) {
+	if _, err := h.authorize(r, auth.PermissionConversationAsk); err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
 	var body RetrieveRequest
 	if err := render.Decode(r, &body); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
@@ -193,6 +232,19 @@ func (h HttpServer) Retrieve(w http.ResponseWriter, r *http.Request) {
 		Query:  body.Query,
 		Chunks: chunks,
 	})
+}
+
+func (h HttpServer) authorize(r *http.Request, permissions ...string) (auth.User, error) {
+	user, ok := auth.UserFromContext(r.Context())
+	if !ok {
+		return auth.User{}, commonerrors.NewAuthorizationError("unauthenticated", "unauthenticated")
+	}
+	for _, permission := range permissions {
+		if !auth.HasPermission(user, permission) {
+			return auth.User{}, commonerrors.NewAuthorizationError("missing "+permission+" permission", "forbidden")
+		}
+	}
+	return user, nil
 }
 
 // Mapper functions

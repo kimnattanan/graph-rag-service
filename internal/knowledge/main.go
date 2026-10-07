@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 
+	"github.com/kimnattanan/graph-rag-service/internal/common/auth"
 	commonConfig "github.com/kimnattanan/graph-rag-service/internal/common/config"
 	knowledgepb "github.com/kimnattanan/graph-rag-service/internal/common/genproto/knowledge"
 	"github.com/kimnattanan/graph-rag-service/internal/common/logs"
@@ -45,6 +46,7 @@ func main() {
 		// go loadFixtures(application)
 
 		server.RunHTTPServer(&cfg.Common, func(router chi.Router) http.Handler {
+			router.Use(auth.Middleware(cfg.Auth.JWTSecret))
 			return ports.HandlerFromMux(
 				ports.NewHttpServer(application),
 				router,

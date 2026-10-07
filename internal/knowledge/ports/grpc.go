@@ -19,7 +19,7 @@ import (
 
 type GrpcServer struct {
 	knowledge.UnimplementedKnowledgeServiceServer
-	app app.Application
+	app       app.Application
 }
 
 func NewGrpcServer(application app.Application) GrpcServer {

@@ -42,7 +42,6 @@ func setMiddlewares(router *chi.Mux, cfg *config.CommonConfig) {
 	router.Use(middleware.Recoverer)
 
 	addCorsMiddleware(router, cfg)
-	// addAuthMiddleware(router)
 
 	router.Use(
 		middleware.SetHeader("X-Content-Type-Options", "nosniff"),
@@ -67,28 +66,3 @@ func addCorsMiddleware(router *chi.Mux, cfg *config.CommonConfig) {
 	})
 	router.Use(corsMiddleware.Handler)
 }
-
-// func addAuthMiddleware(router *chi.Mux) {
-// 	if mockAuth, _ := strconv.ParseBool(os.Getenv("MOCK_AUTH")); mockAuth {
-// 		router.Use(auth.HttpMockMiddleware)
-// 		return
-// 	}
-
-// 	var opts []option.ClientOption
-// 	if file := os.Getenv("SERVICE_ACCOUNT_FILE"); file != "" {
-// 		opts = append(opts, option.WithCredentialsFile(file))
-// 	}
-
-// 	config := &firebase.Config{ProjectID: os.Getenv("GCP_PROJECT")}
-// 	firebaseApp, err := firebase.NewApp(context.Background(), config, opts...)
-// 	if err != nil {
-// 		logrus.Fatalf("error initializing app: %v\n", err)
-// 	}
-
-// 	authClient, err := firebaseApp.Auth(context.Background())
-// 	if err != nil {
-// 		logrus.WithError(err).Fatal("Unable to create firebase Auth client")
-// 	}
-
-// 	router.Use(auth.FirebaseHttpMiddleware{authClient}.Middleware)
-// }

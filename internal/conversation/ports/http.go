@@ -16,12 +16,11 @@ import (
 )
 
 type HttpServer struct {
-	app       app.Application
-	jwtSecret string
+	app app.Application
 }
 
-func NewHttpServer(application app.Application, jwtSecret string) HttpServer {
-	return HttpServer{app: application, jwtSecret: jwtSecret}
+func NewHttpServer(application app.Application) HttpServer {
+	return HttpServer{app: application}
 }
 
 func (h HttpServer) ListConversations(w http.ResponseWriter, r *http.Request, params ListConversationsParams) {
@@ -221,14 +220,9 @@ func (h HttpServer) GetMessage(w http.ResponseWriter, r *http.Request, conversat
 }
 
 func (h HttpServer) authorize(r *http.Request) (auth.User, error) {
-	token, err := auth.BearerToken(r)
-	if err != nil {
-		return auth.User{}, err
-	}
-
-	user, err := auth.Parse(h.jwtSecret, token)
-	if err != nil {
-		return auth.User{}, err
+	user, ok := auth.UserFromContext(r.Context())
+	if !ok {
+		return auth.User{}, commonerrors.NewAuthorizationError("unauthenticated", "unauthenticated")
 	}
 	if !auth.HasPermission(user, auth.PermissionConversationAsk) {
 		return auth.User{}, commonerrors.NewAuthorizationError("missing conversation:ask permission", "forbidden")

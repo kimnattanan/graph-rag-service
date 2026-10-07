@@ -10,6 +10,7 @@ type (
 		App      App
 		Memgraph Memgraph
 		Worker   Worker
+		Auth     Auth
 	}
 
 	App struct {
@@ -26,5 +27,9 @@ type (
 	Worker struct {
 		WorkerCount    int `env:"KNOWLEDGE_WORKER_COUNT" envDefault:"0"`
 		WorkerInterval int `env:"KNOWLEDGE_WORKER_INTERVAL" envDefault:"60"`
+	}
+
+	Auth struct {
+		JWTSecret string `env:"JWT_SECRET,required"`
 	}
 )
