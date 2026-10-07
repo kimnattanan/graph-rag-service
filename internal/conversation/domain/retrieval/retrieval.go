@@ -16,13 +16,7 @@ type Retriever interface {
 	Retrieve(ctx context.Context, query string, topK int, tags []string) ([]Chunk, error)
 }
 
-// ChatMessage is one turn passed to the language model.
-type ChatMessage struct {
-	Role    string
-	Content string
-}
-
 // Completer generates an assistant reply from the prompt messages.
 type Completer interface {
-	Complete(ctx context.Context, messages []ChatMessage) (string, error)
+	Complete(ctx context.Context, prompt string) (string, error)
 }

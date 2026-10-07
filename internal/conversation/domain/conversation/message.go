@@ -15,8 +15,8 @@ var (
 type Role string
 
 const (
-	RoleUser      Role = "user"
-	RoleAssistant Role = "assistant"
+	RoleUser      Role = "User"
+	RoleAssistant Role = "Assistant"
 )
 
 func (r Role) IsValid() bool {

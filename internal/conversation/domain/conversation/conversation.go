@@ -10,6 +10,7 @@ var (
 	ErrEmptyConversationID         = commonerrors.NewIncorrectInputError("empty conversation id", "empty-conversation-id")
 	ErrEmptyUserID                 = commonerrors.NewIncorrectInputError("empty user id", "empty-user-id")
 	ErrMessageConversationMismatch = commonerrors.NewIncorrectInputError("message does not belong to this conversation", "message-conversation-mismatch")
+	ErrConversationNotOwnedByUser  = commonerrors.NewIncorrectInputError("conversation not owned by user", "conversation-not-owned-by-user")
 )
 
 type Conversation struct {

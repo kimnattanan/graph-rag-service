@@ -40,5 +40,9 @@ type GetMessageReadModel interface {
 }
 
 func (h getMessageHandler) Handle(ctx context.Context, query GetMessage) (Message, error) {
-	return Message{}, nil
+	message, err := h.readModel.GetMessage(ctx, query.UserID, query.ConversationID, query.MessageID)
+	if err != nil {
+		return Message{}, err
+	}
+	return *message, nil
 }

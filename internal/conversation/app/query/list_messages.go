@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kimnattanan/graph-rag-service/internal/common/decorator"
+	commonerrors "github.com/kimnattanan/graph-rag-service/internal/common/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,5 +42,29 @@ type ListMessagesReadModel interface {
 }
 
 func (h listMessagesHandler) Handle(ctx context.Context, query ListMessages) (MessageList, error) {
-	return MessageList{}, nil
+	limit := 50
+	if query.Limit != nil {
+		limit = *query.Limit
+	}
+	offset := 0
+	if query.Offset != nil {
+		offset = *query.Offset
+	}
+	if limit < 1 || limit > 100 {
+		return MessageList{}, commonerrors.NewIncorrectInputError(
+			"Limit must be between 1 and 100",
+			"limit-invalid",
+		)
+	}
+	if offset < 0 {
+		return MessageList{}, commonerrors.NewIncorrectInputError(
+			"Offset must be greater than 0",
+			"offset-invalid",
+		)
+	}
+	messages, err := h.readModel.ListMessages(ctx, query.UserID, query.ConversationID, limit, offset)
+	if err != nil {
+		return MessageList{}, err
+	}
+	return *messages, nil
 }

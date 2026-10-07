@@ -40,5 +40,23 @@ type GetConversationReadModel interface {
 }
 
 func (h getConversationHandler) Handle(ctx context.Context, query GetConversation) (Conversation, error) {
-	return Conversation{}, nil
+	conversation, err := h.readModel.GetConversation(ctx, query.UserID, query.ConversationID)
+	if err != nil {
+		return Conversation{}, err
+	}
+	messages := make([]Message, len(conversation.Messages()))
+	for i, message := range conversation.Messages() {
+		messages[i] = Message{
+			ID:             message.ID(),
+			ConversationID: message.ConversationID(),
+		}
+	}
+	return Conversation{
+		ID:        conversation.ID(),
+		UserID:    conversation.UserID(),
+		Title:     conversation.Title(),
+		CreatedAt: conversation.CreatedAt(),
+		UpdatedAt: conversation.UpdatedAt(),
+		Messages:  messages,
+	}, nil
 }

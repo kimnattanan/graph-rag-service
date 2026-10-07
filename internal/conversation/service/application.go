@@ -7,6 +7,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 
+	grpcClient "github.com/kimnattanan/graph-rag-service/internal/common/client"
+	knowledgepb "github.com/kimnattanan/graph-rag-service/internal/common/genproto/knowledge"
 	"github.com/kimnattanan/graph-rag-service/internal/common/metrics"
 	"github.com/kimnattanan/graph-rag-service/internal/conversation/adapters"
 	"github.com/kimnattanan/graph-rag-service/internal/conversation/app"
@@ -24,10 +26,19 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 		pool.Close()
 		panic(fmt.Errorf("postgres: %w", err))
 	}
+	if err := startupPostgres(ctx, pool); err != nil {
+		panic(err)
+	}
+
+	knowledgeClientConn, closeKnowledgeClient, err := grpcClient.NewGrpcClientConnection(cfg.Knowledge.GRPCAddress, cfg.Common.GRPCNoTLS)
+	if err != nil {
+		panic(err)
+	}
+	knowledgeClient := knowledgepb.NewKnowledgeServiceClient(knowledgeClientConn)
 
 	conversationRepository := adapters.NewConversationPostgresRepository(pool)
 	conversationReadModel := adapters.NewConversationPostgresReadModel(pool)
-	retriever := adapters.NewKnowledgeRetriever(cfg.Knowledge.GRPCAddress)
+	knowledgeGrpc := adapters.NewKnowledgeGrpc(knowledgeClient)
 	completer := adapters.NewLLMCompleter(cfg.LLM)
 
 	logger := logrus.NewEntry(logrus.StandardLogger())
@@ -37,7 +48,7 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 			Commands: app.Commands{
 				CreateConversation: command.NewCreateConversationHandler(conversationRepository, logger, metricsClient),
 				DeleteConversation: command.NewDeleteConversationHandler(conversationRepository, logger, metricsClient),
-				SendMessage:        command.NewSendMessageHandler(conversationRepository, retriever, completer, logger, metricsClient),
+				SendMessage:        command.NewSendMessageHandler(conversationRepository, knowledgeGrpc, completer, logger, metricsClient),
 			},
 			Queries: app.Queries{
 				ListConversations: query.NewListConversationsHandler(conversationReadModel, logger, metricsClient),
@@ -47,5 +58,6 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 			},
 		}, func() {
 			pool.Close()
+			closeKnowledgeClient()
 		}
 }

@@ -36,5 +36,12 @@ func NewDeleteConversationHandler(
 }
 
 func (h deleteConversationHandler) Handle(ctx context.Context, cmd DeleteConversation) error {
-	return nil
+	conv, err := h.repo.GetConversation(ctx, cmd.ConversationID)
+	if err != nil {
+		return err
+	}
+	if conv.UserID() != cmd.UserID {
+		return conversation.ErrConversationNotOwnedByUser
+	}
+	return h.repo.DeleteConversation(ctx, cmd.ConversationID)
 }

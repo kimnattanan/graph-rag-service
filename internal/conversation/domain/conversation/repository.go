@@ -3,7 +3,8 @@ package conversation
 import "context"
 
 type Repository interface {
-	AddConversation(ctx context.Context, conversation *Conversation) error
-	UpdateConversation(ctx context.Context, conversationID string, updateFn func(conversation *Conversation) error) error
-	DeleteConversation(ctx context.Context, conversationID string) error
+	AddConversation(ctx context.Context, conv *Conversation) error
+	UpdateConversation(ctx context.Context, convID string, updateFn func(conv *Conversation) error) error
+	DeleteConversation(ctx context.Context, convID string) error
+	GetConversation(ctx context.Context, convID string) (*Conversation, error)
 }

@@ -37,5 +37,9 @@ func NewCreateConversationHandler(
 }
 
 func (h createConversationHandler) Handle(ctx context.Context, cmd CreateConversation) error {
-	return nil
+	conversation, err := conversation.NewConversation(cmd.ConversationID, cmd.UserID, cmd.Title)
+	if err != nil {
+		return err
+	}
+	return h.repo.AddConversation(ctx, conversation)
 }
