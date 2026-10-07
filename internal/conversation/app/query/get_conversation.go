@@ -44,11 +44,27 @@ func (h getConversationHandler) Handle(ctx context.Context, query GetConversatio
 	if err != nil {
 		return Conversation{}, err
 	}
-	messages := make([]Message, len(conversation.Messages()))
-	for i, message := range conversation.Messages() {
+	domainMessages := conversation.Messages()
+	messages := make([]Message, len(domainMessages))
+	for i, message := range domainMessages {
+		domainSources := message.Sources()
+		sources := make([]Source, len(domainSources))
+		for j, source := range domainSources {
+			sources[j] = Source{
+				DocumentID:    source.DocumentID(),
+				DocumentTitle: source.DocumentTitle(),
+				ChunkID:       source.ChunkID(),
+				Text:          source.Text(),
+				Score:         source.Score(),
+			}
+		}
 		messages[i] = Message{
 			ID:             message.ID(),
 			ConversationID: message.ConversationID(),
+			Role:           message.Role(),
+			Content:        message.Content(),
+			Sources:        sources,
+			CreatedAt:      message.CreatedAt(),
 		}
 	}
 	return Conversation{

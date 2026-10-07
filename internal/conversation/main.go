@@ -37,13 +37,13 @@ func main() {
 	case "http":
 		server.RunHTTPServer(&cfg.Common, func(router chi.Router) http.Handler {
 			return ports.HandlerFromMux(
-				ports.NewHttpServer(application),
+				ports.NewHttpServer(application, cfg.Auth.JWTSecret),
 				router,
 			)
 		})
 	case "grpc":
 		server.RunGRPCServer(&cfg.Common, func(grpcServer *grpc.Server) {
-			svc := ports.NewGrpcServer(application)
+			svc := ports.NewGrpcServer(application, cfg.Auth.JWTSecret)
 			conversationpb.RegisterConversationServiceServer(grpcServer, svc)
 		})
 	default:

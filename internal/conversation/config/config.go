@@ -14,6 +14,7 @@ type (
 		Postgres  Postgres
 		Knowledge Knowledge
 		LLM       LLM
+		Auth      Auth
 	}
 
 	App struct {
@@ -37,6 +38,10 @@ type (
 		BaseURL string `env:"LLM_BASE_URL" envDefault:""`
 		APIKey  string `env:"LLM_API_KEY" envDefault:""`
 		Model   string `env:"LLM_MODEL" envDefault:""`
+	}
+
+	Auth struct {
+		JWTSecret string `env:"JWT_SECRET,required"`
 	}
 )
 

@@ -1,0 +1,170 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+nav a {
+  margin-right: 0.75rem;
+}
+
+#who {
+  margin-left: auto;
+}
+
+#who button {
+  margin-left: 0.35rem;
+}
+
+#banner {
+  margin: 0.5rem 1rem;
+}
+
+#banner.error {
+  color: #900;
+}
+
+#banner.ok {
+  color: #063;
+}
+
+main {
+  padding: 0 1rem 1rem;
+}
+
+label {
+  display: block;
+  margin: 0.4rem 0;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 6rem;
+}
+
+.auth {
+  max-width: 24rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.chat,
+.docs {
+  display: flex;
+  gap: 1rem;
+}
+
+.chat {
+  height: calc(100vh - 7rem);
+}
+
+.docs {
+  align-items: flex-start;
+}
+
+.side {
+  width: 280px;
+  overflow: auto;
+  flex: none;
+}
+
+.thread,
+.editor {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.thread {
+  height: 100%;
+  min-height: 0;
+}
+
+.messages,
+.doc-list {
+  overflow: auto;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+}
+
+.doc-list,
+.editor {
+  flex: 1;
+}
+
+.doc-list {
+  max-height: 70vh;
+}
+
+.message {
+  border-bottom: 1px solid #ddd;
+  padding: 0.4rem 0;
+  white-space: pre-wrap;
+}
+
+.role {
+  font-weight: bold;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #ccc;
+  padding: 0.25rem 0.4rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+tr.selected {
+  background: #eef;
+}
+
+.inline {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.inline label {
+  flex: 1;
+}
+
+.actions {
+  margin: 0.4rem 0;
+}
