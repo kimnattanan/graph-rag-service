@@ -2,7 +2,9 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Graph RAG Service - User
-  description: Authentication, authorization, and user management.
+  description: >
+    Authentication and user accounts. Access tokens are JWTs that carry the user id,
+    role, and permissions so other services can authorize requests.
 servers:
   - url: https://{hostname}/api
     variables:
@@ -15,7 +17,7 @@ paths:
     post:
       operationId: register
       summary: Register a new user account
-      description: Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+      description: Command. Creates an account with role user. Returns no body.
       security: []
       requestBody:
         required: true
@@ -36,8 +38,8 @@ paths:
   /auth/login:
     post:
       operationId: login
-      summary: Authenticate and receive access tokens
-      description: Query. Validates credentials and returns tokens.
+      summary: Authenticate and receive an access token
+      description: Validates credentials, opens a session, and returns a JWT.
       security: []
       requestBody:
         required: true
@@ -59,25 +61,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /auth/refresh:
+  /auth/logout:
     post:
-      operationId: refreshToken
-      summary: Exchange a refresh token for a new access token
-      description: Query. Returns a new access token for a valid refresh token.
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RefreshRequest'
+      operationId: logout
+      summary: Log out the current session
+      description: Command. Revokes the session embedded in the access token.
       responses:
-        '200':
-          description: Token refreshed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResult'
+        '204':
+          description: Session revoked
         default:
           description: unexpected error
           content:
@@ -103,141 +94,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /users/me/permissions:
-    get:
-      operationId: getCurrentUserPermissions
-      summary: Get permissions for the authenticated user
-      responses:
-        '200':
-          description: Permission list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Permissions'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /users:
-    get:
-      operationId: listUsers
-      summary: List users (admin only)
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-      responses:
-        '200':
-          description: User list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserList'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    post:
-      operationId: createUser
-      summary: Create a user (admin only)
-      description: Command. Returns no body. Read the user with getUser.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserRequest'
-      responses:
-        '204':
-          description: User created
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /users/{userId}:
-    get:
-      operationId: getUser
-      summary: Get a user by ID (admin only)
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: User details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    put:
-      operationId: updateUser
-      summary: Update a user (admin only)
-      description: Command. Returns no body. Read the user with getUser.
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
-      responses:
-        '204':
-          description: User updated
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
     delete:
-      operationId: deleteUser
-      summary: Delete a user (admin only)
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-            format: uuid
+      operationId: deleteAccount
+      summary: Delete the authenticated user account
+      description: Command. Deletes the account and its sessions.
       responses:
         '204':
-          description: User deleted
+          description: Account deleted
         default:
           description: unexpected error
           content:
@@ -255,21 +118,20 @@ components:
   schemas:
     RegisterRequest:
       type: object
-      required: [id, email, password, displayName]
+      required: [email, username, password]
       properties:
-        id:
-          type: string
-          format: uuid
-          description: Client-generated user id
         email:
           type: string
           format: email
+        username:
+          type: string
+          minLength: 1
+          maxLength: 64
         password:
           type: string
           format: password
           minLength: 8
-        displayName:
-          type: string
+          maxLength: 72
 
     LoginRequest:
       type: object
@@ -282,20 +144,11 @@ components:
           type: string
           format: password
 
-    RefreshRequest:
-      type: object
-      required: [refreshToken]
-      properties:
-        refreshToken:
-          type: string
-
     AuthResult:
       type: object
-      required: [accessToken, refreshToken, expiresIn, tokenType, user]
+      required: [accessToken, expiresIn, tokenType, user]
       properties:
         accessToken:
-          type: string
-        refreshToken:
           type: string
         expiresIn:
           type: integer
@@ -308,7 +161,7 @@ components:
 
     User:
       type: object
-      required: [id, email, displayName, role, permissions, createdAt]
+      required: [id, email, username, role, permissions, createdAt, updatedAt]
       properties:
         id:
           type: string
@@ -316,13 +169,14 @@ components:
         email:
           type: string
           format: email
-        displayName:
+        username:
           type: string
         role:
           type: string
           enum: [admin, user]
         permissions:
           type: array
+          description: Derived from role. Present in the JWT for other services.
           items:
             type: string
             enum: [knowledge:write, conversation:ask]
@@ -332,61 +186,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-
-    CreateUserRequest:
-      type: object
-      required: [id, email, password, displayName, role]
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Client-generated user id
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-          minLength: 8
-        displayName:
-          type: string
-        role:
-          type: string
-          enum: [admin, user]
-
-    UpdateUserRequest:
-      type: object
-      properties:
-        displayName:
-          type: string
-        role:
-          type: string
-          enum: [admin, user]
-        password:
-          type: string
-          format: password
-          minLength: 8
-
-    Permissions:
-      type: object
-      required: [permissions]
-      properties:
-        permissions:
-          type: array
-          items:
-            type: string
-            enum: [knowledge:write, conversation:ask]
-
-    UserList:
-      type: object
-      required: [items, total]
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        total:
-          type: integer
 
     Error:
       type: object

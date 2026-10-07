@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -14,20 +14,15 @@
 
 import ApiClient from './ApiClient';
 import AuthResult from './model/AuthResult';
-import CreateUserRequest from './model/CreateUserRequest';
 import Error from './model/Error';
 import LoginRequest from './model/LoginRequest';
-import Permissions from './model/Permissions';
-import RefreshRequest from './model/RefreshRequest';
 import RegisterRequest from './model/RegisterRequest';
-import UpdateUserRequest from './model/UpdateUserRequest';
 import User from './model/User';
-import UserList from './model/UserList';
 import DefaultApi from './api/DefaultApi';
 
 
 /**
-* Authentication_authorization_and_user_management_.<br>
+* Authentication_and_user_accounts__Access_tokens_are_JWTs_that_carry_the_user_id_role_and_permissions_so_other_services_can_authorize_requests_.<br>
 * The <code>index</code> module provides access to constructors for all the classes which comprise the public API.
 * <p>
 * An AMD (recommended!) or CommonJS application will generally do something equivalent to the following:
@@ -71,12 +66,6 @@ export {
     AuthResult,
 
     /**
-     * The CreateUserRequest model constructor.
-     * @property {module:model/CreateUserRequest}
-     */
-    CreateUserRequest,
-
-    /**
      * The Error model constructor.
      * @property {module:model/Error}
      */
@@ -89,40 +78,16 @@ export {
     LoginRequest,
 
     /**
-     * The Permissions model constructor.
-     * @property {module:model/Permissions}
-     */
-    Permissions,
-
-    /**
-     * The RefreshRequest model constructor.
-     * @property {module:model/RefreshRequest}
-     */
-    RefreshRequest,
-
-    /**
      * The RegisterRequest model constructor.
      * @property {module:model/RegisterRequest}
      */
     RegisterRequest,
 
     /**
-     * The UpdateUserRequest model constructor.
-     * @property {module:model/UpdateUserRequest}
-     */
-    UpdateUserRequest,
-
-    /**
      * The User model constructor.
      * @property {module:model/User}
      */
     User,
-
-    /**
-     * The UserList model constructor.
-     * @property {module:model/UserList}
-     */
-    UserList,
 
     /**
     * The DefaultApi service constructor.

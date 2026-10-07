@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 

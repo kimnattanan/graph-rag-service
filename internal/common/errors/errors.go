@@ -9,6 +9,7 @@ var (
 	ErrorTypeAuthorization  = ErrorType{"authorization"}
 	ErrorTypeIncorrectInput = ErrorType{"incorrect-input"}
 	ErrorTypeNotFound       = ErrorType{"not-found"}
+	ErrorTypeConflict       = ErrorType{"conflict"}
 )
 
 type SlugError struct {
@@ -58,5 +59,13 @@ func NewNotFoundError(error string, slug string) SlugError {
 		error:     error,
 		slug:      slug,
 		errorType: ErrorTypeNotFound,
+	}
+}
+
+func NewConflictError(error string, slug string) SlugError {
+	return SlugError{
+		error:     error,
+		slug:      slug,
+		errorType: ErrorTypeConflict,
 	}
 }

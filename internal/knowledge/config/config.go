@@ -24,7 +24,7 @@ type (
 	}
 
 	Worker struct {
-		WorkerCount    int   `env:"KNOWLEDGE_WORKER_COUNT" envDefault:"1"`
+		WorkerCount    int `env:"KNOWLEDGE_WORKER_COUNT" envDefault:"0"`
 		WorkerInterval int `env:"KNOWLEDGE_WORKER_INTERVAL" envDefault:"60"`
 	}
 )

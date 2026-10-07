@@ -9,7 +9,10 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"google.golang.org/grpc"
+
 	commonConfig "github.com/kimnattanan/graph-rag-service/internal/common/config"
+	knowledgepb "github.com/kimnattanan/graph-rag-service/internal/common/genproto/knowledge"
 	"github.com/kimnattanan/graph-rag-service/internal/common/logs"
 	"github.com/kimnattanan/graph-rag-service/internal/common/server"
 	"github.com/kimnattanan/graph-rag-service/internal/knowledge/config"
@@ -47,11 +50,11 @@ func main() {
 				router,
 			)
 		})
-	// case "grpc":
-	// 	server.RunGRPCServer(func(server *grpc.Server) {
-	// 		svc := ports.NewGrpcServer(application)
-	// 		trainer.RegisterTrainerServiceServer(server, svc)
-	// 	})
+	case "grpc":
+		server.RunGRPCServer(&cfg.Common, func(server *grpc.Server) {
+			svc := ports.NewGrpcServer(application)
+			knowledgepb.RegisterKnowledgeServiceServer(server, svc)
+		})
 	default:
 		panic(fmt.Sprintf("server type '%s' is not supported", serverType))
 	}

@@ -19,6 +19,145 @@ services:
     depends_on:
       - memgraph
 
+  knowledge-grpc:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /internal
+    ports:
+      - "127.0.0.1:3010:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVICE: knowledge
+      SERVER_TO_RUN: grpc
+      GOCACHE: /go-cachee
+    depends_on:
+      - memgraph
+
+  user-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /internal
+    ports:
+      - "127.0.0.1:3001:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVICE: user
+      SERVER_TO_RUN: http
+      GOCACHE: /go-cache
+      USER_POSTGRES_HOST: user-postgres
+      USER_POSTGRES_PORT: "5432"
+    depends_on:
+      user-postgres:
+        condition: service_healthy
+
+  # user-grpc:
+  #   build:
+  #     context: docker/app
+  #   volumes:
+  #     - ./internal:/internal
+  #     - ./.go/pkg:/go/pkg
+  #     - ./.go-cache:/go-cache
+  #   working_dir: /internal
+  #   ports:
+  #     - "127.0.0.1:3011:$PORT"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     SERVICE: user
+  #     SERVER_TO_RUN: grpc
+  #     GOCACHE: /go-cache
+  #     USER_POSTGRES_HOST: user-postgres
+  #     USER_POSTGRES_PORT: "5432"
+  #   depends_on:
+  #     user-postgres:
+  #       condition: service_healthy
+
+  conversation-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /internal
+    ports:
+      - "127.0.0.1:3002:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVICE: conversation
+      SERVER_TO_RUN: http
+      GOCACHE: /go-cache
+      CONVERSATION_POSTGRES_HOST: conversation-postgres
+      CONVERSATION_POSTGRES_PORT: "5432"
+    depends_on:
+      conversation-postgres:
+        condition: service_healthy
+
+  conversation-grpc:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
+    working_dir: /internal
+    ports:
+      - "127.0.0.1:3012:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVICE: conversation
+      SERVER_TO_RUN: grpc
+      GOCACHE: /go-cache
+      CONVERSATION_POSTGRES_HOST: conversation-postgres
+      CONVERSATION_POSTGRES_PORT: "5432"
+    depends_on:
+      conversation-postgres:
+        condition: service_healthy
+
+  conversation-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${CONVERSATION_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${CONVERSATION_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${CONVERSATION_POSTGRES_DB:-conversation}
+    ports:
+      - "127.0.0.1:${CONVERSATION_POSTGRES_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - conversation_pg_data:/var/lib/postgresql/data
+
+  user-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${USER_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${USER_POSTGRES_DB:-users}
+    ports:
+      - "127.0.0.1:${USER_POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - user_pg_data:/var/lib/postgresql/data
+
   memgraph:
     image: "memgraph/memgraph-mage"
     volumes:
@@ -48,3 +187,5 @@ volumes:
   mg_lib:
   mg_log:
   mg_etc:
+  user_pg_data:
+  conversation_pg_data:

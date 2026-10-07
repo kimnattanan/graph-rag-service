@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/oapi-codegen/runtime v1.6.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2

@@ -6,11 +6,11 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
 **email** | **String** |  | 
-**displayName** | **String** |  | 
+**username** | **String** |  | 
 **role** | **String** |  | 
-**permissions** | **[String]** |  | 
+**permissions** | **[String]** | Derived from role. Present in the JWT for other services. | 
 **createdAt** | **Date** |  | 
-**updatedAt** | **Date** |  | [optional] 
+**updatedAt** | **Date** |  | 
 
 
 

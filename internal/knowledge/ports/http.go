@@ -22,6 +22,43 @@ func NewHttpServer(app app.Application) HttpServer {
 	return HttpServer{app}
 }
 
+func (h HttpServer) GetDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	appDoc, err := h.app.Queries.GetDocument.Handle(r.Context(), query.GetDocument{
+		DocumentID: documentId.String(),
+	})
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
+	doc, err := appDocumentToResponse(appDoc)
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
+	render.Respond(w, r, doc)
+}
+
+
+func (h HttpServer) GetDocumentIndexStatus(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	status, err := h.app.Queries.GetDocumentIndexStatus.Handle(r.Context(), query.GetDocumentIndexStatus{
+		DocumentID: documentId.String(),
+	})
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
+	indexJob, err := appDocumentIndexStatusToResponse(status)
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
+
+	render.Respond(w, r, indexJob)
+}
+
 func (h HttpServer) ListDocuments(w http.ResponseWriter, r *http.Request, params ListDocumentsParams) {
 	var indexStatus *document.IndexStatus
 	if params.IndexStatus != nil {
@@ -83,35 +120,6 @@ func (h HttpServer) CreateDocument(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h HttpServer) DeleteDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
-	err := h.app.Commands.DeleteDocument.Handle(r.Context(), command.DeleteDocument{
-		DocumentID: documentId.String(),
-	})
-	if err != nil {
-		httperr.RespondWithSlugError(err, w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-}
-
-func (h HttpServer) GetDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
-	appDoc, err := h.app.Queries.GetDocument.Handle(r.Context(), query.GetDocument{
-		DocumentID: documentId.String(),
-	})
-	if err != nil {
-		httperr.RespondWithSlugError(err, w, r)
-		return
-	}
-
-	doc, err := appDocumentToResponse(appDoc)
-	if err != nil {
-		httperr.RespondWithSlugError(err, w, r)
-		return
-	}
-
-	render.Respond(w, r, doc)
-}
 
 func (h HttpServer) UpdateDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
 	var body UpdateDocumentRequest
@@ -134,8 +142,8 @@ func (h HttpServer) UpdateDocument(w http.ResponseWriter, r *http.Request, docum
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h HttpServer) GetDocumentIndexStatus(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
-	status, err := h.app.Queries.GetDocumentIndexStatus.Handle(r.Context(), query.GetDocumentIndexStatus{
+func (h HttpServer) DeleteDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {
+	err := h.app.Commands.DeleteDocument.Handle(r.Context(), command.DeleteDocument{
 		DocumentID: documentId.String(),
 	})
 	if err != nil {
@@ -143,13 +151,7 @@ func (h HttpServer) GetDocumentIndexStatus(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	indexJob, err := appDocumentIndexStatusToResponse(status)
-	if err != nil {
-		httperr.RespondWithSlugError(err, w, r)
-		return
-	}
-
-	render.Respond(w, r, indexJob)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h HttpServer) ReindexDocument(w http.ResponseWriter, r *http.Request, documentId openapi_types.UUID) {

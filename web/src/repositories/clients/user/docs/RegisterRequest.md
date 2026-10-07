@@ -4,9 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **String** | Client-generated user id | 
 **email** | **String** |  | 
+**username** | **String** |  | 
 **password** | **String** |  | 
-**displayName** | **String** |  | 
 
 

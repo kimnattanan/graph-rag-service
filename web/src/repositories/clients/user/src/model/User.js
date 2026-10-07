@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -24,14 +24,15 @@ class User {
      * @alias module:model/User
      * @param id {String} 
      * @param email {String} 
-     * @param displayName {String} 
+     * @param username {String} 
      * @param role {module:model/User.RoleEnum} 
-     * @param permissions {Array.<module:model/User.PermissionsEnum>} 
+     * @param permissions {Array.<module:model/User.PermissionsEnum>} Derived from role. Present in the JWT for other services.
      * @param createdAt {Date} 
+     * @param updatedAt {Date} 
      */
-    constructor(id, email, displayName, role, permissions, createdAt) { 
+    constructor(id, email, username, role, permissions, createdAt, updatedAt) { 
         
-        User.initialize(this, id, email, displayName, role, permissions, createdAt);
+        User.initialize(this, id, email, username, role, permissions, createdAt, updatedAt);
     }
 
     /**
@@ -39,13 +40,14 @@ class User {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, email, displayName, role, permissions, createdAt) { 
+    static initialize(obj, id, email, username, role, permissions, createdAt, updatedAt) { 
         obj['id'] = id;
         obj['email'] = email;
-        obj['displayName'] = displayName;
+        obj['username'] = username;
         obj['role'] = role;
         obj['permissions'] = permissions;
         obj['createdAt'] = createdAt;
+        obj['updatedAt'] = updatedAt;
     }
 
     /**
@@ -65,8 +67,8 @@ class User {
             if (data.hasOwnProperty('email')) {
                 obj['email'] = ApiClient.convertToType(data['email'], 'String');
             }
-            if (data.hasOwnProperty('displayName')) {
-                obj['displayName'] = ApiClient.convertToType(data['displayName'], 'String');
+            if (data.hasOwnProperty('username')) {
+                obj['username'] = ApiClient.convertToType(data['username'], 'String');
             }
             if (data.hasOwnProperty('role')) {
                 obj['role'] = ApiClient.convertToType(data['role'], 'String');
@@ -98,9 +100,9 @@ User.prototype['id'] = undefined;
 User.prototype['email'] = undefined;
 
 /**
- * @member {String} displayName
+ * @member {String} username
  */
-User.prototype['displayName'] = undefined;
+User.prototype['username'] = undefined;
 
 /**
  * @member {module:model/User.RoleEnum} role
@@ -108,6 +110,7 @@ User.prototype['displayName'] = undefined;
 User.prototype['role'] = undefined;
 
 /**
+ * Derived from role. Present in the JWT for other services.
  * @member {Array.<module:model/User.PermissionsEnum>} permissions
  */
 User.prototype['permissions'] = undefined;

@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -22,14 +22,13 @@ class RegisterRequest {
     /**
      * Constructs a new <code>RegisterRequest</code>.
      * @alias module:model/RegisterRequest
-     * @param id {String} Client-generated user id
      * @param email {String} 
+     * @param username {String} 
      * @param password {String} 
-     * @param displayName {String} 
      */
-    constructor(id, email, password, displayName) { 
+    constructor(email, username, password) { 
         
-        RegisterRequest.initialize(this, id, email, password, displayName);
+        RegisterRequest.initialize(this, email, username, password);
     }
 
     /**
@@ -37,11 +36,10 @@ class RegisterRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, id, email, password, displayName) { 
-        obj['id'] = id;
+    static initialize(obj, email, username, password) { 
         obj['email'] = email;
+        obj['username'] = username;
         obj['password'] = password;
-        obj['displayName'] = displayName;
     }
 
     /**
@@ -55,17 +53,14 @@ class RegisterRequest {
         if (data) {
             obj = obj || new RegisterRequest();
 
-            if (data.hasOwnProperty('id')) {
-                obj['id'] = ApiClient.convertToType(data['id'], 'String');
-            }
             if (data.hasOwnProperty('email')) {
                 obj['email'] = ApiClient.convertToType(data['email'], 'String');
             }
+            if (data.hasOwnProperty('username')) {
+                obj['username'] = ApiClient.convertToType(data['username'], 'String');
+            }
             if (data.hasOwnProperty('password')) {
                 obj['password'] = ApiClient.convertToType(data['password'], 'String');
-            }
-            if (data.hasOwnProperty('displayName')) {
-                obj['displayName'] = ApiClient.convertToType(data['displayName'], 'String');
             }
         }
         return obj;
@@ -75,25 +70,19 @@ class RegisterRequest {
 }
 
 /**
- * Client-generated user id
- * @member {String} id
- */
-RegisterRequest.prototype['id'] = undefined;
-
-/**
  * @member {String} email
  */
 RegisterRequest.prototype['email'] = undefined;
 
 /**
+ * @member {String} username
+ */
+RegisterRequest.prototype['username'] = undefined;
+
+/**
  * @member {String} password
  */
 RegisterRequest.prototype['password'] = undefined;
-
-/**
- * @member {String} displayName
- */
-RegisterRequest.prototype['displayName'] = undefined;
 
 
 

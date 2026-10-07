@@ -4,62 +4,44 @@
 package ports
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Login Authenticate and receive access tokens
+	// Login Authenticate and receive an access token
 	// (POST /auth/login)
 	Login(w http.ResponseWriter, r *http.Request)
-	// RefreshToken Exchange a refresh token for a new access token
-	// (POST /auth/refresh)
-	RefreshToken(w http.ResponseWriter, r *http.Request)
+	// Logout Log out the current session
+	// (POST /auth/logout)
+	Logout(w http.ResponseWriter, r *http.Request)
 	// Register Register a new user account
 	// (POST /auth/register)
 	Register(w http.ResponseWriter, r *http.Request)
-	// ListUsers List users (admin only)
-	// (GET /users)
-	ListUsers(w http.ResponseWriter, r *http.Request, params ListUsersParams)
-	// CreateUser Create a user (admin only)
-	// (POST /users)
-	CreateUser(w http.ResponseWriter, r *http.Request)
+	// DeleteAccount Delete the authenticated user account
+	// (DELETE /users/me)
+	DeleteAccount(w http.ResponseWriter, r *http.Request)
 	// GetCurrentUser Get the authenticated user profile
 	// (GET /users/me)
 	GetCurrentUser(w http.ResponseWriter, r *http.Request)
-	// GetCurrentUserPermissions Get permissions for the authenticated user
-	// (GET /users/me/permissions)
-	GetCurrentUserPermissions(w http.ResponseWriter, r *http.Request)
-	// DeleteUser Delete a user (admin only)
-	// (DELETE /users/{userId})
-	DeleteUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID)
-	// GetUser Get a user by ID (admin only)
-	// (GET /users/{userId})
-	GetUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID)
-	// UpdateUser Update a user (admin only)
-	// (PUT /users/{userId})
-	UpdateUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
 
-// Login Authenticate and receive access tokens
+// Login Authenticate and receive an access token
 // (POST /auth/login)
 func (_ Unimplemented) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// RefreshToken Exchange a refresh token for a new access token
-// (POST /auth/refresh)
-func (_ Unimplemented) RefreshToken(w http.ResponseWriter, r *http.Request) {
+// Logout Log out the current session
+// (POST /auth/logout)
+func (_ Unimplemented) Logout(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -69,45 +51,15 @@ func (_ Unimplemented) Register(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// ListUsers List users (admin only)
-// (GET /users)
-func (_ Unimplemented) ListUsers(w http.ResponseWriter, r *http.Request, params ListUsersParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// CreateUser Create a user (admin only)
-// (POST /users)
-func (_ Unimplemented) CreateUser(w http.ResponseWriter, r *http.Request) {
+// DeleteAccount Delete the authenticated user account
+// (DELETE /users/me)
+func (_ Unimplemented) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // GetCurrentUser Get the authenticated user profile
 // (GET /users/me)
 func (_ Unimplemented) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// GetCurrentUserPermissions Get permissions for the authenticated user
-// (GET /users/me/permissions)
-func (_ Unimplemented) GetCurrentUserPermissions(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// DeleteUser Delete a user (admin only)
-// (DELETE /users/{userId})
-func (_ Unimplemented) DeleteUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// GetUser Get a user by ID (admin only)
-// (GET /users/{userId})
-func (_ Unimplemented) GetUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// UpdateUser Update a user (admin only)
-// (PUT /users/{userId})
-func (_ Unimplemented) UpdateUser(w http.ResponseWriter, r *http.Request, userId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -134,11 +86,11 @@ func (siw *ServerInterfaceWrapper) Login(w http.ResponseWriter, r *http.Request)
 	handler.ServeHTTP(w, r)
 }
 
-// RefreshToken operation middleware
-func (siw *ServerInterfaceWrapper) RefreshToken(w http.ResponseWriter, r *http.Request) {
+// Logout operation middleware
+func (siw *ServerInterfaceWrapper) Logout(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.RefreshToken(w, r)
+		siw.Handler.Logout(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -162,57 +114,11 @@ func (siw *ServerInterfaceWrapper) Register(w http.ResponseWriter, r *http.Reque
 	handler.ServeHTTP(w, r)
 }
 
-// ListUsers operation middleware
-func (siw *ServerInterfaceWrapper) ListUsers(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListUsersParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		}
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", r.URL.Query(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "offset"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		}
-		return
-	}
+// DeleteAccount operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListUsers(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateUser operation middleware
-func (siw *ServerInterfaceWrapper) CreateUser(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateUser(w, r)
+		siw.Handler.DeleteAccount(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -227,98 +133,6 @@ func (siw *ServerInterfaceWrapper) GetCurrentUser(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetCurrentUser(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetCurrentUserPermissions operation middleware
-func (siw *ServerInterfaceWrapper) GetCurrentUserPermissions(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCurrentUserPermissions(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteUser operation middleware
-func (siw *ServerInterfaceWrapper) DeleteUser(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// ------------- Path parameter "userId" -------------
-	var userId openapi_types.UUID
-
-	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteUser(w, r, userId)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetUser operation middleware
-func (siw *ServerInterfaceWrapper) GetUser(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// ------------- Path parameter "userId" -------------
-	var userId openapi_types.UUID
-
-	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUser(w, r, userId)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateUser operation middleware
-func (siw *ServerInterfaceWrapper) UpdateUser(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// ------------- Path parameter "userId" -------------
-	var userId openapi_types.UUID
-
-	err = runtime.BindStyledParameterWithOptions("simple", "userId", chi.URLParam(r, "userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateUser(w, r, userId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -448,28 +262,13 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/auth/login", wrapper.Login)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/auth/refresh", wrapper.RefreshToken)
+		r.Post(options.BaseURL+"/auth/logout", wrapper.Logout)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/users/me", wrapper.DeleteAccount)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/users/me", wrapper.GetCurrentUser)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/me/permissions", wrapper.GetCurrentUserPermissions)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users", wrapper.ListUsers)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/users", wrapper.CreateUser)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/users/{userId}", wrapper.DeleteUser)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{userId}", wrapper.GetUser)
-	})
-	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/users/{userId}", wrapper.UpdateUser)
 	})
 
 	return r

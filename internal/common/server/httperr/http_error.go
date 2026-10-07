@@ -25,6 +25,10 @@ func NotFound(slug string, err error, w http.ResponseWriter, r *http.Request) {
 	httpResponseWithError(err, slug, w, r, userMessage(err, "Not Found"), http.StatusNotFound)
 }
 
+func Conflict(slug string, err error, w http.ResponseWriter, r *http.Request) {
+	httpResponseWithError(err, slug, w, r, userMessage(err, "Conflict"), http.StatusConflict)
+}
+
 func RespondWithSlugError(err error, w http.ResponseWriter, r *http.Request) {
 	var slugError errors.SlugError
 	if !stderrors.As(err, &slugError) {
@@ -39,6 +43,8 @@ func RespondWithSlugError(err error, w http.ResponseWriter, r *http.Request) {
 		BadRequest(slugError.Slug(), slugError, w, r)
 	case errors.ErrorTypeNotFound:
 		NotFound(slugError.Slug(), slugError, w, r)
+	case errors.ErrorTypeConflict:
+		Conflict(slugError.Slug(), slugError, w, r)
 	default:
 		InternalError(slugError.Slug(), slugError, w, r)
 	}

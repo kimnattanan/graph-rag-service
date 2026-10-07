@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -24,14 +24,13 @@ class AuthResult {
      * Constructs a new <code>AuthResult</code>.
      * @alias module:model/AuthResult
      * @param accessToken {String} 
-     * @param refreshToken {String} 
      * @param expiresIn {Number} Access token lifetime in seconds
      * @param tokenType {String} 
      * @param user {module:model/User} 
      */
-    constructor(accessToken, refreshToken, expiresIn, tokenType, user) { 
+    constructor(accessToken, expiresIn, tokenType, user) { 
         
-        AuthResult.initialize(this, accessToken, refreshToken, expiresIn, tokenType, user);
+        AuthResult.initialize(this, accessToken, expiresIn, tokenType, user);
     }
 
     /**
@@ -39,9 +38,8 @@ class AuthResult {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, accessToken, refreshToken, expiresIn, tokenType, user) { 
+    static initialize(obj, accessToken, expiresIn, tokenType, user) { 
         obj['accessToken'] = accessToken;
-        obj['refreshToken'] = refreshToken;
         obj['expiresIn'] = expiresIn;
         obj['tokenType'] = tokenType;
         obj['user'] = user;
@@ -60,9 +58,6 @@ class AuthResult {
 
             if (data.hasOwnProperty('accessToken')) {
                 obj['accessToken'] = ApiClient.convertToType(data['accessToken'], 'String');
-            }
-            if (data.hasOwnProperty('refreshToken')) {
-                obj['refreshToken'] = ApiClient.convertToType(data['refreshToken'], 'String');
             }
             if (data.hasOwnProperty('expiresIn')) {
                 obj['expiresIn'] = ApiClient.convertToType(data['expiresIn'], 'Number');
@@ -84,11 +79,6 @@ class AuthResult {
  * @member {String} accessToken
  */
 AuthResult.prototype['accessToken'] = undefined;
-
-/**
- * @member {String} refreshToken
- */
-AuthResult.prototype['refreshToken'] = undefined;
 
 /**
  * Access token lifetime in seconds

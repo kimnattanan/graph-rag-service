@@ -1,6 +1,6 @@
 /**
  * Graph RAG Service - User
- * Authentication, authorization, and user management.
+ * Authentication and user accounts. Access tokens are JWTs that carry the user id, role, and permissions so other services can authorize requests. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -14,15 +14,10 @@
 
 import ApiClient from "../ApiClient";
 import AuthResult from '../model/AuthResult';
-import CreateUserRequest from '../model/CreateUserRequest';
 import Error from '../model/Error';
 import LoginRequest from '../model/LoginRequest';
-import Permissions from '../model/Permissions';
-import RefreshRequest from '../model/RefreshRequest';
 import RegisterRequest from '../model/RegisterRequest';
-import UpdateUserRequest from '../model/UpdateUserRequest';
 import User from '../model/User';
-import UserList from '../model/UserList';
 
 /**
 * Default service.
@@ -44,68 +39,22 @@ export default class DefaultApi {
 
 
     /**
-     * Callback function to receive the result of the createUser operation.
-     * @callback module:api/DefaultApi~createUserCallback
+     * Callback function to receive the result of the deleteAccount operation.
+     * @callback module:api/DefaultApi~deleteAccountCallback
      * @param {String} error Error message, if any.
      * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
-     * Create a user (admin only)
-     * Command. Returns no body. Read the user with getUser.
-     * @param {module:model/CreateUserRequest} createUserRequest 
-     * @param {module:api/DefaultApi~createUserCallback} callback The callback function, accepting three arguments: error, data, response
+     * Delete the authenticated user account
+     * Command. Deletes the account and its sessions.
+     * @param {module:api/DefaultApi~deleteAccountCallback} callback The callback function, accepting three arguments: error, data, response
      */
-    createUser(createUserRequest, callback) {
-      let postBody = createUserRequest;
-      // verify the required parameter 'createUserRequest' is set
-      if (createUserRequest === undefined || createUserRequest === null) {
-        throw new Error("Missing the required parameter 'createUserRequest' when calling createUser");
-      }
-
-      let pathParams = {
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['bearerAuth'];
-      let contentTypes = ['application/json'];
-      let accepts = ['application/json'];
-      let returnType = null;
-      return this.apiClient.callApi(
-        '/users', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the deleteUser operation.
-     * @callback module:api/DefaultApi~deleteUserCallback
-     * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Delete a user (admin only)
-     * @param {String} userId 
-     * @param {module:api/DefaultApi~deleteUserCallback} callback The callback function, accepting three arguments: error, data, response
-     */
-    deleteUser(userId, callback) {
+    deleteAccount(callback) {
       let postBody = null;
-      // verify the required parameter 'userId' is set
-      if (userId === undefined || userId === null) {
-        throw new Error("Missing the required parameter 'userId' when calling deleteUser");
-      }
 
       let pathParams = {
-        'userId': userId
       };
       let queryParams = {
       };
@@ -119,7 +68,7 @@ export default class DefaultApi {
       let accepts = ['application/json'];
       let returnType = null;
       return this.apiClient.callApi(
-        '/users/{userId}', 'DELETE',
+        '/users/me', 'DELETE',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
@@ -162,126 +111,6 @@ export default class DefaultApi {
     }
 
     /**
-     * Callback function to receive the result of the getCurrentUserPermissions operation.
-     * @callback module:api/DefaultApi~getCurrentUserPermissionsCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/Permissions} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Get permissions for the authenticated user
-     * @param {module:api/DefaultApi~getCurrentUserPermissionsCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Permissions}
-     */
-    getCurrentUserPermissions(callback) {
-      let postBody = null;
-
-      let pathParams = {
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['bearerAuth'];
-      let contentTypes = [];
-      let accepts = ['application/json'];
-      let returnType = Permissions;
-      return this.apiClient.callApi(
-        '/users/me/permissions', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the getUser operation.
-     * @callback module:api/DefaultApi~getUserCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/User} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Get a user by ID (admin only)
-     * @param {String} userId 
-     * @param {module:api/DefaultApi~getUserCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/User}
-     */
-    getUser(userId, callback) {
-      let postBody = null;
-      // verify the required parameter 'userId' is set
-      if (userId === undefined || userId === null) {
-        throw new Error("Missing the required parameter 'userId' when calling getUser");
-      }
-
-      let pathParams = {
-        'userId': userId
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['bearerAuth'];
-      let contentTypes = [];
-      let accepts = ['application/json'];
-      let returnType = User;
-      return this.apiClient.callApi(
-        '/users/{userId}', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the listUsers operation.
-     * @callback module:api/DefaultApi~listUsersCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/UserList} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * List users (admin only)
-     * @param {Object} opts Optional parameters
-     * @param {Number} opts.limit  (default to 20)
-     * @param {Number} opts.offset  (default to 0)
-     * @param {module:api/DefaultApi~listUsersCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/UserList}
-     */
-    listUsers(opts, callback) {
-      opts = opts || {};
-      let postBody = null;
-
-      let pathParams = {
-      };
-      let queryParams = {
-        'limit': opts['limit'],
-        'offset': opts['offset']
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['bearerAuth'];
-      let contentTypes = [];
-      let accepts = ['application/json'];
-      let returnType = UserList;
-      return this.apiClient.callApi(
-        '/users', 'GET',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
      * Callback function to receive the result of the login operation.
      * @callback module:api/DefaultApi~loginCallback
      * @param {String} error Error message, if any.
@@ -290,8 +119,8 @@ export default class DefaultApi {
      */
 
     /**
-     * Authenticate and receive access tokens
-     * Query. Validates credentials and returns tokens.
+     * Authenticate and receive an access token
+     * Validates credentials, opens a session, and returns a JWT.
      * @param {module:model/LoginRequest} loginRequest 
      * @param {module:api/DefaultApi~loginCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/AuthResult}
@@ -324,26 +153,20 @@ export default class DefaultApi {
     }
 
     /**
-     * Callback function to receive the result of the refreshToken operation.
-     * @callback module:api/DefaultApi~refreshTokenCallback
+     * Callback function to receive the result of the logout operation.
+     * @callback module:api/DefaultApi~logoutCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/AuthResult} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
-     * Exchange a refresh token for a new access token
-     * Query. Returns a new access token for a valid refresh token.
-     * @param {module:model/RefreshRequest} refreshRequest 
-     * @param {module:api/DefaultApi~refreshTokenCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/AuthResult}
+     * Log out the current session
+     * Command. Revokes the session embedded in the access token.
+     * @param {module:api/DefaultApi~logoutCallback} callback The callback function, accepting three arguments: error, data, response
      */
-    refreshToken(refreshRequest, callback) {
-      let postBody = refreshRequest;
-      // verify the required parameter 'refreshRequest' is set
-      if (refreshRequest === undefined || refreshRequest === null) {
-        throw new Error("Missing the required parameter 'refreshRequest' when calling refreshToken");
-      }
+    logout(callback) {
+      let postBody = null;
 
       let pathParams = {
       };
@@ -354,12 +177,12 @@ export default class DefaultApi {
       let formParams = {
       };
 
-      let authNames = [];
-      let contentTypes = ['application/json'];
+      let authNames = ['bearerAuth'];
+      let contentTypes = [];
       let accepts = ['application/json'];
-      let returnType = AuthResult;
+      let returnType = null;
       return this.apiClient.callApi(
-        '/auth/refresh', 'POST',
+        '/auth/logout', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
@@ -375,7 +198,7 @@ export default class DefaultApi {
 
     /**
      * Register a new user account
-     * Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+     * Command. Creates an account with role user. Returns no body.
      * @param {module:model/RegisterRequest} registerRequest 
      * @param {module:api/DefaultApi~registerCallback} callback The callback function, accepting three arguments: error, data, response
      */
@@ -401,53 +224,6 @@ export default class DefaultApi {
       let returnType = null;
       return this.apiClient.callApi(
         '/auth/register', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the updateUser operation.
-     * @callback module:api/DefaultApi~updateUserCallback
-     * @param {String} error Error message, if any.
-     * @param data This operation does not return a value.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Update a user (admin only)
-     * Command. Returns no body. Read the user with getUser.
-     * @param {String} userId 
-     * @param {module:model/UpdateUserRequest} updateUserRequest 
-     * @param {module:api/DefaultApi~updateUserCallback} callback The callback function, accepting three arguments: error, data, response
-     */
-    updateUser(userId, updateUserRequest, callback) {
-      let postBody = updateUserRequest;
-      // verify the required parameter 'userId' is set
-      if (userId === undefined || userId === null) {
-        throw new Error("Missing the required parameter 'userId' when calling updateUser");
-      }
-      // verify the required parameter 'updateUserRequest' is set
-      if (updateUserRequest === undefined || updateUserRequest === null) {
-        throw new Error("Missing the required parameter 'updateUserRequest' when calling updateUser");
-      }
-
-      let pathParams = {
-        'userId': userId
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-      };
-
-      let authNames = ['bearerAuth'];
-      let contentTypes = ['application/json'];
-      let accepts = ['application/json'];
-      let returnType = null;
-      return this.apiClient.callApi(
-        '/users/{userId}', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );

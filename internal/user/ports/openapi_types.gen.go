@@ -9,72 +9,18 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for CreateUserRequestRole.
-const (
-	CreateUserRequestRoleAdmin CreateUserRequestRole = "admin"
-	CreateUserRequestRoleUser  CreateUserRequestRole = "user"
-)
-
-// Valid indicates whether the value is a known member of the CreateUserRequestRole enum.
-func (e CreateUserRequestRole) Valid() bool {
-	switch e {
-	case CreateUserRequestRoleAdmin:
-		return true
-	case CreateUserRequestRoleUser:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for PermissionsPermissions.
-const (
-	PermissionsPermissionsConversationAsk PermissionsPermissions = "conversation:ask"
-	PermissionsPermissionsKnowledgeWrite  PermissionsPermissions = "knowledge:write"
-)
-
-// Valid indicates whether the value is a known member of the PermissionsPermissions enum.
-func (e PermissionsPermissions) Valid() bool {
-	switch e {
-	case PermissionsPermissionsConversationAsk:
-		return true
-	case PermissionsPermissionsKnowledgeWrite:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for UpdateUserRequestRole.
-const (
-	UpdateUserRequestRoleAdmin UpdateUserRequestRole = "admin"
-	UpdateUserRequestRoleUser  UpdateUserRequestRole = "user"
-)
-
-// Valid indicates whether the value is a known member of the UpdateUserRequestRole enum.
-func (e UpdateUserRequestRole) Valid() bool {
-	switch e {
-	case UpdateUserRequestRoleAdmin:
-		return true
-	case UpdateUserRequestRoleUser:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for UserPermissions.
 const (
-	UserPermissionsConversationAsk UserPermissions = "conversation:ask"
-	UserPermissionsKnowledgeWrite  UserPermissions = "knowledge:write"
+	ConversationAsk UserPermissions = "conversation:ask"
+	KnowledgeWrite  UserPermissions = "knowledge:write"
 )
 
 // Valid indicates whether the value is a known member of the UserPermissions enum.
 func (e UserPermissions) Valid() bool {
 	switch e {
-	case UserPermissionsConversationAsk:
+	case ConversationAsk:
 		return true
-	case UserPermissionsKnowledgeWrite:
+	case KnowledgeWrite:
 		return true
 	default:
 		return false
@@ -104,27 +50,12 @@ type AuthResult struct {
 	AccessToken string `json:"accessToken"`
 
 	// ExpiresIn Access token lifetime in seconds
-	ExpiresIn    int    `json:"expiresIn"`
-	RefreshToken string `json:"refreshToken"`
+	ExpiresIn int `json:"expiresIn"`
 
 	// TokenType Example: Bearer
 	TokenType string `json:"tokenType"`
 	User      User   `json:"user"`
 }
-
-// CreateUserRequest defines model for CreateUserRequest.
-type CreateUserRequest struct {
-	DisplayName string              `json:"displayName"`
-	Email       openapi_types.Email `json:"email"`
-
-	// Id Client-generated user id
-	Id       openapi_types.UUID    `json:"id"`
-	Password string                `json:"password"`
-	Role     CreateUserRequestRole `json:"role"`
-}
-
-// CreateUserRequestRole defines model for CreateUserRequest.Role.
-type CreateUserRequestRole string
 
 // Error defines model for Error.
 type Error struct {
@@ -138,48 +69,24 @@ type LoginRequest struct {
 	Password string              `json:"password"`
 }
 
-// Permissions defines model for Permissions.
-type Permissions struct {
-	Permissions []PermissionsPermissions `json:"permissions"`
-}
-
-// PermissionsPermissions defines model for Permissions.Permissions.
-type PermissionsPermissions string
-
-// RefreshRequest defines model for RefreshRequest.
-type RefreshRequest struct {
-	RefreshToken string `json:"refreshToken"`
-}
-
 // RegisterRequest defines model for RegisterRequest.
 type RegisterRequest struct {
-	DisplayName string              `json:"displayName"`
-	Email       openapi_types.Email `json:"email"`
-
-	// Id Client-generated user id
-	Id       openapi_types.UUID `json:"id"`
-	Password string             `json:"password"`
+	Email    openapi_types.Email `json:"email"`
+	Password string              `json:"password"`
+	Username string              `json:"username"`
 }
-
-// UpdateUserRequest defines model for UpdateUserRequest.
-type UpdateUserRequest struct {
-	DisplayName *string                `json:"displayName,omitempty"`
-	Password    *string                `json:"password,omitempty"`
-	Role        *UpdateUserRequestRole `json:"role,omitempty"`
-}
-
-// UpdateUserRequestRole defines model for UpdateUserRequest.Role.
-type UpdateUserRequestRole string
 
 // User defines model for User.
 type User struct {
-	CreatedAt   time.Time           `json:"createdAt"`
-	DisplayName string              `json:"displayName"`
-	Email       openapi_types.Email `json:"email"`
-	Id          openapi_types.UUID  `json:"id"`
-	Permissions []UserPermissions   `json:"permissions"`
-	Role        UserRole            `json:"role"`
-	UpdatedAt   *time.Time          `json:"updatedAt,omitempty"`
+	CreatedAt time.Time           `json:"createdAt"`
+	Email     openapi_types.Email `json:"email"`
+	Id        openapi_types.UUID  `json:"id"`
+
+	// Permissions Derived from role. Present in the JWT for other services.
+	Permissions []UserPermissions `json:"permissions"`
+	Role        UserRole          `json:"role"`
+	UpdatedAt   time.Time         `json:"updatedAt"`
+	Username    string            `json:"username"`
 }
 
 // UserPermissions defines model for User.Permissions.
@@ -188,29 +95,8 @@ type UserPermissions string
 // UserRole defines model for User.Role.
 type UserRole string
 
-// UserList defines model for UserList.
-type UserList struct {
-	Items []User `json:"items"`
-	Total int    `json:"total"`
-}
-
-// ListUsersParams defines parameters for ListUsers.
-type ListUsersParams struct {
-	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-}
-
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = LoginRequest
 
-// RefreshTokenJSONRequestBody defines body for RefreshToken for application/json ContentType.
-type RefreshTokenJSONRequestBody = RefreshRequest
-
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
 type RegisterJSONRequestBody = RegisterRequest
-
-// CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody = CreateUserRequest
-
-// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = UpdateUserRequest

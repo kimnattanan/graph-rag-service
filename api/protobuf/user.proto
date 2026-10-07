@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "github.com/kimnattanan/graph-rag-service/internal/user";
+option go_package = "github.com/kimnattanan/graph-rag-service/internal/common/genproto/user";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
@@ -10,14 +10,9 @@ import "google/protobuf/timestamp.proto";
 service UserService {
   rpc Register(RegisterRequest) returns (google.protobuf.Empty) {}
   rpc Login(LoginRequest) returns (LoginResponse) {}
-  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+  rpc Logout(LogoutRequest) returns (google.protobuf.Empty) {}
   rpc GetCurrentUser(GetCurrentUserRequest) returns (User) {}
-  rpc GetCurrentUserPermissions(GetCurrentUserPermissionsRequest) returns (GetCurrentUserPermissionsResponse) {}
-  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
-  rpc CreateUser(CreateUserRequest) returns (google.protobuf.Empty) {}
-  rpc GetUser(GetUserRequest) returns (User) {}
-  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty) {}
-  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {}
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty) {}
 }
 
 enum Role {
@@ -34,9 +29,8 @@ enum Permission {
 
 message RegisterRequest {
   string email = 1;
-  string password = 2;
-  string display_name = 3;
-  string id = 4;
+  string username = 2;
+  string password = 3;
 }
 
 message LoginRequest {
@@ -46,69 +40,21 @@ message LoginRequest {
 
 message LoginResponse {
   string access_token = 1;
-  string refresh_token = 2;
-  int32 expires_in = 3;
-  string token_type = 4;
-  User user = 5;
+  int32 expires_in = 2;
+  string token_type = 3;
+  User user = 4;
 }
 
-message RefreshTokenRequest {
-  string refresh_token = 1;
-}
-
-message RefreshTokenResponse {
-  string access_token = 1;
-  string refresh_token = 2;
-  int32 expires_in = 3;
-  string token_type = 4;
-  User user = 5;
-}
+message LogoutRequest {}
 
 message GetCurrentUserRequest {}
 
-message GetCurrentUserPermissionsRequest {}
-
-message GetCurrentUserPermissionsResponse {
-  repeated Permission permissions = 1;
-}
-
-message ListUsersRequest {
-  int32 limit = 1;
-  int32 offset = 2;
-}
-
-message ListUsersResponse {
-  repeated User users = 1;
-  int32 total = 2;
-}
-
-message CreateUserRequest {
-  string email = 1;
-  string password = 2;
-  string display_name = 3;
-  Role role = 4;
-  string id = 5;
-}
-
-message GetUserRequest {
-  string user_id = 1;
-}
-
-message UpdateUserRequest {
-  string user_id = 1;
-  string display_name = 2;
-  Role role = 3;
-  string password = 4;
-}
-
-message DeleteUserRequest {
-  string user_id = 1;
-}
+message DeleteAccountRequest {}
 
 message User {
   string id = 1;
   string email = 2;
-  string display_name = 3;
+  string username = 3;
   Role role = 4;
   repeated Permission permissions = 5;
   google.protobuf.Timestamp created_at = 6;

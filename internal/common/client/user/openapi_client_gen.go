@@ -12,9 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // RequestEditorFn is the function signature for the RequestEditor callback function
@@ -91,45 +88,34 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
-	// LoginWithBody Authenticate and receive access tokens
+	// LoginWithBody Authenticate and receive an access token
 	//
-	// Query. Validates credentials and returns tokens.
+	// Validates credentials, opens a session, and returns a JWT.
 	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// Login Authenticate and receive access tokens
+	// Login Authenticate and receive an access token
 	//
-	// Query. Validates credentials and returns tokens.
+	// Validates credentials, opens a session, and returns a JWT.
 	//
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	Login(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// RefreshTokenWithBody Exchange a refresh token for a new access token
+	// Logout Log out the current session
 	//
-	// Query. Returns a new access token for a valid refresh token.
+	// Command. Revokes the session embedded in the access token.
 	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-	RefreshTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// RefreshToken Exchange a refresh token for a new access token
-	//
-	// Query. Returns a new access token for a valid refresh token.
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-	RefreshToken(ctx context.Context, body RefreshTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// Corresponds with POST /auth/logout (the `Logout` operationId).
+	Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RegisterWithBody Register a new user account
 	//
-	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	// Command. Creates an account with role user. Returns no body.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -138,78 +124,29 @@ type ClientInterface interface {
 
 	// Register Register a new user account
 	//
-	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	// Command. Creates an account with role user. Returns no body.
 	//
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with POST /auth/register (the `Register` operationId).
 	Register(ctx context.Context, body RegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListUsers List users (admin only)
+	// DeleteAccount Delete the authenticated user account
 	//
-	// Corresponds with GET /users (the `ListUsers` operationId).
-	ListUsers(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateUserWithBody Create a user (admin only)
+	// Command. Deletes the account and its sessions.
 	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /users (the `CreateUser` operationId).
-	CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateUser Create a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /users (the `CreateUser` operationId).
-	CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// Corresponds with DELETE /users/me (the `DeleteAccount` operationId).
+	DeleteAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetCurrentUser Get the authenticated user profile
 	//
 	// Corresponds with GET /users/me (the `GetCurrentUser` operationId).
 	GetCurrentUser(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetCurrentUserPermissions Get permissions for the authenticated user
-	//
-	// Corresponds with GET /users/me/permissions (the `GetCurrentUserPermissions` operationId).
-	GetCurrentUserPermissions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteUser Delete a user (admin only)
-	//
-	// Corresponds with DELETE /users/{userId} (the `DeleteUser` operationId).
-	DeleteUser(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetUser Get a user by ID (admin only)
-	//
-	// Corresponds with GET /users/{userId} (the `GetUser` operationId).
-	GetUser(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateUserWithBody Update a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-	UpdateUserWithBody(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateUser Update a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-	UpdateUser(ctx context.Context, userId openapi_types.UUID, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-// LoginWithBody Authenticate and receive access tokens
+// LoginWithBody Authenticate and receive an access token
 //
-// Query. Validates credentials and returns tokens.
+// Validates credentials, opens a session, and returns a JWT.
 //
 // Takes any type of body and a specified content type.
 //
@@ -226,9 +163,9 @@ func (c *Client) LoginWithBody(ctx context.Context, contentType string, body io.
 	return c.Client.Do(req)
 }
 
-// Login Authenticate and receive access tokens
+// Login Authenticate and receive an access token
 //
-// Query. Validates credentials and returns tokens.
+// Validates credentials, opens a session, and returns a JWT.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -245,34 +182,13 @@ func (c *Client) Login(ctx context.Context, body LoginJSONRequestBody, reqEditor
 	return c.Client.Do(req)
 }
 
-// RefreshTokenWithBody Exchange a refresh token for a new access token
+// Logout Log out the current session
 //
-// Query. Returns a new access token for a valid refresh token.
+// Command. Revokes the session embedded in the access token.
 //
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-func (c *Client) RefreshTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRefreshTokenRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// RefreshToken Exchange a refresh token for a new access token
-//
-// Query. Returns a new access token for a valid refresh token.
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-func (c *Client) RefreshToken(ctx context.Context, body RefreshTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRefreshTokenRequest(c.Server, body)
+// Corresponds with POST /auth/logout (the `Logout` operationId).
+func (c *Client) Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLogoutRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -285,7 +201,7 @@ func (c *Client) RefreshToken(ctx context.Context, body RefreshTokenJSONRequestB
 
 // RegisterWithBody Register a new user account
 //
-// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+// Command. Creates an account with role user. Returns no body.
 //
 // Takes any type of body and a specified content type.
 //
@@ -304,7 +220,7 @@ func (c *Client) RegisterWithBody(ctx context.Context, contentType string, body 
 
 // Register Register a new user account
 //
-// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+// Command. Creates an account with role user. Returns no body.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -321,49 +237,13 @@ func (c *Client) Register(ctx context.Context, body RegisterJSONRequestBody, req
 	return c.Client.Do(req)
 }
 
-// ListUsers List users (admin only)
+// DeleteAccount Delete the authenticated user account
 //
-// Corresponds with GET /users (the `ListUsers` operationId).
-func (c *Client) ListUsers(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListUsersRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreateUserWithBody Create a user (admin only)
+// Command. Deletes the account and its sessions.
 //
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /users (the `CreateUser` operationId).
-func (c *Client) CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateUserRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreateUser Create a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /users (the `CreateUser` operationId).
-func (c *Client) CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateUserRequest(c.Server, body)
+// Corresponds with DELETE /users/me (the `DeleteAccount` operationId).
+func (c *Client) DeleteAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAccountRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -379,89 +259,6 @@ func (c *Client) CreateUser(ctx context.Context, body CreateUserJSONRequestBody,
 // Corresponds with GET /users/me (the `GetCurrentUser` operationId).
 func (c *Client) GetCurrentUser(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCurrentUserRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetCurrentUserPermissions Get permissions for the authenticated user
-//
-// Corresponds with GET /users/me/permissions (the `GetCurrentUserPermissions` operationId).
-func (c *Client) GetCurrentUserPermissions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCurrentUserPermissionsRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// DeleteUser Delete a user (admin only)
-//
-// Corresponds with DELETE /users/{userId} (the `DeleteUser` operationId).
-func (c *Client) DeleteUser(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteUserRequest(c.Server, userId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetUser Get a user by ID (admin only)
-//
-// Corresponds with GET /users/{userId} (the `GetUser` operationId).
-func (c *Client) GetUser(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetUserRequest(c.Server, userId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateUserWithBody Update a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-func (c *Client) UpdateUserWithBody(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateUserRequestWithBody(c.Server, userId, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateUser Update a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-func (c *Client) UpdateUser(ctx context.Context, userId openapi_types.UUID, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateUserRequest(c.Server, userId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -512,19 +309,8 @@ func NewLoginRequestWithBody(server string, contentType string, body io.Reader) 
 	return req, nil
 }
 
-// NewRefreshTokenRequest calls the generic RefreshToken builder with application/json body
-func NewRefreshTokenRequest(server string, body RefreshTokenJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewRefreshTokenRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewRefreshTokenRequestWithBody constructs an http.Request for the RefreshToken method, with any body, and a specified content type
-func NewRefreshTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewLogoutRequest constructs an http.Request for the Logout method
+func NewLogoutRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -532,7 +318,7 @@ func NewRefreshTokenRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/auth/refresh")
+	operationPath := fmt.Sprintf("/auth/logout")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -542,12 +328,10 @@ func NewRefreshTokenRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -592,8 +376,8 @@ func NewRegisterRequestWithBody(server string, contentType string, body io.Reade
 	return req, nil
 }
 
-// NewListUsersRequest constructs an http.Request for the ListUsers method
-func NewListUsersRequest(server string, params *ListUsersParams) (*http.Request, error) {
+// NewDeleteAccountRequest constructs an http.Request for the DeleteAccount method
+func NewDeleteAccountRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -601,7 +385,7 @@ func NewListUsersRequest(server string, params *ListUsersParams) (*http.Request,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/users")
+	operationPath := fmt.Sprintf("/users/me")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -611,89 +395,10 @@ func NewListUsersRequest(server string, params *ListUsersParams) (*http.Request,
 		return nil, err
 	}
 
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.Offset != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	return req, nil
-}
-
-// NewCreateUserRequest calls the generic CreateUser builder with application/json body
-func NewCreateUserRequest(server string, body CreateUserJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreateUserRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewCreateUserRequestWithBody constructs an http.Request for the CreateUser method, with any body, and a specified content type
-func NewCreateUserRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -721,148 +426,6 @@ func NewGetCurrentUserRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return req, nil
-}
-
-// NewGetCurrentUserPermissionsRequest constructs an http.Request for the GetCurrentUserPermissions method
-func NewGetCurrentUserPermissionsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/me/permissions")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewDeleteUserRequest constructs an http.Request for the DeleteUser method
-func NewDeleteUserRequest(server string, userId openapi_types.UUID) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userId", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetUserRequest constructs an http.Request for the GetUser method
-func NewGetUserRequest(server string, userId openapi_types.UUID) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userId", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateUserRequest calls the generic UpdateUser builder with application/json body
-func NewUpdateUserRequest(server string, userId openapi_types.UUID, body UpdateUserJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewUpdateUserRequestWithBody(server, userId, "application/json", bodyReader)
-}
-
-// NewUpdateUserRequestWithBody constructs an http.Request for the UpdateUser method, with any body, and a specified content type
-func NewUpdateUserRequestWithBody(server string, userId openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userId", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -911,45 +474,36 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
-	// LoginWithBodyWithResponse Authenticate and receive access tokens
+	// LoginWithBodyWithResponse Authenticate and receive an access token
 	//
-	// Query. Validates credentials and returns tokens.
+	// Validates credentials, opens a session, and returns a JWT.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error)
 
-	// LoginWithResponse Authenticate and receive access tokens
+	// LoginWithResponse Authenticate and receive an access token
 	//
-	// Query. Validates credentials and returns tokens.
+	// Validates credentials, opens a session, and returns a JWT.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	LoginWithResponse(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginResponse, error)
 
-	// RefreshTokenWithBodyWithResponse Exchange a refresh token for a new access token
+	// LogoutWithResponse Log out the current session
 	//
-	// Query. Returns a new access token for a valid refresh token.
+	// Command. Revokes the session embedded in the access token.
 	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-	RefreshTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RefreshTokenResponse, error)
-
-	// RefreshTokenWithResponse Exchange a refresh token for a new access token
-	//
-	// Query. Returns a new access token for a valid refresh token.
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-	RefreshTokenWithResponse(ctx context.Context, body RefreshTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RefreshTokenResponse, error)
+	// Corresponds with POST /auth/logout (the `Logout` operationId).
+	LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error)
 
 	// RegisterWithBodyWithResponse Register a new user account
 	//
-	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	// Command. Creates an account with role user. Returns no body.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -958,37 +512,21 @@ type ClientWithResponsesInterface interface {
 
 	// RegisterWithResponse Register a new user account
 	//
-	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	// Command. Creates an account with role user. Returns no body.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/register (the `Register` operationId).
 	RegisterWithResponse(ctx context.Context, body RegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*RegisterResponse, error)
 
-	// ListUsersWithResponse List users (admin only)
+	// DeleteAccountWithResponse Delete the authenticated user account
+	//
+	// Command. Deletes the account and its sessions.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /users (the `ListUsers` operationId).
-	ListUsersWithResponse(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*ListUsersResponse, error)
-
-	// CreateUserWithBodyWithResponse Create a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /users (the `CreateUser` operationId).
-	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
-
-	// CreateUserWithResponse Create a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /users (the `CreateUser` operationId).
-	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
+	// Corresponds with DELETE /users/me (the `DeleteAccount` operationId).
+	DeleteAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteAccountResponse, error)
 
 	// GetCurrentUserWithResponse Get the authenticated user profile
 	//
@@ -996,45 +534,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /users/me (the `GetCurrentUser` operationId).
 	GetCurrentUserWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCurrentUserResponse, error)
-
-	// GetCurrentUserPermissionsWithResponse Get permissions for the authenticated user
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /users/me/permissions (the `GetCurrentUserPermissions` operationId).
-	GetCurrentUserPermissionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCurrentUserPermissionsResponse, error)
-
-	// DeleteUserWithResponse Delete a user (admin only)
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with DELETE /users/{userId} (the `DeleteUser` operationId).
-	DeleteUserWithResponse(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteUserResponse, error)
-
-	// GetUserWithResponse Get a user by ID (admin only)
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /users/{userId} (the `GetUser` operationId).
-	GetUserWithResponse(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetUserResponse, error)
-
-	// UpdateUserWithBodyWithResponse Update a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-	UpdateUserWithBodyWithResponse(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error)
-
-	// UpdateUserWithResponse Update a user (admin only)
-	//
-	// Command. Returns no body. Read the user with getUser.
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-	UpdateUserWithResponse(ctx context.Context, userId openapi_types.UUID, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error)
 }
 
 type LoginResponse struct {
@@ -1085,32 +584,25 @@ func (r LoginResponse) ContentType() string {
 	return ""
 }
 
-type RefreshTokenResponse struct {
+type LogoutResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AuthResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
 }
 
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r RefreshTokenResponse) GetJSON200() *AuthResult {
-	return r.JSON200
-}
-
 // GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r RefreshTokenResponse) GetJSONDefault() *Error {
+func (r LogoutResponse) GetJSONDefault() *Error {
 	return r.JSONDefault
 }
 
 // GetBody returns the raw response body bytes
-func (r RefreshTokenResponse) GetBody() []byte {
+func (r LogoutResponse) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r RefreshTokenResponse) Status() string {
+func (r LogoutResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1118,7 +610,7 @@ func (r RefreshTokenResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r RefreshTokenResponse) StatusCode() int {
+func (r LogoutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1126,7 +618,7 @@ func (r RefreshTokenResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r RefreshTokenResponse) ContentType() string {
+func (r LogoutResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -1174,55 +666,7 @@ func (r RegisterResponse) ContentType() string {
 	return ""
 }
 
-type ListUsersResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *UserList
-	// JSONDefault the response for an HTTP default `application/json` response
-	JSONDefault *Error
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListUsersResponse) GetJSON200() *UserList {
-	return r.JSON200
-}
-
-// GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r ListUsersResponse) GetJSONDefault() *Error {
-	return r.JSONDefault
-}
-
-// GetBody returns the raw response body bytes
-func (r ListUsersResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListUsersResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListUsersResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListUsersResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type CreateUserResponse struct {
+type DeleteAccountResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSONDefault the response for an HTTP default `application/json` response
@@ -1230,17 +674,17 @@ type CreateUserResponse struct {
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r CreateUserResponse) GetJSONDefault() *Error {
+func (r DeleteAccountResponse) GetJSONDefault() *Error {
 	return r.JSONDefault
 }
 
 // GetBody returns the raw response body bytes
-func (r CreateUserResponse) GetBody() []byte {
+func (r DeleteAccountResponse) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r CreateUserResponse) Status() string {
+func (r DeleteAccountResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1248,7 +692,7 @@ func (r CreateUserResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r CreateUserResponse) StatusCode() int {
+func (r DeleteAccountResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1256,7 +700,7 @@ func (r CreateUserResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r CreateUserResponse) ContentType() string {
+func (r DeleteAccountResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -1311,187 +755,9 @@ func (r GetCurrentUserResponse) ContentType() string {
 	return ""
 }
 
-type GetCurrentUserPermissionsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *Permissions
-	// JSONDefault the response for an HTTP default `application/json` response
-	JSONDefault *Error
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetCurrentUserPermissionsResponse) GetJSON200() *Permissions {
-	return r.JSON200
-}
-
-// GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r GetCurrentUserPermissionsResponse) GetJSONDefault() *Error {
-	return r.JSONDefault
-}
-
-// GetBody returns the raw response body bytes
-func (r GetCurrentUserPermissionsResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetCurrentUserPermissionsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetCurrentUserPermissionsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetCurrentUserPermissionsResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type DeleteUserResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSONDefault the response for an HTTP default `application/json` response
-	JSONDefault *Error
-}
-
-// GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r DeleteUserResponse) GetJSONDefault() *Error {
-	return r.JSONDefault
-}
-
-// GetBody returns the raw response body bytes
-func (r DeleteUserResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteUserResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteUserResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteUserResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetUserResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *User
-	// JSONDefault the response for an HTTP default `application/json` response
-	JSONDefault *Error
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetUserResponse) GetJSON200() *User {
-	return r.JSON200
-}
-
-// GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r GetUserResponse) GetJSONDefault() *Error {
-	return r.JSONDefault
-}
-
-// GetBody returns the raw response body bytes
-func (r GetUserResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetUserResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetUserResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetUserResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type UpdateUserResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSONDefault the response for an HTTP default `application/json` response
-	JSONDefault *Error
-}
-
-// GetJSONDefault returns the response for an HTTP default `application/json` response
-func (r UpdateUserResponse) GetJSONDefault() *Error {
-	return r.JSONDefault
-}
-
-// GetBody returns the raw response body bytes
-func (r UpdateUserResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateUserResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateUserResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r UpdateUserResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-// LoginWithBodyWithResponse Authenticate and receive access tokens
+// LoginWithBodyWithResponse Authenticate and receive an access token
 //
-// Query. Validates credentials and returns tokens.
+// Validates credentials, opens a session, and returns a JWT.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1504,9 +770,9 @@ func (c *ClientWithResponses) LoginWithBodyWithResponse(ctx context.Context, con
 	return ParseLoginResponse(rsp)
 }
 
-// LoginWithResponse Authenticate and receive access tokens
+// LoginWithResponse Authenticate and receive an access token
 //
-// Query. Validates credentials and returns tokens.
+// Validates credentials, opens a session, and returns a JWT.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1519,39 +785,24 @@ func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, body LoginJ
 	return ParseLoginResponse(rsp)
 }
 
-// RefreshTokenWithBodyWithResponse Exchange a refresh token for a new access token
+// LogoutWithResponse Log out the current session
 //
-// Query. Returns a new access token for a valid refresh token.
+// Command. Revokes the session embedded in the access token.
 //
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+// Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-func (c *ClientWithResponses) RefreshTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RefreshTokenResponse, error) {
-	rsp, err := c.RefreshTokenWithBody(ctx, contentType, body, reqEditors...)
+// Corresponds with POST /auth/logout (the `Logout` operationId).
+func (c *ClientWithResponses) LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error) {
+	rsp, err := c.Logout(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseRefreshTokenResponse(rsp)
-}
-
-// RefreshTokenWithResponse Exchange a refresh token for a new access token
-//
-// Query. Returns a new access token for a valid refresh token.
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
-func (c *ClientWithResponses) RefreshTokenWithResponse(ctx context.Context, body RefreshTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RefreshTokenResponse, error) {
-	rsp, err := c.RefreshToken(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseRefreshTokenResponse(rsp)
+	return ParseLogoutResponse(rsp)
 }
 
 // RegisterWithBodyWithResponse Register a new user account
 //
-// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+// Command. Creates an account with role user. Returns no body.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1566,7 +817,7 @@ func (c *ClientWithResponses) RegisterWithBodyWithResponse(ctx context.Context, 
 
 // RegisterWithResponse Register a new user account
 //
-// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+// Command. Creates an account with role user. Returns no body.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1579,47 +830,19 @@ func (c *ClientWithResponses) RegisterWithResponse(ctx context.Context, body Reg
 	return ParseRegisterResponse(rsp)
 }
 
-// ListUsersWithResponse List users (admin only)
+// DeleteAccountWithResponse Delete the authenticated user account
+//
+// Command. Deletes the account and its sessions.
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /users (the `ListUsers` operationId).
-func (c *ClientWithResponses) ListUsersWithResponse(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*ListUsersResponse, error) {
-	rsp, err := c.ListUsers(ctx, params, reqEditors...)
+// Corresponds with DELETE /users/me (the `DeleteAccount` operationId).
+func (c *ClientWithResponses) DeleteAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteAccountResponse, error) {
+	rsp, err := c.DeleteAccount(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseListUsersResponse(rsp)
-}
-
-// CreateUserWithBodyWithResponse Create a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /users (the `CreateUser` operationId).
-func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
-	rsp, err := c.CreateUserWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateUserResponse(rsp)
-}
-
-// CreateUserWithResponse Create a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /users (the `CreateUser` operationId).
-func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
-	rsp, err := c.CreateUser(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateUserResponse(rsp)
+	return ParseDeleteAccountResponse(rsp)
 }
 
 // GetCurrentUserWithResponse Get the authenticated user profile
@@ -1633,75 +856,6 @@ func (c *ClientWithResponses) GetCurrentUserWithResponse(ctx context.Context, re
 		return nil, err
 	}
 	return ParseGetCurrentUserResponse(rsp)
-}
-
-// GetCurrentUserPermissionsWithResponse Get permissions for the authenticated user
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /users/me/permissions (the `GetCurrentUserPermissions` operationId).
-func (c *ClientWithResponses) GetCurrentUserPermissionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCurrentUserPermissionsResponse, error) {
-	rsp, err := c.GetCurrentUserPermissions(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetCurrentUserPermissionsResponse(rsp)
-}
-
-// DeleteUserWithResponse Delete a user (admin only)
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with DELETE /users/{userId} (the `DeleteUser` operationId).
-func (c *ClientWithResponses) DeleteUserWithResponse(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteUserResponse, error) {
-	rsp, err := c.DeleteUser(ctx, userId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteUserResponse(rsp)
-}
-
-// GetUserWithResponse Get a user by ID (admin only)
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /users/{userId} (the `GetUser` operationId).
-func (c *ClientWithResponses) GetUserWithResponse(ctx context.Context, userId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetUserResponse, error) {
-	rsp, err := c.GetUser(ctx, userId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetUserResponse(rsp)
-}
-
-// UpdateUserWithBodyWithResponse Update a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-func (c *ClientWithResponses) UpdateUserWithBodyWithResponse(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error) {
-	rsp, err := c.UpdateUserWithBody(ctx, userId, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateUserResponse(rsp)
-}
-
-// UpdateUserWithResponse Update a user (admin only)
-//
-// Command. Returns no body. Read the user with getUser.
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
-func (c *ClientWithResponses) UpdateUserWithResponse(ctx context.Context, userId openapi_types.UUID, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error) {
-	rsp, err := c.UpdateUser(ctx, userId, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateUserResponse(rsp)
 }
 
 // ParseLoginResponse parses an HTTP response from a LoginWithResponse call
@@ -1737,26 +891,22 @@ func ParseLoginResponse(rsp *http.Response) (*LoginResponse, error) {
 	return response, nil
 }
 
-// ParseRefreshTokenResponse parses an HTTP response from a RefreshTokenWithResponse call
-func ParseRefreshTokenResponse(rsp *http.Response) (*RefreshTokenResponse, error) {
+// ParseLogoutResponse parses an HTTP response from a LogoutWithResponse call
+func ParseLogoutResponse(rsp *http.Response) (*LogoutResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &RefreshTokenResponse{
+	response := &LogoutResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AuthResult
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1799,48 +949,15 @@ func ParseRegisterResponse(rsp *http.Response) (*RegisterResponse, error) {
 	return response, nil
 }
 
-// ParseListUsersResponse parses an HTTP response from a ListUsersWithResponse call
-func ParseListUsersResponse(rsp *http.Response) (*ListUsersResponse, error) {
+// ParseDeleteAccountResponse parses an HTTP response from a DeleteAccountWithResponse call
+func ParseDeleteAccountResponse(rsp *http.Response) (*DeleteAccountResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ListUsersResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest UserList
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreateUserResponse parses an HTTP response from a CreateUserWithResponse call
-func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreateUserResponse{
+	response := &DeleteAccountResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -1881,130 +998,6 @@ func ParseGetCurrentUserResponse(rsp *http.Response) (*GetCurrentUserResponse, e
 			return nil, err
 		}
 		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetCurrentUserPermissionsResponse parses an HTTP response from a GetCurrentUserPermissionsWithResponse call
-func ParseGetCurrentUserPermissionsResponse(rsp *http.Response) (*GetCurrentUserPermissionsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetCurrentUserPermissionsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Permissions
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteUserResponse parses an HTTP response from a DeleteUserWithResponse call
-func ParseDeleteUserResponse(rsp *http.Response) (*DeleteUserResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteUserResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case rsp.StatusCode == 204:
-		break // No content-type
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetUserResponse parses an HTTP response from a GetUserWithResponse call
-func ParseGetUserResponse(rsp *http.Response) (*GetUserResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetUserResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest User
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateUserResponse parses an HTTP response from a UpdateUserWithResponse call
-func ParseUpdateUserResponse(rsp *http.Response) (*UpdateUserResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateUserResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case rsp.StatusCode == 204:
-		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
