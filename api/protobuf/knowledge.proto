@@ -9,19 +9,20 @@ import "google/protobuf/timestamp.proto";
 
 service KnowledgeService {
   rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse) {}
-  rpc CreateDocument(CreateDocumentRequest) returns (Document) {}
+  rpc CreateDocument(CreateDocumentRequest) returns (google.protobuf.Empty) {}
   rpc GetDocument(GetDocumentRequest) returns (Document) {}
-  rpc UpdateDocument(UpdateDocumentRequest) returns (Document) {}
+  rpc UpdateDocument(UpdateDocumentRequest) returns (google.protobuf.Empty) {}
   rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty) {}
-  rpc ReindexDocument(ReindexDocumentRequest) returns (ReindexDocumentResponse) {}
+  rpc ReindexDocument(ReindexDocumentRequest) returns (google.protobuf.Empty) {}
   rpc GetDocumentIndexStatus(GetDocumentIndexStatusRequest) returns (GetDocumentIndexStatusResponse) {}
   rpc Retrieve(RetrieveRequest) returns (RetrieveResponse) {}
 }
 
 enum IndexStatus {
   INDEX_STATUS_PENDING = 0;
-  INDEX_STATUS_COMPLETED = 1;
-  INDEX_STATUS_FAILED = 2;
+  INDEX_STATUS_INDEXING = 1;
+  INDEX_STATUS_COMPLETED = 2;
+  INDEX_STATUS_FAILED = 3;
 }
 
 message ListDocumentsRequest {
@@ -40,6 +41,7 @@ message CreateDocumentRequest {
   string title = 1;
   string content = 2;
   repeated string tags = 3;
+  string id = 4;
 }
 
 message GetDocumentRequest {
@@ -59,10 +61,6 @@ message DeleteDocumentRequest {
 
 message ReindexDocumentRequest {
   string document_id = 1;
-}
-
-message ReindexDocumentResponse {
-  IndexJob job = 1;
 }
 
 message GetDocumentIndexStatusRequest {

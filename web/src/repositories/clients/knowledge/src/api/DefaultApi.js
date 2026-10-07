@@ -46,15 +46,15 @@ export default class DefaultApi {
      * Callback function to receive the result of the createDocument operation.
      * @callback module:api/DefaultApi~createDocumentCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/Document} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Create a markdown document and start indexing (requires knowledge:write)
+     * Command. Returns no body. Read the document with getDocument.
      * @param {module:model/CreateDocumentRequest} createDocumentRequest 
      * @param {module:api/DefaultApi~createDocumentCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Document}
      */
     createDocument(createDocumentRequest, callback) {
       let postBody = createDocumentRequest;
@@ -75,7 +75,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = Document;
+      let returnType = null;
       return this.apiClient.callApi(
         '/documents', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -258,15 +258,15 @@ export default class DefaultApi {
      * Callback function to receive the result of the reindexDocument operation.
      * @callback module:api/DefaultApi~reindexDocumentCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/IndexJob} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Trigger reindexing for a document (requires knowledge:write)
+     * Command. Returns no body. Read progress with getDocumentIndexStatus.
      * @param {String} documentId 
      * @param {module:api/DefaultApi~reindexDocumentCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/IndexJob}
      */
     reindexDocument(documentId, callback) {
       let postBody = null;
@@ -288,7 +288,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = [];
       let accepts = ['application/json'];
-      let returnType = IndexJob;
+      let returnType = null;
       return this.apiClient.callApi(
         '/documents/{documentId}/reindex', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -306,7 +306,7 @@ export default class DefaultApi {
 
     /**
      * Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
-     * Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+     * Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
      * @param {module:model/RetrieveRequest} retrieveRequest 
      * @param {module:api/DefaultApi~retrieveCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/RetrieveResult}
@@ -342,16 +342,16 @@ export default class DefaultApi {
      * Callback function to receive the result of the updateDocument operation.
      * @callback module:api/DefaultApi~updateDocumentCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/Document} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Update a document and reindex (requires knowledge:write)
+     * Command. Returns no body. Read the document with getDocument.
      * @param {String} documentId 
      * @param {module:model/UpdateDocumentRequest} updateDocumentRequest 
      * @param {module:api/DefaultApi~updateDocumentCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Document}
      */
     updateDocument(documentId, updateDocumentRequest, callback) {
       let postBody = updateDocumentRequest;
@@ -377,7 +377,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = Document;
+      let returnType = null;
       return this.apiClient.callApi(
         '/documents/{documentId}', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,

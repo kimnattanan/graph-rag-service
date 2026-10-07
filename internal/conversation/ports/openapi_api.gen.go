@@ -30,7 +30,7 @@ type ServerInterface interface {
 	// ListMessages List messages in a conversation (requires conversation:ask)
 	// (GET /conversations/{conversationId}/messages)
 	ListMessages(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID, params ListMessagesParams)
-	// SendMessage Send a user message and receive an assistant reply (requires conversation:ask)
+	// SendMessage Send a user message (requires conversation:ask)
 	// (POST /conversations/{conversationId}/messages)
 	SendMessage(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID)
 	// GetMessage Get a single message (requires conversation:ask)
@@ -72,7 +72,7 @@ func (_ Unimplemented) ListMessages(w http.ResponseWriter, r *http.Request, conv
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// SendMessage Send a user message and receive an assistant reply (requires conversation:ask)
+// SendMessage Send a user message (requires conversation:ask)
 // (POST /conversations/{conversationId}/messages)
 func (_ Unimplemented) SendMessage(w http.ResponseWriter, r *http.Request, conversationId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)

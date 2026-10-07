@@ -22,14 +22,15 @@ class CreateUserRequest {
     /**
      * Constructs a new <code>CreateUserRequest</code>.
      * @alias module:model/CreateUserRequest
+     * @param id {String} Client-generated user id
      * @param email {String} 
      * @param password {String} 
      * @param displayName {String} 
      * @param role {module:model/CreateUserRequest.RoleEnum} 
      */
-    constructor(email, password, displayName, role) { 
+    constructor(id, email, password, displayName, role) { 
         
-        CreateUserRequest.initialize(this, email, password, displayName, role);
+        CreateUserRequest.initialize(this, id, email, password, displayName, role);
     }
 
     /**
@@ -37,7 +38,8 @@ class CreateUserRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, email, password, displayName, role) { 
+    static initialize(obj, id, email, password, displayName, role) { 
+        obj['id'] = id;
         obj['email'] = email;
         obj['password'] = password;
         obj['displayName'] = displayName;
@@ -55,6 +57,9 @@ class CreateUserRequest {
         if (data) {
             obj = obj || new CreateUserRequest();
 
+            if (data.hasOwnProperty('id')) {
+                obj['id'] = ApiClient.convertToType(data['id'], 'String');
+            }
             if (data.hasOwnProperty('email')) {
                 obj['email'] = ApiClient.convertToType(data['email'], 'String');
             }
@@ -73,6 +78,12 @@ class CreateUserRequest {
 
 
 }
+
+/**
+ * Client-generated user id
+ * @member {String} id
+ */
+CreateUserRequest.prototype['id'] = undefined;
 
 /**
  * @member {String} email

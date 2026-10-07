@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**id** | **String** | Client-generated id for the user message | 
 **content** | **String** |  | 
 **topK** | **Number** | Number of knowledge chunks to retrieve | [optional] [default to 5]
 **tags** | **[String]** | Optional tag filter passed to Knowledge retrieval | [optional] 

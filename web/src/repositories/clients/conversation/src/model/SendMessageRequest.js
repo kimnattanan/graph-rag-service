@@ -22,11 +22,12 @@ class SendMessageRequest {
     /**
      * Constructs a new <code>SendMessageRequest</code>.
      * @alias module:model/SendMessageRequest
+     * @param id {String} Client-generated id for the user message
      * @param content {String} 
      */
-    constructor(content) { 
+    constructor(id, content) { 
         
-        SendMessageRequest.initialize(this, content);
+        SendMessageRequest.initialize(this, id, content);
     }
 
     /**
@@ -34,7 +35,8 @@ class SendMessageRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, content) { 
+    static initialize(obj, id, content) { 
+        obj['id'] = id;
         obj['content'] = content;
     }
 
@@ -49,6 +51,9 @@ class SendMessageRequest {
         if (data) {
             obj = obj || new SendMessageRequest();
 
+            if (data.hasOwnProperty('id')) {
+                obj['id'] = ApiClient.convertToType(data['id'], 'String');
+            }
             if (data.hasOwnProperty('content')) {
                 obj['content'] = ApiClient.convertToType(data['content'], 'String');
             }
@@ -67,6 +72,12 @@ class SendMessageRequest {
 
 
 }
+
+/**
+ * Client-generated id for the user message
+ * @member {String} id
+ */
+SendMessageRequest.prototype['id'] = undefined;
 
 /**
  * @member {String} content

@@ -46,19 +46,16 @@ paths:
     post:
       operationId: createConversation
       summary: Create an empty conversation (requires conversation:ask)
+      description: Command. Returns no body. Read the conversation with getConversation.
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateConversationRequest'
       responses:
-        '201':
+        '204':
           description: Conversation created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Conversation'
         default:
           description: unexpected error
           content:
@@ -151,8 +148,8 @@ paths:
 
     post:
       operationId: sendMessage
-      summary: Send a user message and receive an assistant reply (requires conversation:ask)
-      description: Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+      summary: Send a user message (requires conversation:ask)
+      description: Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
       parameters:
         - in: path
           name: conversationId
@@ -167,12 +164,8 @@ paths:
             schema:
               $ref: '#/components/schemas/SendMessageRequest'
       responses:
-        '201':
-          description: Messages created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SendMessageResult'
+        '204':
+          description: Message accepted
         default:
           description: unexpected error
           content:
@@ -221,15 +214,24 @@ components:
   schemas:
     CreateConversationRequest:
       type: object
+      required: [id]
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Client-generated conversation id
         title:
           type: string
           description: Optional title; auto-generated from the first message if omitted when a message is sent
 
     SendMessageRequest:
       type: object
-      required: [content]
+      required: [id, content]
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Client-generated id for the user message
         content:
           type: string
           minLength: 1
@@ -330,15 +332,6 @@ components:
         createdAt:
           type: string
           format: date-time
-
-    SendMessageResult:
-      type: object
-      required: [userMessage, assistantMessage]
-      properties:
-        userMessage:
-          $ref: '#/components/schemas/Message'
-        assistantMessage:
-          $ref: '#/components/schemas/Message'
 
     MessageList:
       type: object

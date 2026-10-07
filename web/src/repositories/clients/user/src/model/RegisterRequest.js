@@ -22,13 +22,14 @@ class RegisterRequest {
     /**
      * Constructs a new <code>RegisterRequest</code>.
      * @alias module:model/RegisterRequest
+     * @param id {String} Client-generated user id
      * @param email {String} 
      * @param password {String} 
      * @param displayName {String} 
      */
-    constructor(email, password, displayName) { 
+    constructor(id, email, password, displayName) { 
         
-        RegisterRequest.initialize(this, email, password, displayName);
+        RegisterRequest.initialize(this, id, email, password, displayName);
     }
 
     /**
@@ -36,7 +37,8 @@ class RegisterRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, email, password, displayName) { 
+    static initialize(obj, id, email, password, displayName) { 
+        obj['id'] = id;
         obj['email'] = email;
         obj['password'] = password;
         obj['displayName'] = displayName;
@@ -53,6 +55,9 @@ class RegisterRequest {
         if (data) {
             obj = obj || new RegisterRequest();
 
+            if (data.hasOwnProperty('id')) {
+                obj['id'] = ApiClient.convertToType(data['id'], 'String');
+            }
             if (data.hasOwnProperty('email')) {
                 obj['email'] = ApiClient.convertToType(data['email'], 'String');
             }
@@ -68,6 +73,12 @@ class RegisterRequest {
 
 
 }
+
+/**
+ * Client-generated user id
+ * @member {String} id
+ */
+RegisterRequest.prototype['id'] = undefined;
 
 /**
  * @member {String} email

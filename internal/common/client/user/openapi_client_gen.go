@@ -93,12 +93,16 @@ type ClientInterface interface {
 
 	// LoginWithBody Authenticate and receive access tokens
 	//
+	// Query. Validates credentials and returns tokens.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Login Authenticate and receive access tokens
+	//
+	// Query. Validates credentials and returns tokens.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -107,12 +111,16 @@ type ClientInterface interface {
 
 	// RefreshTokenWithBody Exchange a refresh token for a new access token
 	//
+	// Query. Returns a new access token for a valid refresh token.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
 	RefreshTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RefreshToken Exchange a refresh token for a new access token
+	//
+	// Query. Returns a new access token for a valid refresh token.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -121,12 +129,16 @@ type ClientInterface interface {
 
 	// RegisterWithBody Register a new user account
 	//
+	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /auth/register (the `Register` operationId).
 	RegisterWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Register Register a new user account
+	//
+	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -140,12 +152,16 @@ type ClientInterface interface {
 
 	// CreateUserWithBody Create a user (admin only)
 	//
+	// Command. Returns no body. Read the user with getUser.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /users (the `CreateUser` operationId).
 	CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateUser Create a user (admin only)
+	//
+	// Command. Returns no body. Read the user with getUser.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -174,12 +190,16 @@ type ClientInterface interface {
 
 	// UpdateUserWithBody Update a user (admin only)
 	//
+	// Command. Returns no body. Read the user with getUser.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
 	UpdateUserWithBody(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateUser Update a user (admin only)
+	//
+	// Command. Returns no body. Read the user with getUser.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -188,6 +208,8 @@ type ClientInterface interface {
 }
 
 // LoginWithBody Authenticate and receive access tokens
+//
+// Query. Validates credentials and returns tokens.
 //
 // Takes any type of body and a specified content type.
 //
@@ -206,6 +228,8 @@ func (c *Client) LoginWithBody(ctx context.Context, contentType string, body io.
 
 // Login Authenticate and receive access tokens
 //
+// Query. Validates credentials and returns tokens.
+//
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with POST /auth/login (the `Login` operationId).
@@ -222,6 +246,8 @@ func (c *Client) Login(ctx context.Context, body LoginJSONRequestBody, reqEditor
 }
 
 // RefreshTokenWithBody Exchange a refresh token for a new access token
+//
+// Query. Returns a new access token for a valid refresh token.
 //
 // Takes any type of body and a specified content type.
 //
@@ -240,6 +266,8 @@ func (c *Client) RefreshTokenWithBody(ctx context.Context, contentType string, b
 
 // RefreshToken Exchange a refresh token for a new access token
 //
+// Query. Returns a new access token for a valid refresh token.
+//
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
@@ -257,6 +285,8 @@ func (c *Client) RefreshToken(ctx context.Context, body RefreshTokenJSONRequestB
 
 // RegisterWithBody Register a new user account
 //
+// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with POST /auth/register (the `Register` operationId).
@@ -273,6 +303,8 @@ func (c *Client) RegisterWithBody(ctx context.Context, contentType string, body 
 }
 
 // Register Register a new user account
+//
+// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -306,6 +338,8 @@ func (c *Client) ListUsers(ctx context.Context, params *ListUsersParams, reqEdit
 
 // CreateUserWithBody Create a user (admin only)
 //
+// Command. Returns no body. Read the user with getUser.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with POST /users (the `CreateUser` operationId).
@@ -322,6 +356,8 @@ func (c *Client) CreateUserWithBody(ctx context.Context, contentType string, bod
 }
 
 // CreateUser Create a user (admin only)
+//
+// Command. Returns no body. Read the user with getUser.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -400,6 +436,8 @@ func (c *Client) GetUser(ctx context.Context, userId openapi_types.UUID, reqEdit
 
 // UpdateUserWithBody Update a user (admin only)
 //
+// Command. Returns no body. Read the user with getUser.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
@@ -416,6 +454,8 @@ func (c *Client) UpdateUserWithBody(ctx context.Context, userId openapi_types.UU
 }
 
 // UpdateUser Update a user (admin only)
+//
+// Command. Returns no body. Read the user with getUser.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -873,12 +913,16 @@ type ClientWithResponsesInterface interface {
 
 	// LoginWithBodyWithResponse Authenticate and receive access tokens
 	//
+	// Query. Validates credentials and returns tokens.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/login (the `Login` operationId).
 	LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error)
 
 	// LoginWithResponse Authenticate and receive access tokens
+	//
+	// Query. Validates credentials and returns tokens.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -887,12 +931,16 @@ type ClientWithResponsesInterface interface {
 
 	// RefreshTokenWithBodyWithResponse Exchange a refresh token for a new access token
 	//
+	// Query. Returns a new access token for a valid refresh token.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
 	RefreshTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RefreshTokenResponse, error)
 
 	// RefreshTokenWithResponse Exchange a refresh token for a new access token
+	//
+	// Query. Returns a new access token for a valid refresh token.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -901,12 +949,16 @@ type ClientWithResponsesInterface interface {
 
 	// RegisterWithBodyWithResponse Register a new user account
 	//
+	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /auth/register (the `Register` operationId).
 	RegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RegisterResponse, error)
 
 	// RegisterWithResponse Register a new user account
+	//
+	// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -922,12 +974,16 @@ type ClientWithResponsesInterface interface {
 
 	// CreateUserWithBodyWithResponse Create a user (admin only)
 	//
+	// Command. Returns no body. Read the user with getUser.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /users (the `CreateUser` operationId).
 	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
 
 	// CreateUserWithResponse Create a user (admin only)
+	//
+	// Command. Returns no body. Read the user with getUser.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -964,12 +1020,16 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateUserWithBodyWithResponse Update a user (admin only)
 	//
+	// Command. Returns no body. Read the user with getUser.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
 	UpdateUserWithBodyWithResponse(ctx context.Context, userId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error)
 
 	// UpdateUserWithResponse Update a user (admin only)
+	//
+	// Command. Returns no body. Read the user with getUser.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -1076,15 +1136,8 @@ func (r RefreshTokenResponse) ContentType() string {
 type RegisterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *AuthResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r RegisterResponse) GetJSON201() *AuthResult {
-	return r.JSON201
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1172,15 +1225,8 @@ func (r ListUsersResponse) ContentType() string {
 type CreateUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *User
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r CreateUserResponse) GetJSON201() *User {
-	return r.JSON201
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1405,15 +1451,8 @@ func (r GetUserResponse) ContentType() string {
 type UpdateUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *User
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r UpdateUserResponse) GetJSON200() *User {
-	return r.JSON200
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1452,6 +1491,8 @@ func (r UpdateUserResponse) ContentType() string {
 
 // LoginWithBodyWithResponse Authenticate and receive access tokens
 //
+// Query. Validates credentials and returns tokens.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /auth/login (the `Login` operationId).
@@ -1464,6 +1505,8 @@ func (c *ClientWithResponses) LoginWithBodyWithResponse(ctx context.Context, con
 }
 
 // LoginWithResponse Authenticate and receive access tokens
+//
+// Query. Validates credentials and returns tokens.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1478,6 +1521,8 @@ func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, body LoginJ
 
 // RefreshTokenWithBodyWithResponse Exchange a refresh token for a new access token
 //
+// Query. Returns a new access token for a valid refresh token.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /auth/refresh (the `RefreshToken` operationId).
@@ -1490,6 +1535,8 @@ func (c *ClientWithResponses) RefreshTokenWithBodyWithResponse(ctx context.Conte
 }
 
 // RefreshTokenWithResponse Exchange a refresh token for a new access token
+//
+// Query. Returns a new access token for a valid refresh token.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1504,6 +1551,8 @@ func (c *ClientWithResponses) RefreshTokenWithResponse(ctx context.Context, body
 
 // RegisterWithBodyWithResponse Register a new user account
 //
+// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /auth/register (the `Register` operationId).
@@ -1516,6 +1565,8 @@ func (c *ClientWithResponses) RegisterWithBodyWithResponse(ctx context.Context, 
 }
 
 // RegisterWithResponse Register a new user account
+//
+// Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1543,6 +1594,8 @@ func (c *ClientWithResponses) ListUsersWithResponse(ctx context.Context, params 
 
 // CreateUserWithBodyWithResponse Create a user (admin only)
 //
+// Command. Returns no body. Read the user with getUser.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /users (the `CreateUser` operationId).
@@ -1555,6 +1608,8 @@ func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context
 }
 
 // CreateUserWithResponse Create a user (admin only)
+//
+// Command. Returns no body. Read the user with getUser.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1621,6 +1676,8 @@ func (c *ClientWithResponses) GetUserWithResponse(ctx context.Context, userId op
 
 // UpdateUserWithBodyWithResponse Update a user (admin only)
 //
+// Command. Returns no body. Read the user with getUser.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /users/{userId} (the `UpdateUser` operationId).
@@ -1633,6 +1690,8 @@ func (c *ClientWithResponses) UpdateUserWithBodyWithResponse(ctx context.Context
 }
 
 // UpdateUserWithResponse Update a user (admin only)
+//
+// Command. Returns no body. Read the user with getUser.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1725,12 +1784,8 @@ func ParseRegisterResponse(rsp *http.Response) (*RegisterResponse, error) {
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest AuthResult
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1791,12 +1846,8 @@ func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest User
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1952,12 +2003,8 @@ func ParseUpdateUserResponse(rsp *http.Response) (*UpdateUserResponse, error) {
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest User
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error

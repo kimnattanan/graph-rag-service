@@ -22,12 +22,13 @@ class CreateDocumentRequest {
     /**
      * Constructs a new <code>CreateDocumentRequest</code>.
      * @alias module:model/CreateDocumentRequest
+     * @param id {String} Client-generated document id
      * @param title {String} 
      * @param content {String} Markdown content
      */
-    constructor(title, content) { 
+    constructor(id, title, content) { 
         
-        CreateDocumentRequest.initialize(this, title, content);
+        CreateDocumentRequest.initialize(this, id, title, content);
     }
 
     /**
@@ -35,7 +36,8 @@ class CreateDocumentRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, title, content) { 
+    static initialize(obj, id, title, content) { 
+        obj['id'] = id;
         obj['title'] = title;
         obj['content'] = content;
     }
@@ -51,6 +53,9 @@ class CreateDocumentRequest {
         if (data) {
             obj = obj || new CreateDocumentRequest();
 
+            if (data.hasOwnProperty('id')) {
+                obj['id'] = ApiClient.convertToType(data['id'], 'String');
+            }
             if (data.hasOwnProperty('title')) {
                 obj['title'] = ApiClient.convertToType(data['title'], 'String');
             }
@@ -66,6 +71,12 @@ class CreateDocumentRequest {
 
 
 }
+
+/**
+ * Client-generated document id
+ * @member {String} id
+ */
+CreateDocumentRequest.prototype['id'] = undefined;
 
 /**
  * @member {String} title

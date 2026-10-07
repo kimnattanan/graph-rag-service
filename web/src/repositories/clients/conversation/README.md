@@ -106,17 +106,15 @@ var bearerAuth = defaultClient.authentications['bearerAuth'];
 bearerAuth.accessToken = "YOUR ACCESS TOKEN"
 
 var api = new GraphRagServiceConversation.DefaultApi()
-var opts = {
-  'createConversationRequest': new GraphRagServiceConversation.CreateConversationRequest() // {CreateConversationRequest} 
-};
+var createConversationRequest = new GraphRagServiceConversation.CreateConversationRequest(); // {CreateConversationRequest} 
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 };
-api.createConversation(opts, callback);
+api.createConversation(createConversationRequest, callback);
 
 ```
 
@@ -132,7 +130,7 @@ Class | Method | HTTP request | Description
 *GraphRagServiceConversation.DefaultApi* | [**getMessage**](docs/DefaultApi.md#getMessage) | **GET** /conversations/{conversationId}/messages/{messageId} | Get a single message (requires conversation:ask)
 *GraphRagServiceConversation.DefaultApi* | [**listConversations**](docs/DefaultApi.md#listConversations) | **GET** /conversations | List the authenticated user&#39;s conversations (requires conversation:ask)
 *GraphRagServiceConversation.DefaultApi* | [**listMessages**](docs/DefaultApi.md#listMessages) | **GET** /conversations/{conversationId}/messages | List messages in a conversation (requires conversation:ask)
-*GraphRagServiceConversation.DefaultApi* | [**sendMessage**](docs/DefaultApi.md#sendMessage) | **POST** /conversations/{conversationId}/messages | Send a user message and receive an assistant reply (requires conversation:ask)
+*GraphRagServiceConversation.DefaultApi* | [**sendMessage**](docs/DefaultApi.md#sendMessage) | **POST** /conversations/{conversationId}/messages | Send a user message (requires conversation:ask)
 
 
 ## Documentation for Models
@@ -147,7 +145,6 @@ Class | Method | HTTP request | Description
  - [GraphRagServiceConversation.Message](docs/Message.md)
  - [GraphRagServiceConversation.MessageList](docs/MessageList.md)
  - [GraphRagServiceConversation.SendMessageRequest](docs/SendMessageRequest.md)
- - [GraphRagServiceConversation.SendMessageResult](docs/SendMessageResult.md)
  - [GraphRagServiceConversation.Source](docs/Source.md)
 
 

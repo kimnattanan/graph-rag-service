@@ -23,7 +23,6 @@ import Error from './model/Error';
 import Message from './model/Message';
 import MessageList from './model/MessageList';
 import SendMessageRequest from './model/SendMessageRequest';
-import SendMessageResult from './model/SendMessageResult';
 import Source from './model/Source';
 import DefaultApi from './api/DefaultApi';
 
@@ -125,12 +124,6 @@ export {
      * @property {module:model/SendMessageRequest}
      */
     SendMessageRequest,
-
-    /**
-     * The SendMessageResult model constructor.
-     * @property {module:model/SendMessageResult}
-     */
-    SendMessageResult,
 
     /**
      * The Source model constructor.

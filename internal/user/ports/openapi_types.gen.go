@@ -114,10 +114,13 @@ type AuthResult struct {
 
 // CreateUserRequest defines model for CreateUserRequest.
 type CreateUserRequest struct {
-	DisplayName string                `json:"displayName"`
-	Email       openapi_types.Email   `json:"email"`
-	Password    string                `json:"password"`
-	Role        CreateUserRequestRole `json:"role"`
+	DisplayName string              `json:"displayName"`
+	Email       openapi_types.Email `json:"email"`
+
+	// Id Client-generated user id
+	Id       openapi_types.UUID    `json:"id"`
+	Password string                `json:"password"`
+	Role     CreateUserRequestRole `json:"role"`
 }
 
 // CreateUserRequestRole defines model for CreateUserRequest.Role.
@@ -152,7 +155,10 @@ type RefreshRequest struct {
 type RegisterRequest struct {
 	DisplayName string              `json:"displayName"`
 	Email       openapi_types.Email `json:"email"`
-	Password    string              `json:"password"`
+
+	// Id Client-generated user id
+	Id       openapi_types.UUID `json:"id"`
+	Password string             `json:"password"`
 }
 
 // UpdateUserRequest defines model for UpdateUserRequest.

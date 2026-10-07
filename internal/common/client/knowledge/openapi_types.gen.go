@@ -13,6 +13,7 @@ import (
 const (
 	Completed IndexStatus = "completed"
 	Failed    IndexStatus = "failed"
+	Indexing  IndexStatus = "indexing"
 	Pending   IndexStatus = "pending"
 )
 
@@ -22,6 +23,8 @@ func (e IndexStatus) Valid() bool {
 	case Completed:
 		return true
 	case Failed:
+		return true
+	case Indexing:
 		return true
 	case Pending:
 		return true
@@ -33,9 +36,12 @@ func (e IndexStatus) Valid() bool {
 // CreateDocumentRequest defines model for CreateDocumentRequest.
 type CreateDocumentRequest struct {
 	// Content Markdown content
-	Content string    `json:"content"`
-	Tags    *[]string `json:"tags,omitempty"`
-	Title   string    `json:"title"`
+	Content string `json:"content"`
+
+	// Id Client-generated document id
+	Id    openapi_types.UUID `json:"id"`
+	Tags  *[]string          `json:"tags,omitempty"`
+	Title string             `json:"title"`
 }
 
 // Document defines model for Document.

@@ -98,12 +98,16 @@ type ClientInterface interface {
 
 	// CreateConversationWithBody Create an empty conversation (requires conversation:ask)
 	//
+	// Command. Returns no body. Read the conversation with getConversation.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /conversations (the `CreateConversation` operationId).
 	CreateConversationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateConversation Create an empty conversation (requires conversation:ask)
+	//
+	// Command. Returns no body. Read the conversation with getConversation.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -125,18 +129,18 @@ type ClientInterface interface {
 	// Corresponds with GET /conversations/{conversationId}/messages (the `ListMessages` operationId).
 	ListMessages(ctx context.Context, conversationId openapi_types.UUID, params *ListMessagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// SendMessageWithBody Send a user message and receive an assistant reply (requires conversation:ask)
+	// SendMessageWithBody Send a user message (requires conversation:ask)
 	//
-	// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+	// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /conversations/{conversationId}/messages (the `SendMessage` operationId).
 	SendMessageWithBody(ctx context.Context, conversationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// SendMessage Send a user message and receive an assistant reply (requires conversation:ask)
+	// SendMessage Send a user message (requires conversation:ask)
 	//
-	// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+	// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -166,6 +170,8 @@ func (c *Client) ListConversations(ctx context.Context, params *ListConversation
 
 // CreateConversationWithBody Create an empty conversation (requires conversation:ask)
 //
+// Command. Returns no body. Read the conversation with getConversation.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with POST /conversations (the `CreateConversation` operationId).
@@ -182,6 +188,8 @@ func (c *Client) CreateConversationWithBody(ctx context.Context, contentType str
 }
 
 // CreateConversation Create an empty conversation (requires conversation:ask)
+//
+// Command. Returns no body. Read the conversation with getConversation.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -243,9 +251,9 @@ func (c *Client) ListMessages(ctx context.Context, conversationId openapi_types.
 	return c.Client.Do(req)
 }
 
-// SendMessageWithBody Send a user message and receive an assistant reply (requires conversation:ask)
+// SendMessageWithBody Send a user message (requires conversation:ask)
 //
-// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 //
 // Takes any type of body and a specified content type.
 //
@@ -262,9 +270,9 @@ func (c *Client) SendMessageWithBody(ctx context.Context, conversationId openapi
 	return c.Client.Do(req)
 }
 
-// SendMessage Send a user message and receive an assistant reply (requires conversation:ask)
+// SendMessage Send a user message (requires conversation:ask)
 //
-// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -684,12 +692,16 @@ type ClientWithResponsesInterface interface {
 
 	// CreateConversationWithBodyWithResponse Create an empty conversation (requires conversation:ask)
 	//
+	// Command. Returns no body. Read the conversation with getConversation.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /conversations (the `CreateConversation` operationId).
 	CreateConversationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateConversationResponse, error)
 
 	// CreateConversationWithResponse Create an empty conversation (requires conversation:ask)
+	//
+	// Command. Returns no body. Read the conversation with getConversation.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -717,18 +729,18 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /conversations/{conversationId}/messages (the `ListMessages` operationId).
 	ListMessagesWithResponse(ctx context.Context, conversationId openapi_types.UUID, params *ListMessagesParams, reqEditors ...RequestEditorFn) (*ListMessagesResponse, error)
 
-	// SendMessageWithBodyWithResponse Send a user message and receive an assistant reply (requires conversation:ask)
+	// SendMessageWithBodyWithResponse Send a user message (requires conversation:ask)
 	//
-	// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+	// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /conversations/{conversationId}/messages (the `SendMessage` operationId).
 	SendMessageWithBodyWithResponse(ctx context.Context, conversationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendMessageResponse, error)
 
-	// SendMessageWithResponse Send a user message and receive an assistant reply (requires conversation:ask)
+	// SendMessageWithResponse Send a user message (requires conversation:ask)
 	//
-	// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+	// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -794,15 +806,8 @@ func (r ListConversationsResponse) ContentType() string {
 type CreateConversationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *Conversation
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r CreateConversationResponse) GetJSON201() *Conversation {
-	return r.JSON201
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -979,15 +984,8 @@ func (r ListMessagesResponse) ContentType() string {
 type SendMessageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *SendMessageResult
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r SendMessageResponse) GetJSON201() *SendMessageResult {
-	return r.JSON201
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1087,6 +1085,8 @@ func (c *ClientWithResponses) ListConversationsWithResponse(ctx context.Context,
 
 // CreateConversationWithBodyWithResponse Create an empty conversation (requires conversation:ask)
 //
+// Command. Returns no body. Read the conversation with getConversation.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /conversations (the `CreateConversation` operationId).
@@ -1099,6 +1099,8 @@ func (c *ClientWithResponses) CreateConversationWithBodyWithResponse(ctx context
 }
 
 // CreateConversationWithResponse Create an empty conversation (requires conversation:ask)
+//
+// Command. Returns no body. Read the conversation with getConversation.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1150,9 +1152,9 @@ func (c *ClientWithResponses) ListMessagesWithResponse(ctx context.Context, conv
 	return ParseListMessagesResponse(rsp)
 }
 
-// SendMessageWithBodyWithResponse Send a user message and receive an assistant reply (requires conversation:ask)
+// SendMessageWithBodyWithResponse Send a user message (requires conversation:ask)
 //
-// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1165,9 +1167,9 @@ func (c *ClientWithResponses) SendMessageWithBodyWithResponse(ctx context.Contex
 	return ParseSendMessageResponse(rsp)
 }
 
-// SendMessageWithResponse Send a user message and receive an assistant reply (requires conversation:ask)
+// SendMessageWithResponse Send a user message (requires conversation:ask)
 //
-// Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+// Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1240,12 +1242,8 @@ func ParseCreateConversationResponse(rsp *http.Response) (*CreateConversationRes
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Conversation
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1368,12 +1366,8 @@ func ParseSendMessageResponse(rsp *http.Response) (*SendMessageResponse, error) 
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest SendMessageResult
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error

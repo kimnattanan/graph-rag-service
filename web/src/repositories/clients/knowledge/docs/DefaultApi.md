@@ -17,9 +17,11 @@ Method | HTTP request | Description
 
 ## createDocument
 
-> Document createDocument(createDocumentRequest)
+> createDocument(createDocumentRequest)
 
 Create a markdown document and start indexing (requires knowledge:write)
+
+Command. Returns no body. Read the document with getDocument.
 
 ### Example
 
@@ -36,7 +38,7 @@ apiInstance.createDocument(createDocumentRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -50,7 +52,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Document**](Document.md)
+null (empty response body)
 
 ### Authorization
 
@@ -260,9 +262,11 @@ Name | Type | Description  | Notes
 
 ## reindexDocument
 
-> IndexJob reindexDocument(documentId)
+> reindexDocument(documentId)
 
 Trigger reindexing for a document (requires knowledge:write)
+
+Command. Returns no body. Read progress with getDocumentIndexStatus.
 
 ### Example
 
@@ -279,7 +283,7 @@ apiInstance.reindexDocument(documentId, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -293,7 +297,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**IndexJob**](IndexJob.md)
+null (empty response body)
 
 ### Authorization
 
@@ -311,7 +315,7 @@ Name | Type | Description  | Notes
 
 Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 
-Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 
 ### Example
 
@@ -356,9 +360,11 @@ Name | Type | Description  | Notes
 
 ## updateDocument
 
-> Document updateDocument(documentId, updateDocumentRequest)
+> updateDocument(documentId, updateDocumentRequest)
 
 Update a document and reindex (requires knowledge:write)
+
+Command. Returns no body. Read the document with getDocument.
 
 ### Example
 
@@ -376,7 +382,7 @@ apiInstance.updateDocument(documentId, updateDocumentRequest, (error, data, resp
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -391,7 +397,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Document**](Document.md)
+null (empty response body)
 
 ### Authorization
 

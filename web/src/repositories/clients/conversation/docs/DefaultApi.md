@@ -10,15 +10,17 @@ Method | HTTP request | Description
 [**getMessage**](DefaultApi.md#getMessage) | **GET** /conversations/{conversationId}/messages/{messageId} | Get a single message (requires conversation:ask)
 [**listConversations**](DefaultApi.md#listConversations) | **GET** /conversations | List the authenticated user&#39;s conversations (requires conversation:ask)
 [**listMessages**](DefaultApi.md#listMessages) | **GET** /conversations/{conversationId}/messages | List messages in a conversation (requires conversation:ask)
-[**sendMessage**](DefaultApi.md#sendMessage) | **POST** /conversations/{conversationId}/messages | Send a user message and receive an assistant reply (requires conversation:ask)
+[**sendMessage**](DefaultApi.md#sendMessage) | **POST** /conversations/{conversationId}/messages | Send a user message (requires conversation:ask)
 
 
 
 ## createConversation
 
-> Conversation createConversation(opts)
+> createConversation(createConversationRequest)
 
 Create an empty conversation (requires conversation:ask)
+
+Command. Returns no body. Read the conversation with getConversation.
 
 ### Example
 
@@ -30,14 +32,12 @@ let bearerAuth = defaultClient.authentications['bearerAuth'];
 bearerAuth.accessToken = "YOUR ACCESS TOKEN"
 
 let apiInstance = new GraphRagServiceConversation.DefaultApi();
-let opts = {
-  'createConversationRequest': new GraphRagServiceConversation.CreateConversationRequest() // CreateConversationRequest | 
-};
-apiInstance.createConversation(opts, (error, data, response) => {
+let createConversationRequest = new GraphRagServiceConversation.CreateConversationRequest(); // CreateConversationRequest | 
+apiInstance.createConversation(createConversationRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -47,11 +47,11 @@ apiInstance.createConversation(opts, (error, data, response) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **createConversationRequest** | [**CreateConversationRequest**](CreateConversationRequest.md)|  | [optional] 
+ **createConversationRequest** | [**CreateConversationRequest**](CreateConversationRequest.md)|  | 
 
 ### Return type
 
-[**Conversation**](Conversation.md)
+null (empty response body)
 
 ### Authorization
 
@@ -312,11 +312,11 @@ Name | Type | Description  | Notes
 
 ## sendMessage
 
-> SendMessageResult sendMessage(conversationId, sendMessageRequest)
+> sendMessage(conversationId, sendMessageRequest)
 
-Send a user message and receive an assistant reply (requires conversation:ask)
+Send a user message (requires conversation:ask)
 
-Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
 
 ### Example
 
@@ -334,7 +334,7 @@ apiInstance.sendMessage(conversationId, sendMessageRequest, (error, data, respon
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -349,7 +349,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SendMessageResult**](SendMessageResult.md)
+null (empty response body)
 
 ### Authorization
 

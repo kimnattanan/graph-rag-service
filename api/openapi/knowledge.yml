@@ -55,6 +55,7 @@ paths:
     post:
       operationId: createDocument
       summary: Create a markdown document and start indexing (requires knowledge:write)
+      description: Command. Returns no body. Read the document with getDocument.
       requestBody:
         required: true
         content:
@@ -62,12 +63,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateDocumentRequest'
       responses:
-        '201':
+        '204':
           description: Document created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
         default:
           description: unexpected error
           content:
@@ -103,6 +100,7 @@ paths:
     put:
       operationId: updateDocument
       summary: Update a document and reindex (requires knowledge:write)
+      description: Command. Returns no body. Read the document with getDocument.
       parameters:
         - in: path
           name: documentId
@@ -117,12 +115,8 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateDocumentRequest'
       responses:
-        '200':
+        '204':
           description: Document updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
         default:
           description: unexpected error
           content:
@@ -154,6 +148,7 @@ paths:
     post:
       operationId: reindexDocument
       summary: Trigger reindexing for a document (requires knowledge:write)
+      description: Command. Returns no body. Read progress with getDocumentIndexStatus.
       parameters:
         - in: path
           name: documentId
@@ -164,10 +159,6 @@ paths:
       responses:
         '202':
           description: Reindex accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndexJob'
         default:
           description: unexpected error
           content:
@@ -204,7 +195,7 @@ paths:
     post:
       operationId: retrieve
       summary: Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
-      description: Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+      description: Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
       requestBody:
         required: true
         content:
@@ -235,12 +226,16 @@ components:
   schemas:
     IndexStatus:
       type: string
-      enum: [pending, completed, failed]
+      enum: [pending, indexing, completed, failed]
 
     CreateDocumentRequest:
       type: object
-      required: [title, content]
+      required: [id, title, content]
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Client-generated document id
         title:
           type: string
         content:

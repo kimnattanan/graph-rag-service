@@ -35,11 +35,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KnowledgeServiceClient interface {
 	ListDocuments(ctx context.Context, in *ListDocumentsRequest, opts ...grpc.CallOption) (*ListDocumentsResponse, error)
-	CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*Document, error)
+	CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetDocument(ctx context.Context, in *GetDocumentRequest, opts ...grpc.CallOption) (*Document, error)
-	UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*Document, error)
+	UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	ReindexDocument(ctx context.Context, in *ReindexDocumentRequest, opts ...grpc.CallOption) (*ReindexDocumentResponse, error)
+	ReindexDocument(ctx context.Context, in *ReindexDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetDocumentIndexStatus(ctx context.Context, in *GetDocumentIndexStatusRequest, opts ...grpc.CallOption) (*GetDocumentIndexStatusResponse, error)
 	Retrieve(ctx context.Context, in *RetrieveRequest, opts ...grpc.CallOption) (*RetrieveResponse, error)
 }
@@ -62,9 +62,9 @@ func (c *knowledgeServiceClient) ListDocuments(ctx context.Context, in *ListDocu
 	return out, nil
 }
 
-func (c *knowledgeServiceClient) CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*Document, error) {
+func (c *knowledgeServiceClient) CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Document)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, KnowledgeService_CreateDocument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -82,9 +82,9 @@ func (c *knowledgeServiceClient) GetDocument(ctx context.Context, in *GetDocumen
 	return out, nil
 }
 
-func (c *knowledgeServiceClient) UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*Document, error) {
+func (c *knowledgeServiceClient) UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Document)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, KnowledgeService_UpdateDocument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -102,9 +102,9 @@ func (c *knowledgeServiceClient) DeleteDocument(ctx context.Context, in *DeleteD
 	return out, nil
 }
 
-func (c *knowledgeServiceClient) ReindexDocument(ctx context.Context, in *ReindexDocumentRequest, opts ...grpc.CallOption) (*ReindexDocumentResponse, error) {
+func (c *knowledgeServiceClient) ReindexDocument(ctx context.Context, in *ReindexDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ReindexDocumentResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, KnowledgeService_ReindexDocument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -137,11 +137,11 @@ func (c *knowledgeServiceClient) Retrieve(ctx context.Context, in *RetrieveReque
 // for forward compatibility.
 type KnowledgeServiceServer interface {
 	ListDocuments(context.Context, *ListDocumentsRequest) (*ListDocumentsResponse, error)
-	CreateDocument(context.Context, *CreateDocumentRequest) (*Document, error)
+	CreateDocument(context.Context, *CreateDocumentRequest) (*emptypb.Empty, error)
 	GetDocument(context.Context, *GetDocumentRequest) (*Document, error)
-	UpdateDocument(context.Context, *UpdateDocumentRequest) (*Document, error)
+	UpdateDocument(context.Context, *UpdateDocumentRequest) (*emptypb.Empty, error)
 	DeleteDocument(context.Context, *DeleteDocumentRequest) (*emptypb.Empty, error)
-	ReindexDocument(context.Context, *ReindexDocumentRequest) (*ReindexDocumentResponse, error)
+	ReindexDocument(context.Context, *ReindexDocumentRequest) (*emptypb.Empty, error)
 	GetDocumentIndexStatus(context.Context, *GetDocumentIndexStatusRequest) (*GetDocumentIndexStatusResponse, error)
 	Retrieve(context.Context, *RetrieveRequest) (*RetrieveResponse, error)
 }
@@ -156,19 +156,19 @@ type UnimplementedKnowledgeServiceServer struct{}
 func (UnimplementedKnowledgeServiceServer) ListDocuments(context.Context, *ListDocumentsRequest) (*ListDocumentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListDocuments not implemented")
 }
-func (UnimplementedKnowledgeServiceServer) CreateDocument(context.Context, *CreateDocumentRequest) (*Document, error) {
+func (UnimplementedKnowledgeServiceServer) CreateDocument(context.Context, *CreateDocumentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateDocument not implemented")
 }
 func (UnimplementedKnowledgeServiceServer) GetDocument(context.Context, *GetDocumentRequest) (*Document, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDocument not implemented")
 }
-func (UnimplementedKnowledgeServiceServer) UpdateDocument(context.Context, *UpdateDocumentRequest) (*Document, error) {
+func (UnimplementedKnowledgeServiceServer) UpdateDocument(context.Context, *UpdateDocumentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateDocument not implemented")
 }
 func (UnimplementedKnowledgeServiceServer) DeleteDocument(context.Context, *DeleteDocumentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteDocument not implemented")
 }
-func (UnimplementedKnowledgeServiceServer) ReindexDocument(context.Context, *ReindexDocumentRequest) (*ReindexDocumentResponse, error) {
+func (UnimplementedKnowledgeServiceServer) ReindexDocument(context.Context, *ReindexDocumentRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method ReindexDocument not implemented")
 }
 func (UnimplementedKnowledgeServiceServer) GetDocumentIndexStatus(context.Context, *GetDocumentIndexStatusRequest) (*GetDocumentIndexStatusResponse, error) {

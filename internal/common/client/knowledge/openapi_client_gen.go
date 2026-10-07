@@ -98,12 +98,16 @@ type ClientInterface interface {
 
 	// CreateDocumentWithBody Create a markdown document and start indexing (requires knowledge:write)
 	//
+	// Command. Returns no body. Read the document with getDocument.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /documents (the `CreateDocument` operationId).
 	CreateDocumentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateDocument Create a markdown document and start indexing (requires knowledge:write)
+	//
+	// Command. Returns no body. Read the document with getDocument.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -122,12 +126,16 @@ type ClientInterface interface {
 
 	// UpdateDocumentWithBody Update a document and reindex (requires knowledge:write)
 	//
+	// Command. Returns no body. Read the document with getDocument.
+	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /documents/{documentId} (the `UpdateDocument` operationId).
 	UpdateDocumentWithBody(ctx context.Context, documentId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateDocument Update a document and reindex (requires knowledge:write)
+	//
+	// Command. Returns no body. Read the document with getDocument.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -141,12 +149,14 @@ type ClientInterface interface {
 
 	// ReindexDocument Trigger reindexing for a document (requires knowledge:write)
 	//
+	// Command. Returns no body. Read progress with getDocumentIndexStatus.
+	//
 	// Corresponds with POST /documents/{documentId}/reindex (the `ReindexDocument` operationId).
 	ReindexDocument(ctx context.Context, documentId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RetrieveWithBody Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 	//
-	// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+	// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -155,7 +165,7 @@ type ClientInterface interface {
 
 	// Retrieve Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 	//
-	// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+	// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -180,6 +190,8 @@ func (c *Client) ListDocuments(ctx context.Context, params *ListDocumentsParams,
 
 // CreateDocumentWithBody Create a markdown document and start indexing (requires knowledge:write)
 //
+// Command. Returns no body. Read the document with getDocument.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with POST /documents (the `CreateDocument` operationId).
@@ -196,6 +208,8 @@ func (c *Client) CreateDocumentWithBody(ctx context.Context, contentType string,
 }
 
 // CreateDocument Create a markdown document and start indexing (requires knowledge:write)
+//
+// Command. Returns no body. Read the document with getDocument.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -244,6 +258,8 @@ func (c *Client) GetDocument(ctx context.Context, documentId openapi_types.UUID,
 
 // UpdateDocumentWithBody Update a document and reindex (requires knowledge:write)
 //
+// Command. Returns no body. Read the document with getDocument.
+//
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /documents/{documentId} (the `UpdateDocument` operationId).
@@ -260,6 +276,8 @@ func (c *Client) UpdateDocumentWithBody(ctx context.Context, documentId openapi_
 }
 
 // UpdateDocument Update a document and reindex (requires knowledge:write)
+//
+// Command. Returns no body. Read the document with getDocument.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -293,6 +311,8 @@ func (c *Client) GetDocumentIndexStatus(ctx context.Context, documentId openapi_
 
 // ReindexDocument Trigger reindexing for a document (requires knowledge:write)
 //
+// Command. Returns no body. Read progress with getDocumentIndexStatus.
+//
 // Corresponds with POST /documents/{documentId}/reindex (the `ReindexDocument` operationId).
 func (c *Client) ReindexDocument(ctx context.Context, documentId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReindexDocumentRequest(c.Server, documentId)
@@ -308,7 +328,7 @@ func (c *Client) ReindexDocument(ctx context.Context, documentId openapi_types.U
 
 // RetrieveWithBody Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 //
-// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 //
 // Takes any type of body and a specified content type.
 //
@@ -327,7 +347,7 @@ func (c *Client) RetrieveWithBody(ctx context.Context, contentType string, body 
 
 // Retrieve Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 //
-// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -750,12 +770,16 @@ type ClientWithResponsesInterface interface {
 
 	// CreateDocumentWithBodyWithResponse Create a markdown document and start indexing (requires knowledge:write)
 	//
+	// Command. Returns no body. Read the document with getDocument.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /documents (the `CreateDocument` operationId).
 	CreateDocumentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDocumentResponse, error)
 
 	// CreateDocumentWithResponse Create a markdown document and start indexing (requires knowledge:write)
+	//
+	// Command. Returns no body. Read the document with getDocument.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -778,12 +802,16 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateDocumentWithBodyWithResponse Update a document and reindex (requires knowledge:write)
 	//
+	// Command. Returns no body. Read the document with getDocument.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /documents/{documentId} (the `UpdateDocument` operationId).
 	UpdateDocumentWithBodyWithResponse(ctx context.Context, documentId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDocumentResponse, error)
 
 	// UpdateDocumentWithResponse Update a document and reindex (requires knowledge:write)
+	//
+	// Command. Returns no body. Read the document with getDocument.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -799,6 +827,8 @@ type ClientWithResponsesInterface interface {
 
 	// ReindexDocumentWithResponse Trigger reindexing for a document (requires knowledge:write)
 	//
+	// Command. Returns no body. Read progress with getDocumentIndexStatus.
+	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /documents/{documentId}/reindex (the `ReindexDocument` operationId).
@@ -806,7 +836,7 @@ type ClientWithResponsesInterface interface {
 
 	// RetrieveWithBodyWithResponse Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 	//
-	// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+	// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -815,7 +845,7 @@ type ClientWithResponsesInterface interface {
 
 	// RetrieveWithResponse Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 	//
-	// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+	// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -874,15 +904,8 @@ func (r ListDocumentsResponse) ContentType() string {
 type CreateDocumentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *Document
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r CreateDocumentResponse) GetJSON201() *Document {
-	return r.JSON201
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1011,15 +1034,8 @@ func (r GetDocumentResponse) ContentType() string {
 type UpdateDocumentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *Document
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r UpdateDocumentResponse) GetJSON200() *Document {
-	return r.JSON200
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1107,15 +1123,8 @@ func (r GetDocumentIndexStatusResponse) ContentType() string {
 type ReindexDocumentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	// JSON202 the response for an HTTP 202 `application/json` response
-	JSON202 *IndexJob
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
-}
-
-// GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r ReindexDocumentResponse) GetJSON202() *IndexJob {
-	return r.JSON202
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -1215,6 +1224,8 @@ func (c *ClientWithResponses) ListDocumentsWithResponse(ctx context.Context, par
 
 // CreateDocumentWithBodyWithResponse Create a markdown document and start indexing (requires knowledge:write)
 //
+// Command. Returns no body. Read the document with getDocument.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /documents (the `CreateDocument` operationId).
@@ -1227,6 +1238,8 @@ func (c *ClientWithResponses) CreateDocumentWithBodyWithResponse(ctx context.Con
 }
 
 // CreateDocumentWithResponse Create a markdown document and start indexing (requires knowledge:write)
+//
+// Command. Returns no body. Read the document with getDocument.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1267,6 +1280,8 @@ func (c *ClientWithResponses) GetDocumentWithResponse(ctx context.Context, docum
 
 // UpdateDocumentWithBodyWithResponse Update a document and reindex (requires knowledge:write)
 //
+// Command. Returns no body. Read the document with getDocument.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /documents/{documentId} (the `UpdateDocument` operationId).
@@ -1279,6 +1294,8 @@ func (c *ClientWithResponses) UpdateDocumentWithBodyWithResponse(ctx context.Con
 }
 
 // UpdateDocumentWithResponse Update a document and reindex (requires knowledge:write)
+//
+// Command. Returns no body. Read the document with getDocument.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1306,6 +1323,8 @@ func (c *ClientWithResponses) GetDocumentIndexStatusWithResponse(ctx context.Con
 
 // ReindexDocumentWithResponse Trigger reindexing for a document (requires knowledge:write)
 //
+// Command. Returns no body. Read progress with getDocumentIndexStatus.
+//
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /documents/{documentId}/reindex (the `ReindexDocument` operationId).
@@ -1319,7 +1338,7 @@ func (c *ClientWithResponses) ReindexDocumentWithResponse(ctx context.Context, d
 
 // RetrieveWithBodyWithResponse Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 //
-// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1334,7 +1353,7 @@ func (c *ClientWithResponses) RetrieveWithBodyWithResponse(ctx context.Context, 
 
 // RetrieveWithResponse Retrieve relevant chunks from the knowledge graph (requires conversation:ask)
 //
-// Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
+// Query. Called by the Conversation service during message generation. Returns structured context, not an LLM answer.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -1394,12 +1413,8 @@ func ParseCreateDocumentResponse(rsp *http.Response) (*CreateDocumentResponse, e
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Document
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1489,12 +1504,8 @@ func ParseUpdateDocumentResponse(rsp *http.Response) (*UpdateDocumentResponse, e
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Document
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
@@ -1555,12 +1566,8 @@ func ParseReindexDocumentResponse(rsp *http.Response) (*ReindexDocumentResponse,
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
-		var dest IndexJob
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON202 = &dest
+	case rsp.StatusCode == 202:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error

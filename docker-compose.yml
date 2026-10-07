@@ -11,11 +11,11 @@ services:
       - "127.0.0.1:3000:$PORT"
     env_file:
       - .env
-      - .env.knowledge
     environment:
       SERVICE: knowledge
       SERVER_TO_RUN: http
       GOCACHE: /go-cachee
+      KNOWLEDGE_WORKER_COUNT: 1
     depends_on:
       - memgraph
 

@@ -15,6 +15,7 @@ paths:
     post:
       operationId: register
       summary: Register a new user account
+      description: Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
       security: []
       requestBody:
         required: true
@@ -23,12 +24,8 @@ paths:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
-        '201':
+        '204':
           description: User created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResult'
         default:
           description: unexpected error
           content:
@@ -40,6 +37,7 @@ paths:
     post:
       operationId: login
       summary: Authenticate and receive access tokens
+      description: Query. Validates credentials and returns tokens.
       security: []
       requestBody:
         required: true
@@ -65,6 +63,7 @@ paths:
     post:
       operationId: refreshToken
       summary: Exchange a refresh token for a new access token
+      description: Query. Returns a new access token for a valid refresh token.
       security: []
       requestBody:
         required: true
@@ -157,6 +156,7 @@ paths:
     post:
       operationId: createUser
       summary: Create a user (admin only)
+      description: Command. Returns no body. Read the user with getUser.
       requestBody:
         required: true
         content:
@@ -164,12 +164,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateUserRequest'
       responses:
-        '201':
+        '204':
           description: User created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
         default:
           description: unexpected error
           content:
@@ -205,6 +201,7 @@ paths:
     put:
       operationId: updateUser
       summary: Update a user (admin only)
+      description: Command. Returns no body. Read the user with getUser.
       parameters:
         - in: path
           name: userId
@@ -219,12 +216,8 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateUserRequest'
       responses:
-        '200':
+        '204':
           description: User updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
         default:
           description: unexpected error
           content:
@@ -262,8 +255,12 @@ components:
   schemas:
     RegisterRequest:
       type: object
-      required: [email, password, displayName]
+      required: [id, email, password, displayName]
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Client-generated user id
         email:
           type: string
           format: email
@@ -338,8 +335,12 @@ components:
 
     CreateUserRequest:
       type: object
-      required: [email, password, displayName, role]
+      required: [id, email, password, displayName, role]
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Client-generated user id
         email:
           type: string
           format: email

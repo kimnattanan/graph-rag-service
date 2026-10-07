@@ -47,15 +47,15 @@ export default class DefaultApi {
      * Callback function to receive the result of the createUser operation.
      * @callback module:api/DefaultApi~createUserCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/User} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Create a user (admin only)
+     * Command. Returns no body. Read the user with getUser.
      * @param {module:model/CreateUserRequest} createUserRequest 
      * @param {module:api/DefaultApi~createUserCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/User}
      */
     createUser(createUserRequest, callback) {
       let postBody = createUserRequest;
@@ -76,7 +76,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = User;
+      let returnType = null;
       return this.apiClient.callApi(
         '/users', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -291,6 +291,7 @@ export default class DefaultApi {
 
     /**
      * Authenticate and receive access tokens
+     * Query. Validates credentials and returns tokens.
      * @param {module:model/LoginRequest} loginRequest 
      * @param {module:api/DefaultApi~loginCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/AuthResult}
@@ -332,6 +333,7 @@ export default class DefaultApi {
 
     /**
      * Exchange a refresh token for a new access token
+     * Query. Returns a new access token for a valid refresh token.
      * @param {module:model/RefreshRequest} refreshRequest 
      * @param {module:api/DefaultApi~refreshTokenCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/AuthResult}
@@ -367,15 +369,15 @@ export default class DefaultApi {
      * Callback function to receive the result of the register operation.
      * @callback module:api/DefaultApi~registerCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/AuthResult} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Register a new user account
+     * Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
      * @param {module:model/RegisterRequest} registerRequest 
      * @param {module:api/DefaultApi~registerCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/AuthResult}
      */
     register(registerRequest, callback) {
       let postBody = registerRequest;
@@ -396,7 +398,7 @@ export default class DefaultApi {
       let authNames = [];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = AuthResult;
+      let returnType = null;
       return this.apiClient.callApi(
         '/auth/register', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -408,16 +410,16 @@ export default class DefaultApi {
      * Callback function to receive the result of the updateUser operation.
      * @callback module:api/DefaultApi~updateUserCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/User} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Update a user (admin only)
+     * Command. Returns no body. Read the user with getUser.
      * @param {String} userId 
      * @param {module:model/UpdateUserRequest} updateUserRequest 
      * @param {module:api/DefaultApi~updateUserCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/User}
      */
     updateUser(userId, updateUserRequest, callback) {
       let postBody = updateUserRequest;
@@ -443,7 +445,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = User;
+      let returnType = null;
       return this.apiClient.callApi(
         '/users/{userId}', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,

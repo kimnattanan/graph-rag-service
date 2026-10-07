@@ -22,10 +22,11 @@ class CreateConversationRequest {
     /**
      * Constructs a new <code>CreateConversationRequest</code>.
      * @alias module:model/CreateConversationRequest
+     * @param id {String} Client-generated conversation id
      */
-    constructor() { 
+    constructor(id) { 
         
-        CreateConversationRequest.initialize(this);
+        CreateConversationRequest.initialize(this, id);
     }
 
     /**
@@ -33,7 +34,8 @@ class CreateConversationRequest {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj) { 
+    static initialize(obj, id) { 
+        obj['id'] = id;
     }
 
     /**
@@ -47,6 +49,9 @@ class CreateConversationRequest {
         if (data) {
             obj = obj || new CreateConversationRequest();
 
+            if (data.hasOwnProperty('id')) {
+                obj['id'] = ApiClient.convertToType(data['id'], 'String');
+            }
             if (data.hasOwnProperty('title')) {
                 obj['title'] = ApiClient.convertToType(data['title'], 'String');
             }
@@ -56,6 +61,12 @@ class CreateConversationRequest {
 
 
 }
+
+/**
+ * Client-generated conversation id
+ * @member {String} id
+ */
+CreateConversationRequest.prototype['id'] = undefined;
 
 /**
  * Optional title; auto-generated from the first message if omitted when a message is sent

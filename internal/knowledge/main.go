@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	commonConfig "github.com/kimnattanan/graph-rag-service/internal/common/config"
@@ -28,6 +29,12 @@ func main() {
 
 	application, cleanup := service.NewApplication(ctx, &cfg)
 	defer cleanup()
+
+	if cfg.Worker.WorkerCount > 0 {
+		worker := ports.NewWorker(ctx, &application, cfg.Worker.WorkerCount, time.Duration(cfg.Worker.WorkerInterval)*time.Second)
+		worker.RunWorkers()
+		defer worker.Shutdown()
+	}
 
 	serverType := strings.ToLower(cfg.App.ServerToRun)
 	switch serverType {

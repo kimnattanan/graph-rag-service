@@ -27,6 +27,13 @@ export default class IndexStatus {
 
     
         /**
+         * value: "indexing"
+         * @const
+         */
+        "indexing" = "indexing";
+
+    
+        /**
          * value: "completed"
          * @const
          */

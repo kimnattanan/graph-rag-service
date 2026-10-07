@@ -7,6 +7,29 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type commandLoggingDecorator[C any] struct {
+	base   CommandHandler[C]
+	logger *logrus.Entry
+}
+
+func (d commandLoggingDecorator[C]) Handle(ctx context.Context, cmd C) (err error) {
+	logger := d.logger.WithFields(logrus.Fields{
+		"command":      generateActionName(cmd),
+		"command_body": fmt.Sprintf("%#v", cmd),
+	})
+
+	logger.Debug("Executing command")
+	defer func() {
+		if err == nil {
+			logger.Info("Command executed successfully")
+		} else {
+			logger.WithError(err).Error("Failed to execute command")
+		}
+	}()
+
+	return d.base.Handle(ctx, cmd)
+}
+
 type queryLoggingDecorator[Q any, R any] struct {
 	base   QueryHandler[Q, R]
 	logger *logrus.Entry

@@ -13,7 +13,6 @@
 
 
 import ApiClient from "../ApiClient";
-import Conversation from '../model/Conversation';
 import ConversationDetail from '../model/ConversationDetail';
 import ConversationList from '../model/ConversationList';
 import CreateConversationRequest from '../model/CreateConversationRequest';
@@ -21,7 +20,6 @@ import Error from '../model/Error';
 import Message from '../model/Message';
 import MessageList from '../model/MessageList';
 import SendMessageRequest from '../model/SendMessageRequest';
-import SendMessageResult from '../model/SendMessageResult';
 
 /**
 * Default service.
@@ -46,20 +44,22 @@ export default class DefaultApi {
      * Callback function to receive the result of the createConversation operation.
      * @callback module:api/DefaultApi~createConversationCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/Conversation} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
      * Create an empty conversation (requires conversation:ask)
-     * @param {Object} opts Optional parameters
-     * @param {module:model/CreateConversationRequest} opts.createConversationRequest 
+     * Command. Returns no body. Read the conversation with getConversation.
+     * @param {module:model/CreateConversationRequest} createConversationRequest 
      * @param {module:api/DefaultApi~createConversationCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Conversation}
      */
-    createConversation(opts, callback) {
-      opts = opts || {};
-      let postBody = opts['createConversationRequest'];
+    createConversation(createConversationRequest, callback) {
+      let postBody = createConversationRequest;
+      // verify the required parameter 'createConversationRequest' is set
+      if (createConversationRequest === undefined || createConversationRequest === null) {
+        throw new Error("Missing the required parameter 'createConversationRequest' when calling createConversation");
+      }
 
       let pathParams = {
       };
@@ -73,7 +73,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = Conversation;
+      let returnType = null;
       return this.apiClient.callApi(
         '/conversations', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
@@ -306,17 +306,16 @@ export default class DefaultApi {
      * Callback function to receive the result of the sendMessage operation.
      * @callback module:api/DefaultApi~sendMessageCallback
      * @param {String} error Error message, if any.
-     * @param {module:model/SendMessageResult} data The data returned by the service call.
+     * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
      */
 
     /**
-     * Send a user message and receive an assistant reply (requires conversation:ask)
-     * Stores the user message, retrieves context from Knowledge, calls the LLM, stores the assistant message, and returns both.
+     * Send a user message (requires conversation:ask)
+     * Command. Stores the user message, retrieves context from Knowledge, calls the LLM, and stores the assistant message. Returns no body. Read the messages with listMessages or getConversation.
      * @param {String} conversationId 
      * @param {module:model/SendMessageRequest} sendMessageRequest 
      * @param {module:api/DefaultApi~sendMessageCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/SendMessageResult}
      */
     sendMessage(conversationId, sendMessageRequest, callback) {
       let postBody = sendMessageRequest;
@@ -342,7 +341,7 @@ export default class DefaultApi {
       let authNames = ['bearerAuth'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
-      let returnType = SendMessageResult;
+      let returnType = null;
       return this.apiClient.callApi(
         '/conversations/{conversationId}/messages', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,

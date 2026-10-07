@@ -34,11 +34,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ConversationServiceClient interface {
 	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...grpc.CallOption) (*ListConversationsResponse, error)
-	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
+	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...grpc.CallOption) (*ListMessagesResponse, error)
-	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
+	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetMessage(ctx context.Context, in *GetMessageRequest, opts ...grpc.CallOption) (*Message, error)
 }
 
@@ -60,9 +60,9 @@ func (c *conversationServiceClient) ListConversations(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *conversationServiceClient) CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error) {
+func (c *conversationServiceClient) CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Conversation)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ConversationService_CreateConversation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -100,9 +100,9 @@ func (c *conversationServiceClient) ListMessages(ctx context.Context, in *ListMe
 	return out, nil
 }
 
-func (c *conversationServiceClient) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error) {
+func (c *conversationServiceClient) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendMessageResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ConversationService_SendMessage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -125,11 +125,11 @@ func (c *conversationServiceClient) GetMessage(ctx context.Context, in *GetMessa
 // for forward compatibility.
 type ConversationServiceServer interface {
 	ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error)
-	CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error)
+	CreateConversation(context.Context, *CreateConversationRequest) (*emptypb.Empty, error)
 	GetConversation(context.Context, *GetConversationRequest) (*Conversation, error)
 	DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error)
 	ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error)
-	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
+	SendMessage(context.Context, *SendMessageRequest) (*emptypb.Empty, error)
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
 }
 
@@ -143,7 +143,7 @@ type UnimplementedConversationServiceServer struct{}
 func (UnimplementedConversationServiceServer) ListConversations(context.Context, *ListConversationsRequest) (*ListConversationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListConversations not implemented")
 }
-func (UnimplementedConversationServiceServer) CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error) {
+func (UnimplementedConversationServiceServer) CreateConversation(context.Context, *CreateConversationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateConversation not implemented")
 }
 func (UnimplementedConversationServiceServer) GetConversation(context.Context, *GetConversationRequest) (*Conversation, error) {
@@ -155,7 +155,7 @@ func (UnimplementedConversationServiceServer) DeleteConversation(context.Context
 func (UnimplementedConversationServiceServer) ListMessages(context.Context, *ListMessagesRequest) (*ListMessagesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMessages not implemented")
 }
-func (UnimplementedConversationServiceServer) SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error) {
+func (UnimplementedConversationServiceServer) SendMessage(context.Context, *SendMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendMessage not implemented")
 }
 func (UnimplementedConversationServiceServer) GetMessage(context.Context, *GetMessageRequest) (*Message, error) {

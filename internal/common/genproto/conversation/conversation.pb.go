@@ -179,6 +179,7 @@ func (x *ListConversationsResponse) GetTotal() int32 {
 type CreateConversationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -216,6 +217,13 @@ func (*CreateConversationRequest) Descriptor() ([]byte, []int) {
 func (x *CreateConversationRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateConversationRequest) GetId() string {
+	if x != nil {
+		return x.Id
 	}
 	return ""
 }
@@ -427,6 +435,7 @@ type SendMessageRequest struct {
 	TopK            int32                  `protobuf:"varint,3,opt,name=top_k,json=topK,proto3" json:"top_k,omitempty"`
 	Tags            []string               `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty"`
 	HistoryCapacity int32                  `protobuf:"varint,5,opt,name=history_capacity,json=historyCapacity,proto3" json:"history_capacity,omitempty"`
+	Id              string                 `protobuf:"bytes,6,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -496,56 +505,11 @@ func (x *SendMessageRequest) GetHistoryCapacity() int32 {
 	return 0
 }
 
-type SendMessageResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	UserMessage      *Message               `protobuf:"bytes,1,opt,name=user_message,json=userMessage,proto3" json:"user_message,omitempty"`
-	AssistantMessage *Message               `protobuf:"bytes,2,opt,name=assistant_message,json=assistantMessage,proto3" json:"assistant_message,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *SendMessageResponse) Reset() {
-	*x = SendMessageResponse{}
-	mi := &file_conversation_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SendMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendMessageResponse) ProtoMessage() {}
-
-func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[8]
+func (x *SendMessageRequest) GetId() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.Id
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendMessageResponse.ProtoReflect.Descriptor instead.
-func (*SendMessageResponse) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *SendMessageResponse) GetUserMessage() *Message {
-	if x != nil {
-		return x.UserMessage
-	}
-	return nil
-}
-
-func (x *SendMessageResponse) GetAssistantMessage() *Message {
-	if x != nil {
-		return x.AssistantMessage
-	}
-	return nil
+	return ""
 }
 
 type GetMessageRequest struct {
@@ -558,7 +522,7 @@ type GetMessageRequest struct {
 
 func (x *GetMessageRequest) Reset() {
 	*x = GetMessageRequest{}
-	mi := &file_conversation_proto_msgTypes[9]
+	mi := &file_conversation_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -570,7 +534,7 @@ func (x *GetMessageRequest) String() string {
 func (*GetMessageRequest) ProtoMessage() {}
 
 func (x *GetMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[9]
+	mi := &file_conversation_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -583,7 +547,7 @@ func (x *GetMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMessageRequest.ProtoReflect.Descriptor instead.
 func (*GetMessageRequest) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{9}
+	return file_conversation_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetMessageRequest) GetConversationId() string {
@@ -613,7 +577,7 @@ type Conversation struct {
 
 func (x *Conversation) Reset() {
 	*x = Conversation{}
-	mi := &file_conversation_proto_msgTypes[10]
+	mi := &file_conversation_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +589,7 @@ func (x *Conversation) String() string {
 func (*Conversation) ProtoMessage() {}
 
 func (x *Conversation) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[10]
+	mi := &file_conversation_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +602,7 @@ func (x *Conversation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Conversation.ProtoReflect.Descriptor instead.
 func (*Conversation) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{10}
+	return file_conversation_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Conversation) GetId() string {
@@ -689,7 +653,7 @@ type ConversationSummary struct {
 
 func (x *ConversationSummary) Reset() {
 	*x = ConversationSummary{}
-	mi := &file_conversation_proto_msgTypes[11]
+	mi := &file_conversation_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -701,7 +665,7 @@ func (x *ConversationSummary) String() string {
 func (*ConversationSummary) ProtoMessage() {}
 
 func (x *ConversationSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[11]
+	mi := &file_conversation_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -714,7 +678,7 @@ func (x *ConversationSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationSummary.ProtoReflect.Descriptor instead.
 func (*ConversationSummary) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{11}
+	return file_conversation_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ConversationSummary) GetId() string {
@@ -766,7 +730,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_conversation_proto_msgTypes[12]
+	mi := &file_conversation_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -778,7 +742,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[12]
+	mi := &file_conversation_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -791,7 +755,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{12}
+	return file_conversation_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Message) GetId() string {
@@ -849,7 +813,7 @@ type Source struct {
 
 func (x *Source) Reset() {
 	*x = Source{}
-	mi := &file_conversation_proto_msgTypes[13]
+	mi := &file_conversation_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -861,7 +825,7 @@ func (x *Source) String() string {
 func (*Source) ProtoMessage() {}
 
 func (x *Source) ProtoReflect() protoreflect.Message {
-	mi := &file_conversation_proto_msgTypes[13]
+	mi := &file_conversation_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -874,7 +838,7 @@ func (x *Source) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Source.ProtoReflect.Descriptor instead.
 func (*Source) Descriptor() ([]byte, []int) {
-	return file_conversation_proto_rawDescGZIP(), []int{13}
+	return file_conversation_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Source) GetDocumentId() string {
@@ -922,9 +886,10 @@ const file_conversation_proto_rawDesc = "" +
 	"\x06offset\x18\x02 \x01(\x05R\x06offset\"z\n" +
 	"\x19ListConversationsResponse\x12G\n" +
 	"\rconversations\x18\x01 \x03(\v2!.conversation.ConversationSummaryR\rconversations\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"1\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"A\n" +
 	"\x19CreateConversationRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\"A\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\"A\n" +
 	"\x16GetConversationRequest\x12'\n" +
 	"\x0fconversation_id\x18\x01 \x01(\tR\x0econversationId\"D\n" +
 	"\x19DeleteConversationRequest\x12'\n" +
@@ -935,16 +900,14 @@ const file_conversation_proto_rawDesc = "" +
 	"\x06offset\x18\x03 \x01(\x05R\x06offset\"_\n" +
 	"\x14ListMessagesResponse\x121\n" +
 	"\bmessages\x18\x01 \x03(\v2\x15.conversation.MessageR\bmessages\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xab\x01\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"\xbb\x01\n" +
 	"\x12SendMessageRequest\x12'\n" +
 	"\x0fconversation_id\x18\x01 \x01(\tR\x0econversationId\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x13\n" +
 	"\x05top_k\x18\x03 \x01(\x05R\x04topK\x12\x12\n" +
 	"\x04tags\x18\x04 \x03(\tR\x04tags\x12)\n" +
-	"\x10history_capacity\x18\x05 \x01(\x05R\x0fhistoryCapacity\"\x93\x01\n" +
-	"\x13SendMessageResponse\x128\n" +
-	"\fuser_message\x18\x01 \x01(\v2\x15.conversation.MessageR\vuserMessage\x12B\n" +
-	"\x11assistant_message\x18\x02 \x01(\v2\x15.conversation.MessageR\x10assistantMessage\"[\n" +
+	"\x10history_capacity\x18\x05 \x01(\x05R\x0fhistoryCapacity\x12\x0e\n" +
+	"\x02id\x18\x06 \x01(\tR\x02id\"[\n" +
 	"\x11GetMessageRequest\x12'\n" +
 	"\x0fconversation_id\x18\x01 \x01(\tR\x0econversationId\x12\x1d\n" +
 	"\n" +
@@ -983,14 +946,14 @@ const file_conversation_proto_rawDesc = "" +
 	"\vMessageRole\x12\x1c\n" +
 	"\x18MESSAGE_ROLE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11MESSAGE_ROLE_USER\x10\x01\x12\x1a\n" +
-	"\x16MESSAGE_ROLE_ASSISTANT\x10\x022\x81\x05\n" +
+	"\x16MESSAGE_ROLE_ASSISTANT\x10\x022\xf2\x04\n" +
 	"\x13ConversationService\x12f\n" +
-	"\x11ListConversations\x12&.conversation.ListConversationsRequest\x1a'.conversation.ListConversationsResponse\"\x00\x12[\n" +
-	"\x12CreateConversation\x12'.conversation.CreateConversationRequest\x1a\x1a.conversation.Conversation\"\x00\x12U\n" +
+	"\x11ListConversations\x12&.conversation.ListConversationsRequest\x1a'.conversation.ListConversationsResponse\"\x00\x12W\n" +
+	"\x12CreateConversation\x12'.conversation.CreateConversationRequest\x1a\x16.google.protobuf.Empty\"\x00\x12U\n" +
 	"\x0fGetConversation\x12$.conversation.GetConversationRequest\x1a\x1a.conversation.Conversation\"\x00\x12W\n" +
 	"\x12DeleteConversation\x12'.conversation.DeleteConversationRequest\x1a\x16.google.protobuf.Empty\"\x00\x12W\n" +
-	"\fListMessages\x12!.conversation.ListMessagesRequest\x1a\".conversation.ListMessagesResponse\"\x00\x12T\n" +
-	"\vSendMessage\x12 .conversation.SendMessageRequest\x1a!.conversation.SendMessageResponse\"\x00\x12F\n" +
+	"\fListMessages\x12!.conversation.ListMessagesRequest\x1a\".conversation.ListMessagesResponse\"\x00\x12I\n" +
+	"\vSendMessage\x12 .conversation.SendMessageRequest\x1a\x16.google.protobuf.Empty\"\x00\x12F\n" +
 	"\n" +
 	"GetMessage\x12\x1f.conversation.GetMessageRequest\x1a\x15.conversation.Message\"\x00B@Z>github.com/kimnattanan/graph-rag-service/internal/conversationb\x06proto3"
 
@@ -1007,7 +970,7 @@ func file_conversation_proto_rawDescGZIP() []byte {
 }
 
 var file_conversation_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_conversation_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_conversation_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_conversation_proto_goTypes = []any{
 	(MessageRole)(0),                  // 0: conversation.MessageRole
 	(*ListConversationsRequest)(nil),  // 1: conversation.ListConversationsRequest
@@ -1018,47 +981,44 @@ var file_conversation_proto_goTypes = []any{
 	(*ListMessagesRequest)(nil),       // 6: conversation.ListMessagesRequest
 	(*ListMessagesResponse)(nil),      // 7: conversation.ListMessagesResponse
 	(*SendMessageRequest)(nil),        // 8: conversation.SendMessageRequest
-	(*SendMessageResponse)(nil),       // 9: conversation.SendMessageResponse
-	(*GetMessageRequest)(nil),         // 10: conversation.GetMessageRequest
-	(*Conversation)(nil),              // 11: conversation.Conversation
-	(*ConversationSummary)(nil),       // 12: conversation.ConversationSummary
-	(*Message)(nil),                   // 13: conversation.Message
-	(*Source)(nil),                    // 14: conversation.Source
-	(*timestamppb.Timestamp)(nil),     // 15: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),             // 16: google.protobuf.Empty
+	(*GetMessageRequest)(nil),         // 9: conversation.GetMessageRequest
+	(*Conversation)(nil),              // 10: conversation.Conversation
+	(*ConversationSummary)(nil),       // 11: conversation.ConversationSummary
+	(*Message)(nil),                   // 12: conversation.Message
+	(*Source)(nil),                    // 13: conversation.Source
+	(*timestamppb.Timestamp)(nil),     // 14: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),             // 15: google.protobuf.Empty
 }
 var file_conversation_proto_depIdxs = []int32{
-	12, // 0: conversation.ListConversationsResponse.conversations:type_name -> conversation.ConversationSummary
-	13, // 1: conversation.ListMessagesResponse.messages:type_name -> conversation.Message
-	13, // 2: conversation.SendMessageResponse.user_message:type_name -> conversation.Message
-	13, // 3: conversation.SendMessageResponse.assistant_message:type_name -> conversation.Message
-	15, // 4: conversation.Conversation.created_at:type_name -> google.protobuf.Timestamp
-	15, // 5: conversation.Conversation.updated_at:type_name -> google.protobuf.Timestamp
-	13, // 6: conversation.Conversation.messages:type_name -> conversation.Message
-	15, // 7: conversation.ConversationSummary.created_at:type_name -> google.protobuf.Timestamp
-	15, // 8: conversation.ConversationSummary.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 9: conversation.Message.role:type_name -> conversation.MessageRole
-	14, // 10: conversation.Message.sources:type_name -> conversation.Source
-	15, // 11: conversation.Message.created_at:type_name -> google.protobuf.Timestamp
-	1,  // 12: conversation.ConversationService.ListConversations:input_type -> conversation.ListConversationsRequest
-	3,  // 13: conversation.ConversationService.CreateConversation:input_type -> conversation.CreateConversationRequest
-	4,  // 14: conversation.ConversationService.GetConversation:input_type -> conversation.GetConversationRequest
-	5,  // 15: conversation.ConversationService.DeleteConversation:input_type -> conversation.DeleteConversationRequest
-	6,  // 16: conversation.ConversationService.ListMessages:input_type -> conversation.ListMessagesRequest
-	8,  // 17: conversation.ConversationService.SendMessage:input_type -> conversation.SendMessageRequest
-	10, // 18: conversation.ConversationService.GetMessage:input_type -> conversation.GetMessageRequest
-	2,  // 19: conversation.ConversationService.ListConversations:output_type -> conversation.ListConversationsResponse
-	11, // 20: conversation.ConversationService.CreateConversation:output_type -> conversation.Conversation
-	11, // 21: conversation.ConversationService.GetConversation:output_type -> conversation.Conversation
-	16, // 22: conversation.ConversationService.DeleteConversation:output_type -> google.protobuf.Empty
-	7,  // 23: conversation.ConversationService.ListMessages:output_type -> conversation.ListMessagesResponse
-	9,  // 24: conversation.ConversationService.SendMessage:output_type -> conversation.SendMessageResponse
-	13, // 25: conversation.ConversationService.GetMessage:output_type -> conversation.Message
-	19, // [19:26] is the sub-list for method output_type
-	12, // [12:19] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	11, // 0: conversation.ListConversationsResponse.conversations:type_name -> conversation.ConversationSummary
+	12, // 1: conversation.ListMessagesResponse.messages:type_name -> conversation.Message
+	14, // 2: conversation.Conversation.created_at:type_name -> google.protobuf.Timestamp
+	14, // 3: conversation.Conversation.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 4: conversation.Conversation.messages:type_name -> conversation.Message
+	14, // 5: conversation.ConversationSummary.created_at:type_name -> google.protobuf.Timestamp
+	14, // 6: conversation.ConversationSummary.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 7: conversation.Message.role:type_name -> conversation.MessageRole
+	13, // 8: conversation.Message.sources:type_name -> conversation.Source
+	14, // 9: conversation.Message.created_at:type_name -> google.protobuf.Timestamp
+	1,  // 10: conversation.ConversationService.ListConversations:input_type -> conversation.ListConversationsRequest
+	3,  // 11: conversation.ConversationService.CreateConversation:input_type -> conversation.CreateConversationRequest
+	4,  // 12: conversation.ConversationService.GetConversation:input_type -> conversation.GetConversationRequest
+	5,  // 13: conversation.ConversationService.DeleteConversation:input_type -> conversation.DeleteConversationRequest
+	6,  // 14: conversation.ConversationService.ListMessages:input_type -> conversation.ListMessagesRequest
+	8,  // 15: conversation.ConversationService.SendMessage:input_type -> conversation.SendMessageRequest
+	9,  // 16: conversation.ConversationService.GetMessage:input_type -> conversation.GetMessageRequest
+	2,  // 17: conversation.ConversationService.ListConversations:output_type -> conversation.ListConversationsResponse
+	15, // 18: conversation.ConversationService.CreateConversation:output_type -> google.protobuf.Empty
+	10, // 19: conversation.ConversationService.GetConversation:output_type -> conversation.Conversation
+	15, // 20: conversation.ConversationService.DeleteConversation:output_type -> google.protobuf.Empty
+	7,  // 21: conversation.ConversationService.ListMessages:output_type -> conversation.ListMessagesResponse
+	15, // 22: conversation.ConversationService.SendMessage:output_type -> google.protobuf.Empty
+	12, // 23: conversation.ConversationService.GetMessage:output_type -> conversation.Message
+	17, // [17:24] is the sub-list for method output_type
+	10, // [10:17] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_conversation_proto_init() }
@@ -1072,7 +1032,7 @@ func file_conversation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_conversation_proto_rawDesc), len(file_conversation_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

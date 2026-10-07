@@ -19,9 +19,11 @@ Method | HTTP request | Description
 
 ## createUser
 
-> User createUser(createUserRequest)
+> createUser(createUserRequest)
 
 Create a user (admin only)
+
+Command. Returns no body. Read the user with getUser.
 
 ### Example
 
@@ -38,7 +40,7 @@ apiInstance.createUser(createUserRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -52,7 +54,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**User**](User.md)
+null (empty response body)
 
 ### Authorization
 
@@ -301,6 +303,8 @@ Name | Type | Description  | Notes
 
 Authenticate and receive access tokens
 
+Query. Validates credentials and returns tokens.
+
 ### Example
 
 ```javascript
@@ -344,6 +348,8 @@ No authorization required
 
 Exchange a refresh token for a new access token
 
+Query. Returns a new access token for a valid refresh token.
+
 ### Example
 
 ```javascript
@@ -383,9 +389,11 @@ No authorization required
 
 ## register
 
-> AuthResult register(registerRequest)
+> register(registerRequest)
 
 Register a new user account
+
+Command. Returns no body. Sign in with login, then read the profile with getCurrentUser.
 
 ### Example
 
@@ -398,7 +406,7 @@ apiInstance.register(registerRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -412,7 +420,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AuthResult**](AuthResult.md)
+null (empty response body)
 
 ### Authorization
 
@@ -426,9 +434,11 @@ No authorization required
 
 ## updateUser
 
-> User updateUser(userId, updateUserRequest)
+> updateUser(userId, updateUserRequest)
 
 Update a user (admin only)
+
+Command. Returns no body. Read the user with getUser.
 
 ### Example
 
@@ -446,7 +456,7 @@ apiInstance.updateUser(userId, updateUserRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 });
 ```
@@ -461,7 +471,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**User**](User.md)
+null (empty response body)
 
 ### Authorization
 

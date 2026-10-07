@@ -6,6 +6,7 @@ require (
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/go-chi/cors v1.2.2
+	github.com/go-chi/render v1.0.3
 	github.com/oapi-codegen/runtime v1.6.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
@@ -16,7 +17,6 @@ require (
 require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/go-chi/render v1.0.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

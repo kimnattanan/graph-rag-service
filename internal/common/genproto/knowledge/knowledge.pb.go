@@ -27,21 +27,24 @@ type IndexStatus int32
 
 const (
 	IndexStatus_INDEX_STATUS_PENDING   IndexStatus = 0
-	IndexStatus_INDEX_STATUS_COMPLETED IndexStatus = 1
-	IndexStatus_INDEX_STATUS_FAILED    IndexStatus = 2
+	IndexStatus_INDEX_STATUS_INDEXING  IndexStatus = 1
+	IndexStatus_INDEX_STATUS_COMPLETED IndexStatus = 2
+	IndexStatus_INDEX_STATUS_FAILED    IndexStatus = 3
 )
 
 // Enum value maps for IndexStatus.
 var (
 	IndexStatus_name = map[int32]string{
 		0: "INDEX_STATUS_PENDING",
-		1: "INDEX_STATUS_COMPLETED",
-		2: "INDEX_STATUS_FAILED",
+		1: "INDEX_STATUS_INDEXING",
+		2: "INDEX_STATUS_COMPLETED",
+		3: "INDEX_STATUS_FAILED",
 	}
 	IndexStatus_value = map[string]int32{
 		"INDEX_STATUS_PENDING":   0,
-		"INDEX_STATUS_COMPLETED": 1,
-		"INDEX_STATUS_FAILED":    2,
+		"INDEX_STATUS_INDEXING":  1,
+		"INDEX_STATUS_COMPLETED": 2,
+		"INDEX_STATUS_FAILED":    3,
 	}
 )
 
@@ -197,6 +200,7 @@ type CreateDocumentRequest struct {
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
 	Tags          []string               `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	Id            string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -250,6 +254,13 @@ func (x *CreateDocumentRequest) GetTags() []string {
 		return x.Tags
 	}
 	return nil
+}
+
+func (x *CreateDocumentRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
 }
 
 type GetDocumentRequest struct {
@@ -452,50 +463,6 @@ func (x *ReindexDocumentRequest) GetDocumentId() string {
 	return ""
 }
 
-type ReindexDocumentResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Job           *IndexJob              `protobuf:"bytes,1,opt,name=job,proto3" json:"job,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReindexDocumentResponse) Reset() {
-	*x = ReindexDocumentResponse{}
-	mi := &file_knowledge_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReindexDocumentResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReindexDocumentResponse) ProtoMessage() {}
-
-func (x *ReindexDocumentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReindexDocumentResponse.ProtoReflect.Descriptor instead.
-func (*ReindexDocumentResponse) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ReindexDocumentResponse) GetJob() *IndexJob {
-	if x != nil {
-		return x.Job
-	}
-	return nil
-}
-
 type GetDocumentIndexStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DocumentId    string                 `protobuf:"bytes,1,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`
@@ -505,7 +472,7 @@ type GetDocumentIndexStatusRequest struct {
 
 func (x *GetDocumentIndexStatusRequest) Reset() {
 	*x = GetDocumentIndexStatusRequest{}
-	mi := &file_knowledge_proto_msgTypes[8]
+	mi := &file_knowledge_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -517,7 +484,7 @@ func (x *GetDocumentIndexStatusRequest) String() string {
 func (*GetDocumentIndexStatusRequest) ProtoMessage() {}
 
 func (x *GetDocumentIndexStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[8]
+	mi := &file_knowledge_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -530,7 +497,7 @@ func (x *GetDocumentIndexStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDocumentIndexStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetDocumentIndexStatusRequest) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{8}
+	return file_knowledge_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetDocumentIndexStatusRequest) GetDocumentId() string {
@@ -549,7 +516,7 @@ type GetDocumentIndexStatusResponse struct {
 
 func (x *GetDocumentIndexStatusResponse) Reset() {
 	*x = GetDocumentIndexStatusResponse{}
-	mi := &file_knowledge_proto_msgTypes[9]
+	mi := &file_knowledge_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -561,7 +528,7 @@ func (x *GetDocumentIndexStatusResponse) String() string {
 func (*GetDocumentIndexStatusResponse) ProtoMessage() {}
 
 func (x *GetDocumentIndexStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[9]
+	mi := &file_knowledge_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +541,7 @@ func (x *GetDocumentIndexStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDocumentIndexStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetDocumentIndexStatusResponse) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{9}
+	return file_knowledge_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetDocumentIndexStatusResponse) GetJob() *IndexJob {
@@ -595,7 +562,7 @@ type RetrieveRequest struct {
 
 func (x *RetrieveRequest) Reset() {
 	*x = RetrieveRequest{}
-	mi := &file_knowledge_proto_msgTypes[10]
+	mi := &file_knowledge_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -607,7 +574,7 @@ func (x *RetrieveRequest) String() string {
 func (*RetrieveRequest) ProtoMessage() {}
 
 func (x *RetrieveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[10]
+	mi := &file_knowledge_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -620,7 +587,7 @@ func (x *RetrieveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrieveRequest.ProtoReflect.Descriptor instead.
 func (*RetrieveRequest) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{10}
+	return file_knowledge_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *RetrieveRequest) GetQuery() string {
@@ -654,7 +621,7 @@ type RetrieveResponse struct {
 
 func (x *RetrieveResponse) Reset() {
 	*x = RetrieveResponse{}
-	mi := &file_knowledge_proto_msgTypes[11]
+	mi := &file_knowledge_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -666,7 +633,7 @@ func (x *RetrieveResponse) String() string {
 func (*RetrieveResponse) ProtoMessage() {}
 
 func (x *RetrieveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[11]
+	mi := &file_knowledge_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -679,7 +646,7 @@ func (x *RetrieveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrieveResponse.ProtoReflect.Descriptor instead.
 func (*RetrieveResponse) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{11}
+	return file_knowledge_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RetrieveResponse) GetQuery() string {
@@ -711,7 +678,7 @@ type Document struct {
 
 func (x *Document) Reset() {
 	*x = Document{}
-	mi := &file_knowledge_proto_msgTypes[12]
+	mi := &file_knowledge_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -723,7 +690,7 @@ func (x *Document) String() string {
 func (*Document) ProtoMessage() {}
 
 func (x *Document) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[12]
+	mi := &file_knowledge_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -736,7 +703,7 @@ func (x *Document) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document.ProtoReflect.Descriptor instead.
 func (*Document) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{12}
+	return file_knowledge_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Document) GetId() string {
@@ -802,7 +769,7 @@ type DocumentSummary struct {
 
 func (x *DocumentSummary) Reset() {
 	*x = DocumentSummary{}
-	mi := &file_knowledge_proto_msgTypes[13]
+	mi := &file_knowledge_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -814,7 +781,7 @@ func (x *DocumentSummary) String() string {
 func (*DocumentSummary) ProtoMessage() {}
 
 func (x *DocumentSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[13]
+	mi := &file_knowledge_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -827,7 +794,7 @@ func (x *DocumentSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DocumentSummary.ProtoReflect.Descriptor instead.
 func (*DocumentSummary) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{13}
+	return file_knowledge_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DocumentSummary) GetId() string {
@@ -885,7 +852,7 @@ type IndexJob struct {
 
 func (x *IndexJob) Reset() {
 	*x = IndexJob{}
-	mi := &file_knowledge_proto_msgTypes[14]
+	mi := &file_knowledge_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -897,7 +864,7 @@ func (x *IndexJob) String() string {
 func (*IndexJob) ProtoMessage() {}
 
 func (x *IndexJob) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[14]
+	mi := &file_knowledge_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -910,7 +877,7 @@ func (x *IndexJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IndexJob.ProtoReflect.Descriptor instead.
 func (*IndexJob) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{14}
+	return file_knowledge_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *IndexJob) GetDocumentId() string {
@@ -962,7 +929,7 @@ type RetrievedChunk struct {
 
 func (x *RetrievedChunk) Reset() {
 	*x = RetrievedChunk{}
-	mi := &file_knowledge_proto_msgTypes[15]
+	mi := &file_knowledge_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -974,7 +941,7 @@ func (x *RetrievedChunk) String() string {
 func (*RetrievedChunk) ProtoMessage() {}
 
 func (x *RetrievedChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_knowledge_proto_msgTypes[15]
+	mi := &file_knowledge_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -987,7 +954,7 @@ func (x *RetrievedChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrievedChunk.ProtoReflect.Descriptor instead.
 func (*RetrievedChunk) Descriptor() ([]byte, []int) {
-	return file_knowledge_proto_rawDescGZIP(), []int{15}
+	return file_knowledge_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RetrievedChunk) GetDocumentId() string {
@@ -1044,11 +1011,12 @@ const file_knowledge_proto_rawDesc = "" +
 	"\findex_status\x18\x04 \x01(\x0e2\x16.knowledge.IndexStatusR\vindexStatus\"g\n" +
 	"\x15ListDocumentsResponse\x128\n" +
 	"\tdocuments\x18\x01 \x03(\v2\x1a.knowledge.DocumentSummaryR\tdocuments\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"[\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"k\n" +
 	"\x15CreateDocumentRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x12\n" +
-	"\x04tags\x18\x03 \x03(\tR\x04tags\"5\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x12\x0e\n" +
+	"\x02id\x18\x04 \x01(\tR\x02id\"5\n" +
 	"\x12GetDocumentRequest\x12\x1f\n" +
 	"\vdocument_id\x18\x01 \x01(\tR\n" +
 	"documentId\"|\n" +
@@ -1064,8 +1032,6 @@ const file_knowledge_proto_rawDesc = "" +
 	"\x16ReindexDocumentRequest\x12\x1f\n" +
 	"\vdocument_id\x18\x01 \x01(\tR\n" +
 	"documentId\"@\n" +
-	"\x17ReindexDocumentResponse\x12%\n" +
-	"\x03job\x18\x01 \x01(\v2\x13.knowledge.IndexJobR\x03job\"@\n" +
 	"\x1dGetDocumentIndexStatusRequest\x12\x1f\n" +
 	"\vdocument_id\x18\x01 \x01(\tR\n" +
 	"documentId\"G\n" +
@@ -1114,18 +1080,19 @@ const file_knowledge_proto_rawDesc = "" +
 	"\x04text\x18\x04 \x01(\tR\x04text\x12\x14\n" +
 	"\x05score\x18\x05 \x01(\x02R\x05score\x12\x1d\n" +
 	"\n" +
-	"graph_path\x18\x06 \x03(\tR\tgraphPath*\\\n" +
+	"graph_path\x18\x06 \x03(\tR\tgraphPath*w\n" +
 	"\vIndexStatus\x12\x18\n" +
-	"\x14INDEX_STATUS_PENDING\x10\x00\x12\x1a\n" +
-	"\x16INDEX_STATUS_COMPLETED\x10\x01\x12\x17\n" +
-	"\x13INDEX_STATUS_FAILED\x10\x022\xa5\x05\n" +
+	"\x14INDEX_STATUS_PENDING\x10\x00\x12\x19\n" +
+	"\x15INDEX_STATUS_INDEXING\x10\x01\x12\x1a\n" +
+	"\x16INDEX_STATUS_COMPLETED\x10\x02\x12\x17\n" +
+	"\x13INDEX_STATUS_FAILED\x10\x032\x9f\x05\n" +
 	"\x10KnowledgeService\x12T\n" +
-	"\rListDocuments\x12\x1f.knowledge.ListDocumentsRequest\x1a .knowledge.ListDocumentsResponse\"\x00\x12I\n" +
-	"\x0eCreateDocument\x12 .knowledge.CreateDocumentRequest\x1a\x13.knowledge.Document\"\x00\x12C\n" +
-	"\vGetDocument\x12\x1d.knowledge.GetDocumentRequest\x1a\x13.knowledge.Document\"\x00\x12I\n" +
-	"\x0eUpdateDocument\x12 .knowledge.UpdateDocumentRequest\x1a\x13.knowledge.Document\"\x00\x12L\n" +
-	"\x0eDeleteDocument\x12 .knowledge.DeleteDocumentRequest\x1a\x16.google.protobuf.Empty\"\x00\x12Z\n" +
-	"\x0fReindexDocument\x12!.knowledge.ReindexDocumentRequest\x1a\".knowledge.ReindexDocumentResponse\"\x00\x12o\n" +
+	"\rListDocuments\x12\x1f.knowledge.ListDocumentsRequest\x1a .knowledge.ListDocumentsResponse\"\x00\x12L\n" +
+	"\x0eCreateDocument\x12 .knowledge.CreateDocumentRequest\x1a\x16.google.protobuf.Empty\"\x00\x12C\n" +
+	"\vGetDocument\x12\x1d.knowledge.GetDocumentRequest\x1a\x13.knowledge.Document\"\x00\x12L\n" +
+	"\x0eUpdateDocument\x12 .knowledge.UpdateDocumentRequest\x1a\x16.google.protobuf.Empty\"\x00\x12L\n" +
+	"\x0eDeleteDocument\x12 .knowledge.DeleteDocumentRequest\x1a\x16.google.protobuf.Empty\"\x00\x12N\n" +
+	"\x0fReindexDocument\x12!.knowledge.ReindexDocumentRequest\x1a\x16.google.protobuf.Empty\"\x00\x12o\n" +
 	"\x16GetDocumentIndexStatus\x12(.knowledge.GetDocumentIndexStatusRequest\x1a).knowledge.GetDocumentIndexStatusResponse\"\x00\x12E\n" +
 	"\bRetrieve\x12\x1a.knowledge.RetrieveRequest\x1a\x1b.knowledge.RetrieveResponse\"\x00B=Z;github.com/kimnattanan/graph-rag-service/internal/knowledgeb\x06proto3"
 
@@ -1142,7 +1109,7 @@ func file_knowledge_proto_rawDescGZIP() []byte {
 }
 
 var file_knowledge_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_knowledge_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_knowledge_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_knowledge_proto_goTypes = []any{
 	(IndexStatus)(0),                       // 0: knowledge.IndexStatus
 	(*ListDocumentsRequest)(nil),           // 1: knowledge.ListDocumentsRequest
@@ -1152,54 +1119,52 @@ var file_knowledge_proto_goTypes = []any{
 	(*UpdateDocumentRequest)(nil),          // 5: knowledge.UpdateDocumentRequest
 	(*DeleteDocumentRequest)(nil),          // 6: knowledge.DeleteDocumentRequest
 	(*ReindexDocumentRequest)(nil),         // 7: knowledge.ReindexDocumentRequest
-	(*ReindexDocumentResponse)(nil),        // 8: knowledge.ReindexDocumentResponse
-	(*GetDocumentIndexStatusRequest)(nil),  // 9: knowledge.GetDocumentIndexStatusRequest
-	(*GetDocumentIndexStatusResponse)(nil), // 10: knowledge.GetDocumentIndexStatusResponse
-	(*RetrieveRequest)(nil),                // 11: knowledge.RetrieveRequest
-	(*RetrieveResponse)(nil),               // 12: knowledge.RetrieveResponse
-	(*Document)(nil),                       // 13: knowledge.Document
-	(*DocumentSummary)(nil),                // 14: knowledge.DocumentSummary
-	(*IndexJob)(nil),                       // 15: knowledge.IndexJob
-	(*RetrievedChunk)(nil),                 // 16: knowledge.RetrievedChunk
-	(*timestamppb.Timestamp)(nil),          // 17: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                  // 18: google.protobuf.Empty
+	(*GetDocumentIndexStatusRequest)(nil),  // 8: knowledge.GetDocumentIndexStatusRequest
+	(*GetDocumentIndexStatusResponse)(nil), // 9: knowledge.GetDocumentIndexStatusResponse
+	(*RetrieveRequest)(nil),                // 10: knowledge.RetrieveRequest
+	(*RetrieveResponse)(nil),               // 11: knowledge.RetrieveResponse
+	(*Document)(nil),                       // 12: knowledge.Document
+	(*DocumentSummary)(nil),                // 13: knowledge.DocumentSummary
+	(*IndexJob)(nil),                       // 14: knowledge.IndexJob
+	(*RetrievedChunk)(nil),                 // 15: knowledge.RetrievedChunk
+	(*timestamppb.Timestamp)(nil),          // 16: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                  // 17: google.protobuf.Empty
 }
 var file_knowledge_proto_depIdxs = []int32{
 	0,  // 0: knowledge.ListDocumentsRequest.index_status:type_name -> knowledge.IndexStatus
-	14, // 1: knowledge.ListDocumentsResponse.documents:type_name -> knowledge.DocumentSummary
-	15, // 2: knowledge.ReindexDocumentResponse.job:type_name -> knowledge.IndexJob
-	15, // 3: knowledge.GetDocumentIndexStatusResponse.job:type_name -> knowledge.IndexJob
-	16, // 4: knowledge.RetrieveResponse.chunks:type_name -> knowledge.RetrievedChunk
-	0,  // 5: knowledge.Document.index_status:type_name -> knowledge.IndexStatus
-	17, // 6: knowledge.Document.created_at:type_name -> google.protobuf.Timestamp
-	17, // 7: knowledge.Document.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 8: knowledge.DocumentSummary.index_status:type_name -> knowledge.IndexStatus
-	17, // 9: knowledge.DocumentSummary.created_at:type_name -> google.protobuf.Timestamp
-	17, // 10: knowledge.DocumentSummary.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 11: knowledge.IndexJob.status:type_name -> knowledge.IndexStatus
-	17, // 12: knowledge.IndexJob.started_at:type_name -> google.protobuf.Timestamp
-	17, // 13: knowledge.IndexJob.finished_at:type_name -> google.protobuf.Timestamp
-	1,  // 14: knowledge.KnowledgeService.ListDocuments:input_type -> knowledge.ListDocumentsRequest
-	3,  // 15: knowledge.KnowledgeService.CreateDocument:input_type -> knowledge.CreateDocumentRequest
-	4,  // 16: knowledge.KnowledgeService.GetDocument:input_type -> knowledge.GetDocumentRequest
-	5,  // 17: knowledge.KnowledgeService.UpdateDocument:input_type -> knowledge.UpdateDocumentRequest
-	6,  // 18: knowledge.KnowledgeService.DeleteDocument:input_type -> knowledge.DeleteDocumentRequest
-	7,  // 19: knowledge.KnowledgeService.ReindexDocument:input_type -> knowledge.ReindexDocumentRequest
-	9,  // 20: knowledge.KnowledgeService.GetDocumentIndexStatus:input_type -> knowledge.GetDocumentIndexStatusRequest
-	11, // 21: knowledge.KnowledgeService.Retrieve:input_type -> knowledge.RetrieveRequest
-	2,  // 22: knowledge.KnowledgeService.ListDocuments:output_type -> knowledge.ListDocumentsResponse
-	13, // 23: knowledge.KnowledgeService.CreateDocument:output_type -> knowledge.Document
-	13, // 24: knowledge.KnowledgeService.GetDocument:output_type -> knowledge.Document
-	13, // 25: knowledge.KnowledgeService.UpdateDocument:output_type -> knowledge.Document
-	18, // 26: knowledge.KnowledgeService.DeleteDocument:output_type -> google.protobuf.Empty
-	8,  // 27: knowledge.KnowledgeService.ReindexDocument:output_type -> knowledge.ReindexDocumentResponse
-	10, // 28: knowledge.KnowledgeService.GetDocumentIndexStatus:output_type -> knowledge.GetDocumentIndexStatusResponse
-	12, // 29: knowledge.KnowledgeService.Retrieve:output_type -> knowledge.RetrieveResponse
-	22, // [22:30] is the sub-list for method output_type
-	14, // [14:22] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	13, // 1: knowledge.ListDocumentsResponse.documents:type_name -> knowledge.DocumentSummary
+	14, // 2: knowledge.GetDocumentIndexStatusResponse.job:type_name -> knowledge.IndexJob
+	15, // 3: knowledge.RetrieveResponse.chunks:type_name -> knowledge.RetrievedChunk
+	0,  // 4: knowledge.Document.index_status:type_name -> knowledge.IndexStatus
+	16, // 5: knowledge.Document.created_at:type_name -> google.protobuf.Timestamp
+	16, // 6: knowledge.Document.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 7: knowledge.DocumentSummary.index_status:type_name -> knowledge.IndexStatus
+	16, // 8: knowledge.DocumentSummary.created_at:type_name -> google.protobuf.Timestamp
+	16, // 9: knowledge.DocumentSummary.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 10: knowledge.IndexJob.status:type_name -> knowledge.IndexStatus
+	16, // 11: knowledge.IndexJob.started_at:type_name -> google.protobuf.Timestamp
+	16, // 12: knowledge.IndexJob.finished_at:type_name -> google.protobuf.Timestamp
+	1,  // 13: knowledge.KnowledgeService.ListDocuments:input_type -> knowledge.ListDocumentsRequest
+	3,  // 14: knowledge.KnowledgeService.CreateDocument:input_type -> knowledge.CreateDocumentRequest
+	4,  // 15: knowledge.KnowledgeService.GetDocument:input_type -> knowledge.GetDocumentRequest
+	5,  // 16: knowledge.KnowledgeService.UpdateDocument:input_type -> knowledge.UpdateDocumentRequest
+	6,  // 17: knowledge.KnowledgeService.DeleteDocument:input_type -> knowledge.DeleteDocumentRequest
+	7,  // 18: knowledge.KnowledgeService.ReindexDocument:input_type -> knowledge.ReindexDocumentRequest
+	8,  // 19: knowledge.KnowledgeService.GetDocumentIndexStatus:input_type -> knowledge.GetDocumentIndexStatusRequest
+	10, // 20: knowledge.KnowledgeService.Retrieve:input_type -> knowledge.RetrieveRequest
+	2,  // 21: knowledge.KnowledgeService.ListDocuments:output_type -> knowledge.ListDocumentsResponse
+	17, // 22: knowledge.KnowledgeService.CreateDocument:output_type -> google.protobuf.Empty
+	12, // 23: knowledge.KnowledgeService.GetDocument:output_type -> knowledge.Document
+	17, // 24: knowledge.KnowledgeService.UpdateDocument:output_type -> google.protobuf.Empty
+	17, // 25: knowledge.KnowledgeService.DeleteDocument:output_type -> google.protobuf.Empty
+	17, // 26: knowledge.KnowledgeService.ReindexDocument:output_type -> google.protobuf.Empty
+	9,  // 27: knowledge.KnowledgeService.GetDocumentIndexStatus:output_type -> knowledge.GetDocumentIndexStatusResponse
+	11, // 28: knowledge.KnowledgeService.Retrieve:output_type -> knowledge.RetrieveResponse
+	21, // [21:29] is the sub-list for method output_type
+	13, // [13:21] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_knowledge_proto_init() }
@@ -1213,7 +1178,7 @@ func file_knowledge_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_knowledge_proto_rawDesc), len(file_knowledge_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   16,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

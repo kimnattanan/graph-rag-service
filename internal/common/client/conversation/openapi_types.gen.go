@@ -61,6 +61,9 @@ type ConversationSummary struct {
 
 // CreateConversationRequest defines model for CreateConversationRequest.
 type CreateConversationRequest struct {
+	// Id Client-generated conversation id
+	Id openapi_types.UUID `json:"id"`
+
 	// Title Optional title; auto-generated from the first message if omitted when a message is sent
 	Title *string `json:"title,omitempty"`
 }
@@ -99,17 +102,14 @@ type SendMessageRequest struct {
 	// HistoryCapacity Number of most recent messages in the conversation to include as LLM context
 	HistoryCapacity *int `json:"historyCapacity,omitempty"`
 
+	// Id Client-generated id for the user message
+	Id openapi_types.UUID `json:"id"`
+
 	// Tags Optional tag filter passed to Knowledge retrieval
 	Tags *[]string `json:"tags,omitempty"`
 
 	// TopK Number of knowledge chunks to retrieve
 	TopK *int `json:"topK,omitempty"`
-}
-
-// SendMessageResult defines model for SendMessageResult.
-type SendMessageResult struct {
-	AssistantMessage Message `json:"assistantMessage"`
-	UserMessage      Message `json:"userMessage"`
 }
 
 // Source defines model for Source.
