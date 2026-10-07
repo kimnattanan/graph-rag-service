@@ -2,10 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log"
 
-	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"github.com/sirupsen/logrus"
 
 	"github.com/kimnattanan/graph-rag-service/internal/common/metrics"
@@ -17,17 +15,12 @@ import (
 )
 
 func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, func()) {
-	dbUri := fmt.Sprintf("bolt://%s:%s", cfg.Memgraph.Host, cfg.Memgraph.Port)
-	memgraphDriver, err := neo4j.NewDriverWithContext(dbUri, neo4j.BasicAuth(cfg.Memgraph.User, cfg.Memgraph.Password, ""))
+	memgraphDriver, err := connectMemgraph(ctx, cfg)
 	if err != nil {
 		panic(err)
 	}
-	err = memgraphDriver.VerifyConnectivity(ctx)
-	if err != nil {
-		panic(err)
-	}
-	err = startupMemgraph(ctx, memgraphDriver)
-	if err != nil {
+	if err := startupMemgraph(ctx, memgraphDriver); err != nil {
+		_ = memgraphDriver.Close(ctx)
 		panic(err)
 	}
 
@@ -41,12 +34,12 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 
 	return app.Application{
 			Commands: app.Commands{
-				CreateDocument:  command.NewCreateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				UpdateDocument:  command.NewUpdateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				DeleteDocument:  command.NewDeleteDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				ReindexDocument: command.NewReindexDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				CreateDocument:    command.NewCreateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				UpdateDocument:    command.NewUpdateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				DeleteDocument:    command.NewDeleteDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				ReindexDocument:   command.NewReindexDocumentHandler(documentMemgraphRepository, logger, metricsClient),
 				IndexNextDocument: command.NewIndexNextDocumentHandler(documentMemgraphRepository, extractor, indexMemgraphRepository, logger, metricsClient),
-				SweepOrphans: command.NewSweepOrphansHandler(indexMemgraphRepository, logger, metricsClient),
+				SweepOrphans:      command.NewSweepOrphansHandler(indexMemgraphRepository, logger, metricsClient),
 			},
 			Queries: app.Queries{
 				ListDocuments:          query.NewListDocumentsHandler(documentMemgraphReadModel, logger, metricsClient),
