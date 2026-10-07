@@ -3,12 +3,14 @@ module github.com/kimnattanan/graph-rag-service/internal/common
 go 1.25.0
 
 require (
+	cloud.google.com/go/compute/metadata v0.9.0
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/oapi-codegen/runtime v1.6.0
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	google.golang.org/grpc v1.82.1
