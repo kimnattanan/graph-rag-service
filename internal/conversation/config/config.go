@@ -35,9 +35,9 @@ type (
 	}
 
 	LLM struct {
-		BaseURL string `env:"LLM_BASE_URL" envDefault:""`
-		APIKey  string `env:"LLM_API_KEY" envDefault:""`
-		Model   string `env:"LLM_MODEL" envDefault:""`
+		BaseURL string `env:"LLM_BASE_URL"`
+		APIKey  string `env:"LLM_API_KEY"`
+		Model   string `env:"LLM_MODEL"`
 	}
 
 	Auth struct {

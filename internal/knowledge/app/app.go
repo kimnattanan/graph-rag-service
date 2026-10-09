@@ -16,6 +16,7 @@ type Commands struct {
 	DeleteDocument    command.DeleteDocumentHandler
 	ReindexDocument   command.ReindexDocumentHandler
 	IndexNextDocument command.IndexNextDocumentHandler
+	EmbedNextEntity   command.EmbedNextEntityHandler
 	SweepOrphans      command.SweepOrphansHandler
 }
 

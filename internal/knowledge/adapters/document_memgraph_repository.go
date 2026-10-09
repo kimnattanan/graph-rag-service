@@ -23,7 +23,6 @@ func NewDocumentMemgraphRepository(memgraphDriver neo4j.DriverWithContext) *Docu
 
 func (r *DocumentMemgraphRepository) AddDocument(ctx context.Context, doc *document.Document) error {
 	return r.executeWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
-		// Create only when the id is free. The unique constraint on Document.id also rejects a concurrent insert that passes this check.
 		result, err := tx.Run(ctx, `
 			OPTIONAL MATCH (existing:Document {id: $id})
 			WITH existing
@@ -112,8 +111,7 @@ func (r *DocumentMemgraphRepository) DeleteDocument(ctx context.Context, docID s
 func (r *DocumentMemgraphRepository) ClaimNextPending(ctx context.Context) (*document.Document, error) {
 	var claimed *document.Document
 	err := r.executeWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
-		// Oldest pending document first.
-		// The status flip happens in this write, so a concurrent claim conflicts instead of taking the same document.
+		// Oldest pending document first. The status flip happens in this write.
 		result, err := tx.Run(ctx, `
 			MATCH (d:Document)
 			WHERE d.index_status = $pending

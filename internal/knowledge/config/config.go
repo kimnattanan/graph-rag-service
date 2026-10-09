@@ -11,6 +11,7 @@ type (
 		Memgraph Memgraph
 		Worker   Worker
 		Auth     Auth
+		Embedder Embedder
 	}
 
 	App struct {
@@ -31,5 +32,12 @@ type (
 
 	Auth struct {
 		JWTSecret string `env:"JWT_SECRET,required"`
+	}
+
+	Embedder struct {
+		URL       string `env:"VECTOR_EMBEDDING_URL"`
+		APIKey    string `env:"VECTOR_EMBEDDING_API_KEY"`
+		Model     string `env:"VECTOR_EMBEDDING_MODEL"`
+		Dimension int    `env:"VECTOR_EMBEDDING_DIMENSION"`
 	}
 )

@@ -33,7 +33,6 @@ func (r *DocumentMemgraphReadModel) ListDocuments(ctx context.Context, limit int
 		indexStatusClause = "WHERE d.index_status = $indexStatus"
 	}
 
-	// Tags live on Tag nodes reached by Document-[:TAGGED_AS]->Tag.
 	var cypher string
 	if tag == nil {
 		cypher = fmt.Sprintf(`
@@ -121,45 +120,36 @@ func (r *DocumentMemgraphReadModel) GetDocument(ctx context.Context, documentID 
 	return domainDocumentFromRecord(result.Records[0])
 }
 
-func (r *DocumentMemgraphReadModel) Retrieve(ctx context.Context, queryStr string, topK int, tags *[]string) (query.RetrieveResult, error) {
+func (r *DocumentMemgraphReadModel) Retrieve(ctx context.Context, embedding []float64, topK int, tags *[]string) (query.RetrieveResult, error) {
 	tagFilter := []string{}
 	if tags != nil {
 		tagFilter = *tags
 	}
 
-	// Document-[:HAS_CHUNK]->Chunk-[:MENTIONS]->Entity.
-	// Score counts query words found in the chunk text and in mentioned entity names.
 	cypher := `
-		WITH [w IN split(toLower($query), ' ') WHERE size(w) > 0] AS words
-		MATCH (d:Document)-[:HAS_CHUNK]->(c:Chunk)
-		WHERE d.index_status = $indexStatus
+		CALL vector_search.search("chunk_embedding", $candidates, $embedding)
+		YIELD node AS c, similarity
+		MATCH (d:Document)-[:HAS_CHUNK]->(c)
+		WHERE d.index_status = $completedStatus
 		OPTIONAL MATCH (d)-[:TAGGED_AS]->(t:Tag)
-		WITH d, c, words, collect(DISTINCT t.value) AS docTags
+		WITH d, c, similarity, collect(DISTINCT t.value) AS docTags
 		WHERE size($tags) = 0 OR any(tag IN $tags WHERE tag IN docTags)
-		WITH d, c, words,
-		     size([w IN words WHERE toLower(c.text) CONTAINS w]) AS textHits
-		OPTIONAL MATCH (c)-[:MENTIONS]->(e:Entity)
-		WITH d, c, words, textHits, e
-		ORDER BY e.value
-		WITH d, c, words, textHits, collect(e.value) AS entities
-		WITH d, c, textHits, entities,
-		     size([name IN entities WHERE any(w IN words WHERE toLower(name) CONTAINS w)]) AS entityHits
-		WHERE textHits > 0 OR entityHits > 0
-		WITH d, c, entities, toFloat(textHits + entityHits) AS score
-		ORDER BY score DESC, c.id ASC
+		ORDER BY similarity DESC
 		LIMIT $topK
+		OPTIONAL MATCH (c)-[:MENTIONS]->(e:Entity)
 		RETURN d.id AS documentID,
-		       d.title AS documentTitle,
-		       c.id AS chunkID,
-		       c.text AS text,
-		       score,
-		       entities AS graphPath
+			d.title AS documentTitle,
+			c.id AS chunkID,
+			c.text AS text,
+			similarity AS score,
+			collect(DISTINCT e.name) AS graphPath
 	`
 	result, err := neo4j.ExecuteQuery(ctx, r.memgraphDriver, cypher, map[string]any{
-		"query":       queryStr,
-		"topK":        topK,
-		"indexStatus": int64(document.IndexStatusCompleted),
-		"tags":        tagFilter,
+		"embedding":       embedding,
+		"topK":            topK,
+		"candidates":      min(topK*10, 100),
+		"completedStatus": int64(document.IndexStatusCompleted),
+		"tags":            tagFilter,
 	}, neo4j.EagerResultTransformer, neo4j.ExecuteQueryWithDatabase(""))
 	if err != nil {
 		return query.RetrieveResult{}, err

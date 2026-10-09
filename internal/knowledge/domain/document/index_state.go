@@ -105,7 +105,7 @@ func (i *IndexState) MarkAsIndexing() error {
 		return ErrCannotMarkAsIndexing
 	}
 	i.status = IndexStatusIndexing
-	i.startedAt = time.Now()
+	i.startedAt = time.Now().UTC()
 	i.finishedAt = time.Time{}
 	i.errorMessage = ""
 	return nil
@@ -119,7 +119,7 @@ func (i *IndexState) MarkAsCompleted() error {
 		return ErrCannotMarkAsCompleted
 	}
 	i.status = IndexStatusCompleted
-	i.finishedAt = time.Now()
+	i.finishedAt = time.Now().UTC()
 	i.errorMessage = ""
 	return nil
 }
@@ -132,7 +132,7 @@ func (i *IndexState) MarkAsFailed(errorMessage string) error {
 		return ErrCannotMarkAsFailed
 	}
 	i.status = IndexStatusFailed
-	i.finishedAt = time.Now()
+	i.finishedAt = time.Now().UTC()
 	i.errorMessage = errorMessage
 	return nil
 }

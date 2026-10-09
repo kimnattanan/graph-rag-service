@@ -13,7 +13,7 @@ import (
 
 const (
 	memgraphConnectAttempts = 5
-	memgraphConnectDelay    = 2 * time.Second
+	memgraphConnectDelay    = 10 * time.Second
 )
 
 func connectMemgraph(ctx context.Context, cfg *config.Config) (neo4j.DriverWithContext, error) {
@@ -60,13 +60,17 @@ func waitMemgraphRetry(ctx context.Context) error {
 	}
 }
 
-func startupMemgraph(ctx context.Context, memgraphDriver neo4j.DriverWithContext) error {
+func startupMemgraph(ctx context.Context, memgraphDriver neo4j.DriverWithContext, cfg *config.Config) error {
 	session := memgraphDriver.NewSession(ctx, neo4j.SessionConfig{})
 	defer session.Close(ctx)
 	cyphers := []string{
 		`CREATE CONSTRAINT ON (d:Document) ASSERT d.id IS UNIQUE`,
 		`CREATE CONSTRAINT ON (e:Entity) ASSERT e.value IS UNIQUE`,
 		`CREATE CONSTRAINT ON (t:Tag) ASSERT t.value IS UNIQUE`,
+		fmt.Sprintf(`
+			CREATE VECTOR INDEX chunk_embedding ON :Chunk(embedding)
+			WITH CONFIG {"dimension": %d, "capacity": 100000, "metric": "cos"};
+		`, cfg.Embedder.Dimension),
 	}
 	for _, cypher := range cyphers {
 		result, err := session.Run(ctx, cypher, nil)

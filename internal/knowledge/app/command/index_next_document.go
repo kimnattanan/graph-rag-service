@@ -10,8 +10,6 @@ import (
 )
 
 type IndexNextDocument struct {
-	// NoPending is set when the queue has no document to claim.
-	// An empty queue is not a failure, so Handle returns nil and the worker stops on this flag.
 	NoPending *bool
 }
 
@@ -20,12 +18,14 @@ type IndexNextDocumentHandler decorator.CommandHandler[IndexNextDocument]
 type indexNextDocumentHandler struct {
 	repo      document.Repository
 	extractor indexing.Extractor
+	embedder  indexing.Embedder
 	indexRepo indexing.Repository
 }
 
 func NewIndexNextDocumentHandler(
 	repo document.Repository,
 	extractor indexing.Extractor,
+	embedder indexing.Embedder,
 	indexRepo indexing.Repository,
 	logger *logrus.Entry,
 	metricsClient decorator.MetricsClient,
@@ -67,7 +67,15 @@ func (h indexNextDocumentHandler) Handle(ctx context.Context, cmd IndexNextDocum
 		}
 		return err
 	}
-	if err := h.indexRepo.ReplaceChunks(ctx, doc.ID(), results); err != nil {
+	chunkContents := make([]string, 0, len(results))
+	for _, result := range results {
+		chunkContents = append(chunkContents, result.Content())
+	}
+	chunkEmbeddings, err := h.embedder.Embed(ctx, chunkContents)
+	if err != nil {
+		return err
+	}
+	if err := h.indexRepo.ReplaceChunks(ctx, doc.ID(), results, chunkEmbeddings); err != nil {
 		if updateErr := h.repo.UpdateDocument(ctx, doc.ID(), func(doc *document.Document) error {
 			return doc.MarkAsFailed(err.Error())
 		}); updateErr != nil {

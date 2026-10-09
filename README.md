@@ -37,3 +37,10 @@ User                          Conversation                      Knowledge
   |                               |<-- chunks + graphPath ----------|
   |                               |-- prompt + LLM                  |
   |<-- assistant + sources -------|                                 |
+
+
+
+Cypher to see the graph:
+```
+  MATCH p=()-[]-() RETURN p;
+```

@@ -19,7 +19,7 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 	if err != nil {
 		panic(err)
 	}
-	if err := startupMemgraph(ctx, memgraphDriver); err != nil {
+	if err := startupMemgraph(ctx, memgraphDriver, cfg); err != nil {
 		_ = memgraphDriver.Close(ctx)
 		panic(err)
 	}
@@ -28,24 +28,33 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 	documentMemgraphRepository := adapters.NewDocumentMemgraphRepository(memgraphDriver)
 	indexMemgraphRepository := adapters.NewIndexMemgraphRepository(memgraphDriver)
 	extractor := adapters.NewExtractor()
+	embedder := adapters.NewEmbedder(cfg.Embedder)
 
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.NoOp{}
 
 	return app.Application{
 			Commands: app.Commands{
-				CreateDocument:    command.NewCreateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				UpdateDocument:    command.NewUpdateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				DeleteDocument:    command.NewDeleteDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				ReindexDocument:   command.NewReindexDocumentHandler(documentMemgraphRepository, logger, metricsClient),
-				IndexNextDocument: command.NewIndexNextDocumentHandler(documentMemgraphRepository, extractor, indexMemgraphRepository, logger, metricsClient),
-				SweepOrphans:      command.NewSweepOrphansHandler(indexMemgraphRepository, logger, metricsClient),
+				CreateDocument:  command.NewCreateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				UpdateDocument:  command.NewUpdateDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				DeleteDocument:  command.NewDeleteDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				ReindexDocument: command.NewReindexDocumentHandler(documentMemgraphRepository, logger, metricsClient),
+				IndexNextDocument: command.NewIndexNextDocumentHandler(
+					documentMemgraphRepository,
+					extractor,
+					embedder,
+					indexMemgraphRepository,
+					logger,
+					metricsClient,
+				),
+				EmbedNextEntity: command.NewEmbedNextEntityHandler(indexMemgraphRepository, embedder, logger, metricsClient),
+				SweepOrphans: command.NewSweepOrphansHandler(indexMemgraphRepository, logger, metricsClient),
 			},
 			Queries: app.Queries{
 				ListDocuments:          query.NewListDocumentsHandler(documentMemgraphReadModel, logger, metricsClient),
 				GetDocument:            query.NewGetDocumentHandler(documentMemgraphReadModel, logger, metricsClient),
 				GetDocumentIndexStatus: query.NewGetDocumentIndexStatusHandler(documentMemgraphReadModel, logger, metricsClient),
-				Retrieve:               query.NewRetrieveHandler(documentMemgraphReadModel, logger, metricsClient),
+				Retrieve:               query.NewRetrieveHandler(documentMemgraphReadModel, embedder, logger, metricsClient),
 			},
 		}, func() {
 			err := memgraphDriver.Close(ctx)

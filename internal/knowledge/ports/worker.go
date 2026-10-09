@@ -47,12 +47,26 @@ func (w *Worker) runWorker() {
 		case <-w.ctx.Done():
 			return
 		case <-ticker.C:
+			// index documents
 			for {
 				if w.ctx.Err() != nil {
 					return
 				}
 				noPending := false
 				err := w.app.Commands.IndexNextDocument.Handle(w.ctx, command.IndexNextDocument{
+					NoPending: &noPending,
+				})
+				if err != nil || noPending {
+					break
+				}
+			}
+			// embed entities
+			for {
+				if w.ctx.Err() != nil {
+					return
+				}
+				noPending := false
+				err := w.app.Commands.EmbedNextEntity.Handle(w.ctx, command.EmbedNextEntity{
 					NoPending: &noPending,
 				})
 				if err != nil || noPending {

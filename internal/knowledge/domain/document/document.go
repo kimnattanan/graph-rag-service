@@ -34,7 +34,7 @@ func NewDocument(id string, title string, content string, tags []string) (*Docum
 	if content == "" {
 		return nil, ErrEmptyDocumentContent
 	}
-	now := time.Now()
+	now := time.Now().UTC()
 	return &Document{
 		id:         id,
 		title:      title,
@@ -96,7 +96,7 @@ func (d *Document) MarkAsPending() error {
 	if err := d.indexState.MarkAsPending(); err != nil {
 		return err
 	}
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -107,7 +107,7 @@ func (d *Document) MarkAsIndexing() error {
 	if err := d.indexState.MarkAsIndexing(); err != nil {
 		return err
 	}
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -118,7 +118,7 @@ func (d *Document) MarkAsCompleted() error {
 	if err := d.indexState.MarkAsCompleted(); err != nil {
 		return err
 	}
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -129,7 +129,7 @@ func (d *Document) MarkAsFailed(errorMessage string) error {
 	if err := d.indexState.MarkAsFailed(errorMessage); err != nil {
 		return err
 	}
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -138,7 +138,7 @@ func (d *Document) UpdateTitle(title string) error {
 		return errors.New("empty document title")
 	}
 	d.title = title
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -150,11 +150,11 @@ func (d *Document) UpdateContent(content string) error {
 		return errors.New("empty document content")
 	}
 	d.content = content
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 	return nil
 }
 
 func (d *Document) UpdateTags(tags []string) {
 	d.tags = append([]string(nil), tags...)
-	d.updatedAt = time.Now()
+	d.updatedAt = time.Now().UTC()
 }

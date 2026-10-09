@@ -60,28 +60,6 @@ services:
       user-postgres:
         condition: service_healthy
 
-  # user-grpc:
-  #   build:
-  #     context: docker/app
-  #   volumes:
-  #     - ./internal:/internal
-  #     - ./.go/pkg:/go/pkg
-  #     - ./.go-cache:/go-cache
-  #   working_dir: /internal
-  #   ports:
-  #     - "127.0.0.1:3011:$PORT"
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     SERVICE: user
-  #     SERVER_TO_RUN: grpc
-  #     GOCACHE: /go-cache
-  #     USER_POSTGRES_HOST: user-postgres
-  #     USER_POSTGRES_PORT: "5432"
-  #   depends_on:
-  #     user-postgres:
-  #       condition: service_healthy
-
   conversation-http:
     build:
       context: docker/app
@@ -159,7 +137,7 @@ services:
       - user_pg_data:/var/lib/postgresql/data
 
   memgraph:
-    image: "memgraph/memgraph-mage"
+    image: "memgraph/memgraph-mage:3.13.1"
     volumes:
       - mg_lib:/var/lib/memgraph
       - mg_log:/var/log/memgraph

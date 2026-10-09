@@ -48,6 +48,9 @@ type chatCompletionResponse struct {
 }
 
 func (c *LLMCompleter) Complete(ctx context.Context, prompt string) (string, error) {
+	// print the prompt
+	fmt.Println("prompt:", prompt)
+
 	if c.cfg.BaseURL == "" {
 		return "", fmt.Errorf("llm: base url is empty")
 	}
