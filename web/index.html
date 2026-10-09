@@ -3,16 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graph RAG test</title>
+    <title>Graph RAG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <strong>Graph RAG test</strong>
-      <nav id="nav"></nav>
-      <div id="who"></div>
+    <header class="site-header">
+      <div class="brand">
+        <p class="brand-title">Graph RAG</p>
+        <p class="brand-kicker">Service console</p>
+      </div>
+      <nav id="nav" aria-label="Primary"></nav>
+      <div id="who" class="account"></div>
     </header>
-    <p id="banner" hidden></p>
+    <p id="banner" class="banner" role="status" hidden></p>
     <main id="view"></main>
     <script type="module" src="/src/main.js"></script>
   </body>

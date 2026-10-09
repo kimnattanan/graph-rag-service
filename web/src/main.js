@@ -37,6 +37,44 @@ function esc(value) {
     .replaceAll('"', '&quot;');
 }
 
+function roleLabel(role) {
+  if (role === 'user') return 'You';
+  if (role === 'assistant') return 'Assistant';
+  if (!role) return 'Message';
+  const text = String(role);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function statusLabel(status) {
+  if (!status) return 'Any status';
+  const text = String(status);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function formatWhen(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
+function formatScore(score) {
+  const number = Number(score);
+  if (!Number.isFinite(number)) return String(score ?? '');
+  return number.toFixed(3);
+}
+
+function navLink(hash, label) {
+  const active = state.view === hash;
+  return `<a class="nav-link${active ? ' is-active' : ''}" href="#${hash}"${active ? ' aria-current="page"' : ''}>${label}</a>`;
+}
+
 function parseTags(value) {
   return value.split(',').map((part) => part.trim()).filter(Boolean);
 }
@@ -101,19 +139,20 @@ function clearSession() {
 function render() {
   const links = [];
   if (state.user) {
-    links.push('<a href="#chat">Chat</a>');
-    if (isAdmin()) links.push('<a href="#documents">Documents</a>');
+    links.push(navLink('chat', 'Conversation'));
+    if (isAdmin()) links.push(navLink('documents', 'Documents'));
   } else {
-    links.push('<a href="#login">Login</a>');
-    links.push('<a href="#register">Register</a>');
+    links.push(navLink('login', 'Sign in'));
+    links.push(navLink('register', 'Register'));
   }
   navEl.innerHTML = links.join('');
 
   if (state.user) {
     whoEl.innerHTML = `
-      <span>${esc(state.user.username)} (${esc(state.user.role)})</span>
-      <button type="button" id="logout">Logout</button>
-      <button type="button" id="delete-account">Delete account</button>
+      <span class="account-name">${esc(state.user.username)}</span>
+      <span class="role-badge">${esc(state.user.role)}</span>
+      <button type="button" class="btn btn-ghost" id="logout">Sign out</button>
+      <button type="button" class="btn btn-danger" id="delete-account">Delete account</button>
     `;
   } else {
     whoEl.innerHTML = '';
@@ -121,10 +160,11 @@ function render() {
 
   if (state.banner) {
     bannerEl.hidden = false;
-    bannerEl.className = state.bannerKind;
+    bannerEl.className = `banner ${state.bannerKind}`;
     bannerEl.textContent = state.banner;
   } else {
     bannerEl.hidden = true;
+    bannerEl.className = 'banner';
     bannerEl.textContent = '';
   }
 
@@ -141,75 +181,133 @@ function render() {
 
 function loginView() {
   return `
-    <form class="auth" id="login-form">
-      <h2>Login</h2>
-      <label>Email <input name="email" type="email" required autocomplete="username"></label>
-      <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
-      <button>Login</button>
-      <p>Proxied to user :3001, knowledge :3000, conversation :3002.</p>
-    </form>
+    <section class="sheet">
+      <h1>Sign in</h1>
+      <p class="lede">Use your account to open a conversation. Administrators can also manage documents.</p>
+      <form id="login-form">
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="username">
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input name="password" type="password" required autocomplete="current-password">
+        </label>
+        <button class="btn">Sign in</button>
+      </form>
+      <p class="note">Local services: user on port 3001, knowledge on port 3000, conversation on port 3002.</p>
+    </section>
   `;
 }
 
 function registerView() {
   return `
-    <form class="auth" id="register-form">
-      <h2>Register</h2>
-      <label>Email <input name="email" type="email" required></label>
-      <label>Username <input name="username" required maxlength="64"></label>
-      <label>Password <input name="password" type="password" required minlength="8" maxlength="72"></label>
-      <button>Register</button>
-    </form>
+    <section class="sheet">
+      <h1>Register</h1>
+      <p class="lede">Create an account, then sign in to continue.</p>
+      <form id="register-form">
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="email">
+        </label>
+        <label class="field">
+          <span>Username</span>
+          <input name="username" type="text" required maxlength="64" autocomplete="username">
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password">
+          <small class="hint">At least 8 characters.</small>
+        </label>
+        <button class="btn">Create account</button>
+      </form>
+    </section>
   `;
 }
 
 function chatView() {
   const items = state.conversations?.items || [];
   const list = state.conversations
-    ? items.map((item) => `
-        <div>
-          <button type="button" data-open-conversation="${esc(item.id)}" ${item.id === state.selectedConversationId ? 'disabled' : ''}>
-            ${esc(item.title || '(untitled)')} (${item.messageCount})
-          </button>
-          <button type="button" data-delete-conversation="${esc(item.id)}">Delete</button>
-        </div>
-      `).join('') || '<p>No conversations.</p>'
-    : `<p>${state.banner ? 'Could not load conversations.' : 'Loading…'}</p>`;
+    ? items.map((item) => {
+        const selected = item.id === state.selectedConversationId;
+        const count = Number(item.messageCount) || 0;
+        return `
+          <div class="conv-item${selected ? ' is-selected' : ''}">
+            <button type="button" class="conv-open" data-open-conversation="${esc(item.id)}" ${selected ? 'disabled aria-current="true"' : ''}>
+              <span class="conv-title">${esc(item.title || 'Untitled')}</span>
+              <span class="conv-meta">${count} ${count === 1 ? 'message' : 'messages'}</span>
+            </button>
+            <button type="button" class="btn-text" data-delete-conversation="${esc(item.id)}">Delete</button>
+          </div>
+        `;
+      }).join('') || '<p class="empty">No conversations yet.</p>'
+    : `<p class="empty">${state.banner ? 'Could not load conversations.' : 'Loading…'}</p>`;
 
   const messages = state.conversation?.messages?.map((message) => {
+    const role = message.role === 'assistant' || message.role === 'user' ? message.role : 'other';
     const sources = (message.sources || []).map((source) => `
-      <li>${esc(source.documentTitle)} (${source.score}) — ${esc(source.text)}</li>
+      <li>
+        <div class="source-title">${esc(source.documentTitle)}</div>
+        <div class="source-score">Score ${esc(formatScore(source.score))}</div>
+        <div>${esc(source.text)}</div>
+      </li>
     `).join('');
     return `
-      <article class="message">
-        <div class="role">${esc(message.role)}</div>
-        <div>${esc(message.content)}</div>
-        ${sources ? `<details><summary>Sources (${message.sources.length})</summary><ul>${sources}</ul></details>` : ''}
+      <article class="message message-${esc(role)}">
+        <div class="role">${esc(roleLabel(message.role))}</div>
+        <div class="message-body">${esc(message.content)}</div>
+        ${sources ? `<details class="sources"><summary>Sources (${message.sources.length})</summary><ul class="source-list">${sources}</ul></details>` : ''}
       </article>
     `;
-  }).join('') || (state.conversation ? '<p>No messages yet.</p>' : '<p>Select or create a conversation.</p>');
+  }).join('') || (state.conversation
+    ? '<p class="empty">No messages yet. Write a question below.</p>'
+    : '<p class="empty">Select a conversation, or create one to begin.</p>');
+
+  const total = state.conversations ? state.conversations.total : null;
 
   return `
     <div class="chat">
       <aside class="side">
-        <form id="new-conversation">
-          <label>Title <input name="title" type="text" placeholder="optional"></label>
-          <button>New conversation</button>
-        </form>
-        <p>${state.conversations ? `${state.conversations.total} total` : ''}</p>
-        ${list}
+        <div class="side-head">
+          <h2>Conversations</h2>
+          <form id="new-conversation">
+            <label class="field">
+              <span>Title</span>
+              <input name="title" type="text" placeholder="Optional">
+            </label>
+            <button class="btn">New conversation</button>
+          </form>
+        </div>
+        ${total === null ? '' : `<p class="count">${total} ${total === 1 ? 'conversation' : 'conversations'}</p>`}
+        <div class="conv-list">${list}</div>
       </aside>
       <section class="thread">
-        <h2>${esc(state.conversation?.title || 'Chat')}</h2>
+        <header class="thread-head">
+          <h2>${esc(state.conversation?.title || 'Conversation')}</h2>
+        </header>
         <div class="messages">${messages}</div>
-        <form id="composer">
-          <label>Message <textarea name="content" required ${state.sending ? 'disabled' : ''}>${esc(state.draft)}</textarea></label>
-          <div class="inline">
-            <label>topK <input name="topK" type="number" min="1" max="50" value="5"></label>
-            <label>history <input name="historyCapacity" type="number" min="0" max="100" value="3"></label>
-            <label>tags <input name="tags" type="text" placeholder="a, b"></label>
+        <form id="composer" class="composer">
+          <label class="field">
+            <span>Message</span>
+            <textarea name="content" required ${state.sending ? 'disabled' : ''}>${esc(state.draft)}</textarea>
+          </label>
+          <div class="composer-options">
+            <label class="field">
+              <span>Passages</span>
+              <input name="topK" type="number" min="1" max="50" value="5">
+            </label>
+            <label class="field">
+              <span>Prior messages</span>
+              <input name="historyCapacity" type="number" min="0" max="100" value="3">
+            </label>
+            <label class="field">
+              <span>Tags</span>
+              <input name="tags" type="text" placeholder="Comma-separated">
+            </label>
           </div>
-          <button ${state.sending || !state.conversation ? 'disabled' : ''}>${state.sending ? 'Waiting…' : 'Send'}</button>
+          <div class="actions">
+            <button class="btn" ${state.sending || !state.conversation ? 'disabled' : ''}>${state.sending ? 'Sending…' : 'Send message'}</button>
+          </div>
         </form>
       </section>
     </div>
@@ -218,19 +316,26 @@ function chatView() {
 
 function documentsView() {
   if (!isAdmin()) {
-    return '<p>Documents require an admin account (knowledge:write).</p>';
+    return `
+      <section class="sheet">
+        <h1>Documents</h1>
+        <p class="lede">Document management requires the knowledge:write permission.</p>
+      </section>
+    `;
   }
 
   const items = state.documents?.items || [];
   const rows = items.map((item) => `
     <tr class="${item.id === state.selectedDocumentId ? 'selected' : ''}">
       <td>${esc(item.title)}</td>
-      <td>${esc((item.tags || []).join(', '))}</td>
-      <td>${esc(item.indexStatus)}</td>
-      <td>${esc(item.updatedAt)}</td>
-      <td>
-        <button type="button" data-open-document="${esc(item.id)}">Open</button>
-        <button type="button" data-delete-document="${esc(item.id)}">Delete</button>
+      <td>${esc((item.tags || []).join(', ') || '—')}</td>
+      <td><span class="status status-${esc(item.indexStatus)}">${esc(statusLabel(item.indexStatus))}</span></td>
+      <td class="nowrap">${esc(formatWhen(item.updatedAt))}</td>
+      <td class="nowrap">
+        <div class="row-actions">
+          <button type="button" class="btn-quiet" data-open-document="${esc(item.id)}">Open</button>
+          <button type="button" class="btn-text" data-delete-document="${esc(item.id)}">Delete</button>
+        </div>
       </td>
     </tr>
   `).join('');
@@ -239,54 +344,108 @@ function documentsView() {
   const job = state.indexJob;
   const editor = doc ? `
     <form id="edit-document">
-      <h2>Edit</h2>
-      <p>id ${esc(doc.id)} · index ${esc(doc.indexStatus)}</p>
-      <label>Title <input name="title" type="text" required value="${esc(doc.title)}"></label>
-      <label>Tags <input name="tags" type="text" value="${esc((doc.tags || []).join(', '))}"></label>
-      <label>Content <textarea name="content" required>${esc(doc.content)}</textarea></label>
+      <h2>Edit document</h2>
+      <p class="meta-line"><span class="mono">${esc(doc.id)}</span> · <span class="status status-${esc(doc.indexStatus)}">${esc(statusLabel(doc.indexStatus))}</span></p>
+      <label class="field">
+        <span>Title</span>
+        <input name="title" type="text" required value="${esc(doc.title)}">
+      </label>
+      <label class="field">
+        <span>Tags</span>
+        <input name="tags" type="text" value="${esc((doc.tags || []).join(', '))}" placeholder="Comma-separated">
+      </label>
+      <label class="field">
+        <span>Content</span>
+        <textarea name="content" required>${esc(doc.content)}</textarea>
+      </label>
       <div class="actions">
-        <button>Save</button>
-        <button type="button" id="reindex">Reindex</button>
-        <button type="button" id="index-status">Index status</button>
-        <button type="button" id="delete-document">Delete</button>
+        <button class="btn">Save</button>
+        <button type="button" class="btn btn-ghost" id="reindex">Reindex</button>
+        <button type="button" class="btn btn-ghost" id="index-status">Index status</button>
+        <button type="button" class="btn btn-danger" id="delete-document">Delete</button>
       </div>
     </form>
-    ${job ? `<pre>status ${esc(job.status)}
-started ${esc(job.startedAt || '')}
-finished ${esc(job.finishedAt || '')}
-error ${esc(job.errorMessage || '')}</pre>` : ''}
-  ` : '<p>Open a document to edit it.</p>';
+    ${job ? `
+      <dl class="job">
+        <dt>Status</dt><dd>${esc(statusLabel(job.status))}</dd>
+        <dt>Started</dt><dd>${esc(formatWhen(job.startedAt))}</dd>
+        <dt>Finished</dt><dd>${esc(formatWhen(job.finishedAt))}</dd>
+        <dt>Error</dt><dd>${esc(job.errorMessage || '—')}</dd>
+      </dl>
+    ` : ''}
+  ` : `
+    <div class="editor-empty">
+      <h2>Document</h2>
+      <p>Select a document to review its content, save changes, or reindex it.</p>
+    </div>
+  `;
+
+  const total = state.documents ? state.documents.total : null;
 
   return `
-    <h2>Documents ${state.documents ? `(${state.documents.total})` : ''}</h2>
-    <form id="doc-filter" class="inline">
-      <label>Tag <input name="tag" type="text" value="${esc(state.docFilter.tag)}"></label>
-      <label>Index status
-        <select name="indexStatus">
-          ${['', 'pending', 'indexing', 'completed', 'failed'].map((status) => `
-            <option value="${status}" ${state.docFilter.indexStatus === status ? 'selected' : ''}>${status || 'any'}</option>
-          `).join('')}
-        </select>
-      </label>
-      <button>Refresh</button>
-    </form>
-    <form id="create-document">
-      <h3>Create</h3>
-      <label>Title <input name="title" type="text" required value="${esc(state.docDraft.title)}"></label>
-      <label>Tags <input name="tags" type="text" placeholder="comma-separated" value="${esc(state.docDraft.tags)}"></label>
-      <label>Content <textarea name="content" required placeholder="markdown">${esc(state.docDraft.content)}</textarea></label>
-      <button>Create</button>
-    </form>
-    <div class="docs">
-      <div class="doc-list">
-        ${state.documents ? `
-          <table>
-            <thead><tr><th>Title</th><th>Tags</th><th>Index</th><th>Updated</th><th></th></tr></thead>
-            <tbody>${rows || '<tr><td colspan="5">No documents.</td></tr>'}</tbody>
-          </table>
-        ` : `<p>${state.banner ? 'Could not load documents.' : 'Loading…'}</p>`}
+    <div class="docs-page">
+      <header class="page-head">
+        <h1>Documents</h1>
+        <p class="lede">Source documents are stored, indexed, and retrieved as passages in the knowledge graph.</p>
+      </header>
+      <form id="doc-filter" class="toolbar">
+        <label class="field">
+          <span>Tag</span>
+          <input name="tag" type="text" value="${esc(state.docFilter.tag)}">
+        </label>
+        <label class="field">
+          <span>Index status</span>
+          <select name="indexStatus">
+            ${['', 'pending', 'indexing', 'completed', 'failed'].map((status) => `
+              <option value="${status}" ${state.docFilter.indexStatus === status ? 'selected' : ''}>${esc(statusLabel(status))}</option>
+            `).join('')}
+          </select>
+        </label>
+        <button class="btn">Apply</button>
+      </form>
+      <div class="docs">
+        <section class="card card-flush">
+          <div class="card-head">
+            <h2>Library</h2>
+            ${total === null ? '' : `<p class="count">${total} ${total === 1 ? 'document' : 'documents'}</p>`}
+          </div>
+          <div class="doc-list">
+            ${state.documents ? `
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Tags</th>
+                    <th>Index</th>
+                    <th>Updated</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>${rows || '<tr><td colspan="5">No documents match this filter.</td></tr>'}</tbody>
+              </table>
+            ` : `<p class="empty">${state.banner ? 'Could not load documents.' : 'Loading…'}</p>`}
+          </div>
+        </section>
+        <section class="card editor">${editor}</section>
       </div>
-      <div class="editor">${editor}</div>
+      <section class="card">
+        <form id="create-document">
+          <h2>New document</h2>
+          <label class="field">
+            <span>Title</span>
+            <input name="title" type="text" required value="${esc(state.docDraft.title)}">
+          </label>
+          <label class="field">
+            <span>Tags</span>
+            <input name="tags" type="text" placeholder="Comma-separated" value="${esc(state.docDraft.tags)}">
+          </label>
+          <label class="field">
+            <span>Content</span>
+            <textarea name="content" required placeholder="Markdown">${esc(state.docDraft.content)}</textarea>
+          </label>
+          <button class="btn">Create document</button>
+        </form>
+      </section>
     </div>
   `;
 }

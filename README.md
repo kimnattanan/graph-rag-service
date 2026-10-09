@@ -6,9 +6,12 @@
 
 <br />
 <div align="center">
+  <a href="https://github.com/kimnattanan/graph-rag-service">
+    <img src="logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-<h3 align="center">Graph RAG Service</h3>
-
+  <h3 align="center">Graph RAG Service</h3>
+  
   <p align="center">
     Answer questions from a knowledge graph. Documents are chunked, embedded, and linked to the entities they mention, then retrieved over vector search and graph hops.
     <br />
@@ -44,7 +47,6 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
   </ol>
 </details>
@@ -52,8 +54,6 @@
 
 
 ## About The Project
-
-[![Conversation][conversation-screenshot]](smoke_data/png/conversation.png)
 
 Documents live in [Memgraph](https://memgraph.com/). A worker splits each one into chunks, names the entities in a single chat completion, and stores embeddings on the chunks. When someone asks a question, Conversation calls Knowledge, which embeds the question, runs a vector search, and returns the nearest chunks together with the entities they mention. Conversation then asks an LLM to answer from those passages and stores the sources.
 
@@ -65,12 +65,6 @@ The layout follows [Wild Workouts](https://github.com/ThreeDotsLabs/wild-workout
 * **Graph RAG.** A chunk hit is returned with the entities it mentions, so an answer can show the graph path behind a passage.
 * **Vector embedding and search.** One embedding model writes chunk and entity vectors and embeds the question at query time. Memgraph holds a cosine vector index on `Chunk.embedding`.
 * **Auth, access control, gRPC, and jobs.** The user service issues a JWT that carries role and permissions. HTTP handlers enforce those permissions. Conversation calls Knowledge over gRPC. A worker in the Knowledge process indexes documents, embeds entities, and deletes orphaned graph nodes.
-
-```text
-Document -[:TAGGED_AS]-> Tag
-Document -[:HAS_CHUNK]-> Chunk
-Chunk     -[:MENTIONS]-> Entity
-```
 
 An admin creates a markdown document. The HTTP handler stores it as `pending` and returns. The worker later chunks the markdown, names entities, embeds the chunks, and writes the graph.
 
@@ -127,6 +121,16 @@ HTTP is on `127.0.0.1:3001`. Routes live under `/api` (`/auth/register`, `/auth/
 ### Knowledge
 
 Documents and the graph built from them. This context owns indexing and retrieval. It returns chunks. It does not answer the user.
+
+A document points at its tags and its chunks. A chunk points at the entities named in that text.
+
+```text
+Document -[:TAGGED_AS]-> Tag
+Document -[:HAS_CHUNK]-> Chunk
+Chunk     -[:MENTIONS]-> Entity
+```
+
+[![Knowledge graph][graph-screenshot]](smoke_data/png/graph.png)
 
 `POST /api/documents` writes the document and its tags, then stops. A worker inside the HTTP process claims pending documents, replaces their chunks, and moves the index status to `completed` or `failed`. A second loop embeds entities that do not yet have a vector. A sweep deletes chunks, entities, and tags that nothing points at.
 
@@ -291,7 +295,7 @@ Memgraph Lab is on `127.0.0.1:8000`. This Cypher draws the current graph:
 MATCH p=()-[]-() RETURN p;
 ```
 
-[![Knowledge graph][graph-screenshot]](smoke_data/png/graph.png)
+[![Conversation][conversation-screenshot]](smoke_data/png/conversation.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

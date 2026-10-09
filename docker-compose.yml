@@ -14,7 +14,7 @@ services:
     environment:
       SERVICE: knowledge
       SERVER_TO_RUN: http
-      GOCACHE: /go-cachee
+      GOCACHE: /go-cache
       KNOWLEDGE_WORKER_COUNT: 1
     depends_on:
       - memgraph
@@ -34,7 +34,7 @@ services:
     environment:
       SERVICE: knowledge
       SERVER_TO_RUN: grpc
-      GOCACHE: /go-cachee
+      GOCACHE: /go-cache
     depends_on:
       - memgraph
 
