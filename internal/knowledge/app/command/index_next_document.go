@@ -41,7 +41,7 @@ func NewIndexNextDocumentHandler(
 	}
 
 	return decorator.ApplyCommandDecorators(
-		indexNextDocumentHandler{repo: repo, extractor: extractor, indexRepo: indexRepo},
+		indexNextDocumentHandler{repo: repo, extractor: extractor, embedder: embedder, indexRepo: indexRepo},
 		logger,
 		metricsClient,
 	)

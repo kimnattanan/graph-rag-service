@@ -27,7 +27,7 @@ func NewApplication(ctx context.Context, cfg *config.Config) (app.Application, f
 	documentMemgraphReadModel := adapters.NewDocumentMemgraphReadModel(memgraphDriver)
 	documentMemgraphRepository := adapters.NewDocumentMemgraphRepository(memgraphDriver)
 	indexMemgraphRepository := adapters.NewIndexMemgraphRepository(memgraphDriver)
-	extractor := adapters.NewExtractor()
+	extractor := adapters.NewExtractor(cfg.LLM)
 	embedder := adapters.NewEmbedder(cfg.Embedder)
 
 	logger := logrus.NewEntry(logrus.StandardLogger())

@@ -1,0 +1,55 @@
+[00] REQUEST: adapters.entityChatRequest{
+    Model: "steamdj/llama3.1-cpu-only:latest",
+    Messages: []adapters.entityChatMessage{
+        adapters.entityChatMessage{
+            Role: "user",
+            Content: "Extract the named entities from each chunk. Named entities are people, organizations, products, systems, and specific concepts written in the chunk.\nReturn JSON only, with this shape: {\"entities\":[[\"Name\"],[]]}\nThe entities array must contain exactly 6 lists, in chunk order. Use an empty list when a chunk has no entities. Do not add entities that are not written in the chunk. Keep each name as written.\n\nChunk 1:\n# Minestrone Recipe\n\nChunk 2:\n## Ingredients\n\n3 tbsp olive oil\nplus extra to serve\n\n1 onion\nfinely chopped\n\n1 celery stick\nfinely chopped\n\n1 carrot\npeeled and finely chopped\n\n1 courgette\nfinely chopped\n\n70g diced smoked pancetta\n\n1 large garlic clove\ncrushed\n\n½ tsp dried oregano\n\n1 x 400g can cannellini beans\n\n1 x 400g can chopped tomatoes\n\n2 tbsp tomato purée\n\n1.2 litre vegetable stock\n\n1 bay leaf\n\n70g small pasta\n\n100g greens\n- kale, chard or cavolo nero work well\n\nhandful of basil\n\nfinely grated parmesan\nto serve\n\nChunk 3:\n## Method\n\nChunk 4:\n### step 1\n\nHeat the oil in a large saucepan or casserole pot over a low-medium heat and gently fry the onion, celery, carrot, courgette and pancetta for 10 mins. Add the garlic and oregano, and cook for 1 min. Tip in the beans, chopped tomatoes, purée, stock and bay leaf. Season to taste. Bring to the simmer and cook for 30 mins.\n\nChunk 5:\n### step 2\n\nAdd the pasta and greens, and cook for a further 10 mins. Ladle into bowls and scatter with the basil and some parmesan.\n\nChunk 6:\n## Reference\n\nhttps://www.bbcgoodfood.com/recipes/classic-minestrone-soup\n\n"
+        }
+    },
+    Stream: false
+}
+
+[00] RESPONSE: adapters.entityChatResponse{
+    Choices: []struct { Message adapters.entityChatMessage "json:\"message\"" }{
+        struct { Message adapters.entityChatMessage "json:\"message\"" }{
+            Message: adapters.entityChatMessage{
+                Role: "assistant",
+                Content: "{\"entities\": [\r\n[\"cannellini beans\"],\r\n[\"tomatoes\"],\r\n [],\r\n [],\n [],\n [\"parmesan\"],\n[\"BBC Good Food\"]]}"
+            }
+        }
+    },
+    Error: (*struct { Message string "json:\"message\"" })(nil)
+}
+
+[00] PARSED: [][]string{
+    []string{"cannellini beans"},
+    []string{"tomatoes"},
+    []string{},
+    []string{},
+    []string{},
+    []string{"parmesan"},
+    []string{"BBC Good Food"}
+}
+
+[00] {"command":"IndexNextDocument","command_body":"command.IndexNextDocument{NoPending:(*bool)(0x4000262da0)}","error":"extractor: expected 6 entity lists, got 7","message":"Failed to execute command","severity":"error","time":"2026-10-09T12:25:08Z"}
+
+
+
+// check chunks
+
+[00] REQUEST: adapters.entityChatRequest{
+    Model: "steamdj/llama3.1-cpu-only:latest",
+    Messages: []adapters.entityChatMessage{
+        adapters.entityChatMessage{
+            Role: "user",
+            Content: "Extract the named entities from each chunk. Named entities are people, organizations, products, systems, and specific concepts written in the chunk.\nReturn JSON only, with this shape: {\"entities\":[[\"Name\"],[]]}\nThe entities array must contain exactly 6 lists, in chunk order. Use an empty list when a chunk has no entities. Do not add entities that are not written in the chunk. Keep each name as written.\n\n
+                Chunk 1:\n# Minestrone Recipe\n\n
+                Chunk 2:\n## Ingredients\n\n3 tbsp olive oil\nplus extra to serve\n\n1 onion\nfinely chopped\n\n1 celery stick\nfinely chopped\n\n1 carrot\npeeled and finely chopped\n\n1 courgette\nfinely chopped\n\n70g diced smoked pancetta\n\n1 large garlic clove\ncrushed\n\n½ tsp dried oregano\n\n1 x 400g can cannellini beans\n\n1 x 400g can chopped tomatoes\n\n2 tbsp tomato purée\n\n1.2 litre vegetable stock\n\n1 bay leaf\n\n70g small pasta\n\n100g greens\n- kale, chard or cavolo nero work well\n\nhandful of basil\n\nfinely grated parmesan\nto serve\n\n
+                Chunk 3:\n## Method\n\n
+                Chunk 4:\n### step 1\n\nHeat the oil in a large saucepan or casserole pot over a low-medium heat and gently fry the onion, celery, carrot, courgette and pancetta for 10 mins. Add the garlic and oregano, and cook for 1 min. Tip in the beans, chopped tomatoes, purée, stock and bay leaf. Season to taste. Bring to the simmer and cook for 30 mins.\n\n
+                Chunk 5:\n### step 2\n\nAdd the pasta and greens, and cook for a further 10 mins. Ladle into bowls and scatter with the basil and some parmesan.\n\n
+                Chunk 6:\n## Reference\n\nhttps://www.bbcgoodfood.com/recipes/classic-minestrone-soup\n\n"
+        }
+    },
+    Stream: false
+}

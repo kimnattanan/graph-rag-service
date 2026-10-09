@@ -134,6 +134,7 @@ func (r *DocumentMemgraphReadModel) Retrieve(ctx context.Context, embedding []fl
 		OPTIONAL MATCH (d)-[:TAGGED_AS]->(t:Tag)
 		WITH d, c, similarity, collect(DISTINCT t.value) AS docTags
 		WHERE size($tags) = 0 OR any(tag IN $tags WHERE tag IN docTags)
+		WITH d, c, similarity
 		ORDER BY similarity DESC
 		LIMIT $topK
 		OPTIONAL MATCH (c)-[:MENTIONS]->(e:Entity)

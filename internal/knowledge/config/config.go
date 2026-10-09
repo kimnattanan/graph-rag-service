@@ -11,6 +11,7 @@ type (
 		Memgraph Memgraph
 		Worker   Worker
 		Auth     Auth
+		LLM      LLM
 		Embedder Embedder
 	}
 
@@ -32,6 +33,12 @@ type (
 
 	Auth struct {
 		JWTSecret string `env:"JWT_SECRET,required"`
+	}
+
+	LLM struct {
+		BaseURL string `env:"LLM_BASE_URL"`
+		APIKey  string `env:"LLM_API_KEY"`
+		Model   string `env:"LLM_MODEL"`
 	}
 
 	Embedder struct {

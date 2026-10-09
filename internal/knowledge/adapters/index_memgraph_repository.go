@@ -142,7 +142,7 @@ func (r *IndexMemgraphRepository) EmbedEntity(ctx context.Context, name string, 
 	return r.executeWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		result, err := tx.Run(ctx, `
 			MATCH (e:Entity {name: $name})
-			SET e.embedding = $embedding
+			SET e.embedding = $embedding,
 				e.status = $embeddedStatus
 			RETURN e.name AS name
 		`, map[string]any{
