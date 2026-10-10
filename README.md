@@ -15,8 +15,6 @@
   <p align="center">
     Answer questions from a knowledge graph. Documents are chunked, embedded, and linked to the entities they mention, then retrieved over vector search and graph hops.
     <br />
-    <a href="https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example"><strong>Structure reference »</strong></a>
-    <br />
     <br />
     <a href="https://github.com/kimnattanan/graph-rag-service/issues/new?labels=bug">Report Bug</a>
     &middot;
@@ -36,7 +34,6 @@
         <li><a href="#knowledge">Knowledge</a></li>
         <li><a href="#conversation">Conversation</a></li>
         <li><a href="#layout">Layout</a></li>
-        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
@@ -59,6 +56,7 @@ Documents live in [Memgraph](https://memgraph.com/). A worker splits each one in
 
 The layout follows [Wild Workouts](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example). Each bounded context is a clean-architecture service: the domain sits in the middle, application handlers depend only on that domain, and HTTP, gRPC, and databases sit at the edge. Writes and reads are separate CQRS handlers. The services talk to each other instead of sharing a database.
 
+* **Microservices.** User, Knowledge, and Conversation run as separate processes, each with its own database and API. Conversation calls Knowledge over gRPC. No service reads another service's tables.
 * **Domain-driven design.** User, Knowledge, and Conversation are separate contexts. Aggregates protect their own state changes, including the document index lifecycle (`pending`, `indexing`, `completed`, `failed`).
 * **Clean architecture.** Domain code does not import Memgraph, Postgres, HTTP, or the LLM. Those are adapters. `ports` translate a transport into a command or a query, and `service` is the composition root that wires the adapters in.
 * **CQRS.** A command changes state and returns no body (`POST /api/documents` answers `204`). A query only reads (`POST /api/retrieve`, `GET /api/documents/{id}`). Handlers live in `app/command` and `app/query`.
@@ -176,19 +174,6 @@ internal/<context>/
 make openapi   # HTTP server interfaces and JS clients
 make proto     # gRPC stubs
 ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-### Built With
-
-* [![Go][Go]][Go-url]
-* [![gRPC][gRPC]][gRPC-url]
-* [![PostgreSQL][PostgreSQL]][PostgreSQL-url]
-* [![Docker][Docker]][Docker-url]
-* [Memgraph](https://memgraph.com/)
-* [chi](https://github.com/go-chi/chi)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
