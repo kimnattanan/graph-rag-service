@@ -247,8 +247,6 @@ func (h HttpServer) authorize(r *http.Request, permissions ...string) (auth.User
 	return user, nil
 }
 
-// Mapper functions
-
 func parseDomainIndexStatus(status document.IndexStatus) (IndexStatus, error) {
 	switch status {
 	case document.IndexStatusPending:

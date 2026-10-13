@@ -18,8 +18,6 @@ const (
 	TokenTypeBearer = "Bearer"
 )
 
-// User is the principal carried by an access token.
-// Other services authorize from Role and Permissions.
 type User struct {
 	ID          string
 	Email       string

@@ -18,8 +18,7 @@ import (
 )
 
 const (
-	// all-minilm truncates near 256 tokens. 500 runes stays inside that for
-	// typical prose, including denser scripts than English.
+	// all-minilm truncates near 256 tokens.
 	maxChunkRunes     = 500
 	chunkOverlapRunes = 80
 )
@@ -64,9 +63,11 @@ func (e *Extractor) Extract(ctx context.Context, content string) ([]indexing.Ext
 }
 
 type entityChatRequest struct {
-	Model    string              `json:"model"`
-	Messages []entityChatMessage `json:"messages"`
-	Stream   bool                `json:"stream"`
+	Model               string              `json:"model"`
+	Messages            []entityChatMessage `json:"messages"`
+	Stream              bool                `json:"stream"`
+	MaxCompletionTokens int                 `json:"max_completion_tokens"`
+	ReasoningEffort     string              `json:"reasoning_effort"`
 }
 
 type entityChatMessage struct {
@@ -76,7 +77,8 @@ type entityChatMessage struct {
 
 type entityChatResponse struct {
 	Choices []struct {
-		Message entityChatMessage `json:"message"`
+		Message      entityChatMessage `json:"message"`
+		FinishReason string            `json:"finish_reason"`
 	} `json:"choices"`
 	Error *struct {
 		Message string `json:"message"`
@@ -97,8 +99,10 @@ func (e *Extractor) extractEntities(ctx context.Context, chunks []string) ([][]s
 			Role:    "user",
 			Content: entityPrompt(chunks),
 		}},
+		MaxCompletionTokens: 4096,
+		ReasoningEffort:     "low",
 	}
-	fmt.Printf("REQUEST: %#v\n", bodyStruct)
+	// fmt.Printf("extractEntities - REQUEST: %#v\n", bodyStruct)
 	body, err := json.Marshal(bodyStruct)
 	if err != nil {
 		return nil, fmt.Errorf("extractor: encode request: %w", err)
@@ -132,6 +136,9 @@ func (e *Extractor) extractEntities(ctx context.Context, chunks []string) ([][]s
 	if err := json.Unmarshal(respBody, &decoded); err != nil {
 		return nil, fmt.Errorf("extractor: decode response: %w", err)
 	}
+	if decoded.Choices[0].FinishReason == "length" {
+		return nil, fmt.Errorf("extractor: response is too long")
+	}
 
 	// mock
 	// decoded := entityChatResponseMock()
@@ -139,7 +146,7 @@ func (e *Extractor) extractEntities(ctx context.Context, chunks []string) ([][]s
 	if len(decoded.Choices) == 0 {
 		return nil, fmt.Errorf("extractor: empty choices")
 	}
-	fmt.Printf("RESPONSE: %#v\n", decoded)
+	// fmt.Printf("extractEntities - RESPONSE: %#v\n", decoded)
 	return parseEntityResponse(decoded.Choices[0].Message.Content, len(chunks))
 }
 

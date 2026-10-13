@@ -3,7 +3,8 @@ package adapters
 func entityChatResponseMock() entityChatResponse {
 	return entityChatResponse{
 		Choices: []struct {
-			Message entityChatMessage `json:"message"`
+			Message      entityChatMessage `json:"message"`
+			FinishReason string            `json:"finish_reason"`
 		}{
 			{
 				Message: entityChatMessage{

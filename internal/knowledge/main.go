@@ -43,8 +43,6 @@ func main() {
 	serverType := strings.ToLower(cfg.App.ServerToRun)
 	switch serverType {
 	case "http":
-		// go loadFixtures(application)
-
 		server.RunHTTPServer(&cfg.Common, func(router chi.Router) http.Handler {
 			router.Use(auth.Middleware(cfg.Auth.JWTSecret))
 			return ports.HandlerFromMux(

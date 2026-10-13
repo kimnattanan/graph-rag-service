@@ -28,9 +28,10 @@ func NewLLMCompleter(cfg config.LLM) *LLMCompleter {
 }
 
 type chatCompletionRequest struct {
-	Model    string        `json:"model"`
-	Messages []chatMessage `json:"messages"`
-	Stream   bool          `json:"stream"`
+	Model               string        `json:"model"`
+	Messages            []chatMessage `json:"messages"`
+	Stream              bool          `json:"stream"`
+	MaxCompletionTokens int           `json:"max_completion_tokens"`
 }
 
 type chatMessage struct {
@@ -40,7 +41,8 @@ type chatMessage struct {
 
 type chatCompletionResponse struct {
 	Choices []struct {
-		Message chatMessage `json:"message"`
+		Message      chatMessage `json:"message"`
+		FinishReason string      `json:"finish_reason"`
 	} `json:"choices"`
 	Error *struct {
 		Message string `json:"message"`
@@ -48,8 +50,7 @@ type chatCompletionResponse struct {
 }
 
 func (c *LLMCompleter) Complete(ctx context.Context, prompt string) (string, error) {
-	// print the prompt
-	fmt.Println("prompt:", prompt)
+	// fmt.Println("prompt:", prompt)
 
 	if c.cfg.BaseURL == "" {
 		return "", fmt.Errorf("llm: base url is empty")
@@ -64,6 +65,7 @@ func (c *LLMCompleter) Complete(ctx context.Context, prompt string) (string, err
 			Role:    "user",
 			Content: prompt,
 		}},
+		MaxCompletionTokens: 4096,
 	})
 	if err != nil {
 		return "", fmt.Errorf("llm: encode request: %w", err)
@@ -99,6 +101,9 @@ func (c *LLMCompleter) Complete(ctx context.Context, prompt string) (string, err
 	}
 	if len(decoded.Choices) == 0 {
 		return "", fmt.Errorf("llm: empty choices")
+	}
+	if decoded.Choices[0].FinishReason == "length" {
+		return "", fmt.Errorf("llm: response is too long")
 	}
 	content := strings.TrimSpace(decoded.Choices[0].Message.Content)
 	if content == "" {

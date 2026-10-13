@@ -19,7 +19,7 @@ import (
 
 type GrpcServer struct {
 	knowledge.UnimplementedKnowledgeServiceServer
-	app       app.Application
+	app app.Application
 }
 
 func NewGrpcServer(application app.Application) GrpcServer {
@@ -194,8 +194,6 @@ func (g GrpcServer) Retrieve(ctx context.Context, request *knowledge.RetrieveReq
 
 func listIndexStatusFilter(request *knowledge.ListDocumentsRequest) (*document.IndexStatus, error) {
 	field := request.ProtoReflect().Descriptor().Fields().ByName("index_status")
-	// Proto3 does not track presence for the zero enum value, so an omitted
-	// status and an explicit pending status both look unset.
 	if field == nil || !request.ProtoReflect().Has(field) {
 		return nil, nil
 	}

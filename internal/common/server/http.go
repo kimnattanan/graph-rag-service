@@ -4,15 +4,12 @@ import (
 	"net/http"
 	"strings"
 
-	// firebase "firebase.google.com/go/v4"
-	// "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/kimnattanan/graph-rag-service/internal/common/config"
 	"github.com/kimnattanan/graph-rag-service/internal/common/logs"
 	"github.com/sirupsen/logrus"
-	// "google.golang.org/api/option"
 )
 
 func RunHTTPServer(cfg *config.CommonConfig, createHandler func(router chi.Router) http.Handler) {

@@ -34,6 +34,7 @@
         <li><a href="#knowledge">Knowledge</a></li>
         <li><a href="#conversation">Conversation</a></li>
         <li><a href="#layout">Layout</a></li>
+        <li><a href="#example-website">Example website</a></li>
       </ul>
     </li>
     <li>
@@ -175,6 +176,22 @@ make openapi   # HTTP server interfaces and JS clients
 make proto     # gRPC stubs
 ```
 
+### Example website
+
+[`web/`](web/) is a Vite console for the three HTTP APIs. Sign in and register call User. Conversation lists chats, sends a question, and shows the assistant reply with the retrieved passages. Documents is shown only when the token includes `knowledge:write`: create and edit markdown, filter by tag and index status, reindex, and read the index job.
+
+The browser stays on one origin. Vite proxies `/svc/user`, `/svc/knowledge`, and `/svc/conversation` to `127.0.0.1:3001`, `3000`, and `3002`. The access token and the signed-in user are kept in `localStorage`.
+
+Start it after the services are up. Node.js is required for this console only.
+
+```sh
+cd web
+npm install
+npm run dev
+```
+
+The console is on `http://127.0.0.1:5173`. `make openapi` also writes JavaScript clients into `web/src/repositories/clients`. The console itself calls the APIs from `web/src/api.js`.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -220,6 +237,8 @@ Postgres data and the Memgraph store are Docker volumes. `docker compose down -v
 
 
 ## Usage
+
+The [example website](#example-website) covers the same flows in a browser. The steps below use curl.
 
 The admin account from `.env` can both write documents and ask questions. A registered user can ask, and cannot write documents.
 
